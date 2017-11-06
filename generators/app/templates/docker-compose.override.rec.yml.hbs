@@ -1,0 +1,61 @@
+version: "2"
+networks:
+  nginx-proxy:
+    external:
+      name: nginx-proxy
+services:
+{{#if webContainer}}
+  web:
+  {{#if_eq webImage 'php'}}
+    restart: unless-stopped
+    environment:
+      - XDEBUG_CONFIG=idekey=remote-debug remote_host=${HOST_IP}
+      - VIRTUAL_HOST={{projectName}}.rec.etudes.local
+    networks:
+      - default
+      - nginx-proxy
+    ports :
+      - "{{portPrefix}}80:80"
+  {{/if_eq ~}}
+{{/if ~}}
+{{#if dbContainer}}
+  db:
+    restart: unless-stopped
+  {{#if_eq dbImage 'postgres'}}
+    ports:
+      - "{{portPrefix}}32:5432"
+  {{/if_eq ~}}
+  {{#if_eq dbImage 'mysql'}}
+    ports:
+      - "{{portPrefix}}06:3306"
+  {{/if_eq ~}}
+{{/if ~}}
+{{#if mapserverContainer}}
+  mapserver:
+    restart: unless-stopped
+    environment:
+      - VIRTUAL_HOST=mapserver.{{projectName}}.rec.etudes.local
+    networks:
+      - default
+      - nginx-proxy
+    ports:
+      - "{{portPrefix}}85:80"
+{{/if ~}}
+{{#if mailcatcherContainer}}
+  mailcatcher:
+    restart: unless-stopped
+    build:
+      context: .docker/mailcatcher
+      args:
+       http_proxy: ${http_proxy}
+       https_proxy: ${https_proxy}
+       no_proxy: ${no_proxy}
+    environment:
+      - http_proxy=${http_proxy}
+      - https_proxy=${https_proxy}
+      - no_proxy=${no_proxy}
+      - VIRTUAL_HOST=mailcatcher.{{projectName}}.rec.etudes.local
+    networks:
+      - default
+      - nginx-proxy
+{{/if ~}}

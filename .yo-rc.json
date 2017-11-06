@@ -1,0 +1,9 @@
+{
+  "generator-node": {
+    "promptValues": {
+      "authorName": "GFI Orléans - Pôle Digital",
+      "authorEmail": "pole-digital-centre@gfi.fr",
+      "authorUrl": ""
+    }
+  }
+}

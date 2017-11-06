@@ -1,0 +1,20 @@
+FROM node:boron
+MAINTAINER {{authorName}} <{{authorEmail}}>
+
+RUN npm install -g node-sass
+RUN npm install -g chokidar-cli
+RUN npm install -g compass-importer
+
+RUN mkdir -p /app && chown -R node:node /app
+VOLUME /app
+WORKDIR /app
+
+# Fix write permissions on Linux/Mac
+RUN usermod -u ${HOST_UID:-1000} node
+RUN groupmod -g ${HOST_GID:-1000} node
+
+# this environment variable is required for chokidar-cli
+ENV SHELL "/bin/bash"
+
+USER node
+ENTRYPOINT ["node-sass"]
