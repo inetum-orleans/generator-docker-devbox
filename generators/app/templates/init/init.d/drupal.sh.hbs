@@ -37,7 +37,7 @@ drush site-install -y {{drupalInitProfil}} --locale=fr --account-name=gfi --acco
 echo "Init Drupal: create tmp directory"
 mkdir -p ../web/sites/default/files/tmp
 
-echo "Init Drupal: create tmp directory"
+echo "Init Drupal: create settings link"
 cd ../web/sites/default
 mv settings.php settings.$DOCKER_DEVBOX_ENV.php
 ln -s settings.$DOCKER_DEVBOX_ENV.php settings.php
