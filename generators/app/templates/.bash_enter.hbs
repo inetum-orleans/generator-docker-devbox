@@ -13,7 +13,7 @@ if [ -z "$BASH_ENTER_ALIAS_ONLY" ]; then
   autostash COMPOSE_PROJECT_DIR=$PWD
 
   # Define DOCKER_DEVBOX_ENV to customize environment configuration files
-  DOCKER_DEVBOX_ENV="${DOCKER_DEVBOX_ENV:-dev}"
+  autostash DOCKER_DEVBOX_ENV="${DOCKER_DEVBOX_ENV:-dev}"
 
   if [ -f "docker-compose.override.$DOCKER_DEVBOX_ENV.yml" ]; then
     ln -fs "docker-compose.override.$DOCKER_DEVBOX_ENV.yml" "docker-compose.override.yml"
