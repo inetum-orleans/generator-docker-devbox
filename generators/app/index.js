@@ -85,11 +85,15 @@ module.exports = class extends Generator {
       for (const groupOrImage of images) {
         if (!props[groupOrImage.imageVariable]) {
           if (groupOrImage.images && groupOrImage.images.length === 1) {
-            // When there's a single image in the group, no prompt is shown.
+            // When there's a single image in the group, no prompt is shown to choose image.
             props[groupOrImage.imageVariable] = groupOrImage.images[0].name;
           } else {
             props[groupOrImage.imageVariable] = groupOrImage.name;
           }
+        }
+
+        if (!props[groupOrImage.containerVariable]) {
+          delete props[groupOrImage.imageVariable]
         }
       }
 
@@ -107,7 +111,6 @@ module.exports = class extends Generator {
   writing() {
     this.registerTransformStream(
       gulpRename(function (path) {
-        // TODO: Lorsqu'un fichier 'yo-rc-global' est présent dans le dossier utilisateur, ça plante, créer ticket
         if (path.extname === '.hbs') {
           const splitBasename = path.basename.split('.');
           path.extname = (splitBasename.length > 1 ? '.' : '') + splitBasename.pop();
