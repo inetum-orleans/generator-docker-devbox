@@ -1,6 +1,6 @@
 {
   "name": "generator-docker-devbox",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Générateur Yeoman pour les environnements dockerisés via docker-devbox",
   "homepage": "https://glbaso01.asogfi.fr/PoleDigital/generator-docker-devbox",
   "author": {
