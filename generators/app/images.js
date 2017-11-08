@@ -30,7 +30,7 @@ class Container {
         name: this.containerVariable,
         message: `Use ${this.name} container`,
         default: this.default,
-        store: this.name
+        store: true
       }
     ];
   }

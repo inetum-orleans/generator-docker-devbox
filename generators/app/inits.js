@@ -39,7 +39,7 @@ class Init {
         name: this.initVariable,
         message: `Initialize ${this.name}`,
         default: this.default,
-        store: this.name
+        store: true
       }
     ];
   }
