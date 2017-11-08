@@ -16,6 +16,16 @@ Then generate your new project:
 yo docker-devbox
 ```
 
+## Use local installation of generator for development
+
+Use [npm link](https://docs.npmjs.com/cli/link) to use local installation of generator
+
+```bash
+git clone https://glbaso01.asogfi.fr/PoleDigital/generator-docker-devbox
+cd generator-docker-devbox
+npm link
+```
+
 ## Getting To Know Yeoman
 
  * Yeoman has a heart of gold.
