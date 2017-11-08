@@ -7,7 +7,7 @@ First, install [Yeoman](http://yeoman.io) and generator-docker-devbox using [npm
 
 ```bash
 npm install -g yo
-npm install -g https://glbaso01.asogfi.fr/PoleDigital/generator-docker-devbox
+npm install -g https://glbaso01.asogfi.fr/PoleDigital/generator-docker-devbox/repository/archive.tar.gz
 ```
 
 Then generate your new project:
