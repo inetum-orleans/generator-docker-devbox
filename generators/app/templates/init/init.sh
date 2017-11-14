@@ -8,6 +8,6 @@ shopt -s expand_aliases
 alias autostash=
 source ../.bash_enter
 
-for f in ./init.d/*; do source "$f"; done
+for f in ./init.d/*; do source "$f"; cd "$(dirname "$0")"; done
 
 touch .initialized
