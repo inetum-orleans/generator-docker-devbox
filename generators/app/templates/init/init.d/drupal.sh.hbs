@@ -7,8 +7,8 @@ dc up -d
 {{#if_eq drupalInitProfil 'standard'}}
 echo "Init Drupal: composer create-project"
 rm -Rf drupal-project.tmp
-composer create-project drupal-composer/drupal-project init/drupal-project.tmp --stability dev --no-interaction
-cp -Rf drupal-project.tmp/. ../
+composer create-project drupal-composer/drupal-project drupal-project.tmp --stability dev --no-interaction
+cp -Rf drupal-project.tmp/. $COMPOSE_PROJECT_DIR
 rm -Rf drupal-project.tmp
 {{/if_eq}}
 
@@ -24,20 +24,24 @@ rm -Rf drupal-project.tmp/.bash_enter
 rm -Rf drupal-project.tmp/.env
 rm -Rf drupal-project.tmp/docker-compose.*
 
-cp -Rf drupal-project.tmp/. ../
+cp -Rf drupal-project.tmp/. $COMPOSE_PROJECT_DIR
 rm -Rf drupal-project.tmp
+{{/if_eq}}
 
+cd $COMPOSE_PROJECT_DIR
+{{#if_eq drupalInitProfil 'gfi'}}
 echo "Init Drupal: composer install"
 composer install
 {{/if_eq}}
+
+cd web
 
 echo "Init Drupal: drush site-install"
 drush site-install -y {{drupalInitProfil}} --locale=fr --account-name=gfi --account-pass=gfi --account-mail=pole-digital-centre@gfi.fr --db-url={{#if_eq dbImage 'postgres'}}pgsql{{/if_eq}}{{#if_eq dbImage 'mysql'}}mysql{{/if_eq}}://{{projectName}}:{{projectName}}@db/{{projectName}} --site-name='{{projectName}}'
 
 echo "Init Drupal: create tmp directory"
-mkdir -p ../web/sites/default/files/tmp
+mkdir -p sites/default/files/tmp
 
 echo "Init Drupal: create settings link"
-cd ../web/sites/default
-mv settings.php settings.$DOCKER_DEVBOX_ENV.php
-ln -fs settings.$DOCKER_DEVBOX_ENV.php settings.php
+mv sites/default/settings.php sites/default/settings.$DOCKER_DEVBOX_ENV.php
+ln -rfs "sites/default/settings.$DOCKER_DEVBOX_ENV.php" "sites/default/settings.php"
