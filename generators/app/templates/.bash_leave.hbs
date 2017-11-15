@@ -9,3 +9,9 @@
 #
 # See http://smartcd.org for more ideas about what can be put here
 #######################################################################
+
+ALIAS_FUNCTIONS=$(declare -F | sed -r 's/^declare -f //' | awk -F= '/^_?alias_/{print $1 }')
+DOCKER_DEVBOX_FUNCTIONS=$(declare -F | sed -r 's/^declare -f //' | awk -F= '/^_?docker_devbox_/{print $1 }')
+
+for func in $ALIAS_FUNCTIONS; do unset -f $func; done
+for func in $DOCKER_DEVBOX_FUNCTIONS; do unset -f $func; done
