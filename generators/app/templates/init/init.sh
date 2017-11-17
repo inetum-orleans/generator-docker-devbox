@@ -10,4 +10,4 @@ source ../.bash_enter
 
 for f in ./init.d/*; do source "$f"; cd "$COMPOSE_PROJECT_DIR/init"; done
 
-touch .initialized
+rm .should-initialize

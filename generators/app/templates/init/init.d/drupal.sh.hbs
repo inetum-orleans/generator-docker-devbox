@@ -8,8 +8,6 @@ dc up -d
 echo "Init Drupal: composer create-project"
 rm -Rf drupal-project.tmp
 composer create-project drupal-composer/drupal-project drupal-project.tmp --stability dev --no-interaction
-cp -Rf drupal-project.tmp/. $COMPOSE_PROJECT_DIR
-rm -Rf drupal-project.tmp
 {{/if_eq}}
 
 {{#if_eq drupalInitProfil 'gfi'}}
@@ -23,10 +21,15 @@ rm -Rf drupal-project.tmp/.docker
 rm -Rf drupal-project.tmp/.bash_enter
 rm -Rf drupal-project.tmp/.env
 rm -Rf drupal-project.tmp/docker-compose.*
+{{/if_eq}}
+
+if [ -f "$COMPOSE_PROJECT_DIR/.gitignore" ] && [ -f "drupal-project.tmp/.gitignore" ]; then
+  echo -e >> $COMPOSE_PROJECT_DIR/.gitignore
+  cat drupal-project.tmp/.gitignore >> $COMPOSE_PROJECT_DIR/.gitignore
+fi
 
 cp -Rf drupal-project.tmp/. $COMPOSE_PROJECT_DIR
 rm -Rf drupal-project.tmp
-{{/if_eq}}
 
 cd $COMPOSE_PROJECT_DIR
 {{#if_eq drupalInitProfil 'gfi'}}
@@ -43,5 +46,7 @@ echo "Init Drupal: create tmp directory"
 mkdir -p sites/default/files/tmp
 
 echo "Init Drupal: create settings link"
-mv sites/default/settings.php sites/default/settings.$DOCKER_DEVBOX_ENV.php
+if [ ! -f "sites/default/settings.$DOCKER_DEVBOX_ENV.php" ] && [ -f "sites/default/settings.php" ]; then
+  mv sites/default/settings.php "sites/default/settings.$DOCKER_DEVBOX_ENV.php"
+fi
 ln -rfs "sites/default/settings.$DOCKER_DEVBOX_ENV.php" "sites/default/settings.php"

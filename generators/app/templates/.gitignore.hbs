@@ -1,0 +1,10 @@
+.idea/
+*.iml
+docker-compose.override.yml
+{{#if mapserverContainer ~}}
+mapserver/mapserver.map
+{{/if}}
+{{#if drupalInit ~}}
+web/sites/default/settings.php
+{{/if}}
+init/
