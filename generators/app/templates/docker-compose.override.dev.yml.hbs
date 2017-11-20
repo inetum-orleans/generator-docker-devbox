@@ -56,3 +56,23 @@ services:
       - default
       - nginx-proxy
 {{/if ~}}
+{{#if mavenContainer}}
+  maven:
+    build:
+      context: .docker/maven
+      args:
+       http_proxy: ${http_proxy}
+       https_proxy: ${https_proxy}
+       no_proxy: ${no_proxy}
+    environment:
+      http_proxy: ${http_proxy}
+      https_proxy: ${https_proxy}
+      no_proxy: ${no_proxy}
+    volumes:
+      - ".:/usr/src/app"
+      - "maven:/var/www/.m2"
+{{/if ~}}
+{{#if mavenContainer}}
+volumes:
+  maven: ~
+{{/if ~}}

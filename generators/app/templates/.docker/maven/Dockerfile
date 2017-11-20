@@ -1,0 +1,14 @@
+FROM maven
+MAINTAINER {{authorName}} <{{authorEmail}}>
+
+RUN usermod -u ${HOST_UID:-1000} www-data && groupmod -g ${HOST_GID:-1000} www-data
+
+RUN mkdir -p /usr/src/app
+RUN chown -R www-data:www-data /usr/src/app
+VOLUME /usr/src/app
+
+ENV MAVEN_CONFIG=/var/www/.m2
+RUN mkdir -p $MAVEN_CONFIG && chown -R www-data:www-data $MAVEN_CONFIG
+VOLUME $MAVEN_CONFIG
+
+USER www-data

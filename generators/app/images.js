@@ -146,6 +146,9 @@ images = [
   }),
   new Container('mapserver', {
     default: false
+  }),
+  new Container('maven', {
+    default: false
   })
 ];
 

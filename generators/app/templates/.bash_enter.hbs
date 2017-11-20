@@ -56,6 +56,9 @@ _alias_phing() { docker-compose run --rm --user www-data --entrypoint php --work
 _alias_node-sass() { docker-compose run --rm node-sass $@;}
 _alias_watch-sass() { docker-compose run --rm --entrypoint chokidar node-sass \"./**/*.scss\" --initial --verbose -p -c \"node-sass . -r -o css --importer /usr/local/lib/node_modules/compass-importer/index.js --sourceComments true\" $@;}
 {{/if}}
+{{#if mavenContainer ~}}
+_alias_mvn() { docker-compose run --rm --workdir="$(_docker_devbox_map_workdir "/usr/src/app")" maven mvn $@;}
+{{/if}}
 
 ALIAS_FUNCTIONS=$(declare -F | sed -r 's/^declare -f //' | awk -F= '/^_?alias_/{print $1 }')
 if [ -z "$BASH_ENTER_ALIAS_ONLY" ]; then echo "Commands: "; fi
