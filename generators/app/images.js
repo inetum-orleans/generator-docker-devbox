@@ -137,6 +137,9 @@ images = [
       ]
     })
   ]),
+  new Container('node', {
+    default: false
+  }),
   new Container('mailcatcher'),
   new Container('phing', {
     default: false

@@ -69,6 +69,21 @@ services:
       - "${COMPOSE_PROJECT_DIR}/.phing:/build"
     privileged: true
 {{/if ~}}
+{{#if nodeContainer}}
+  node:
+    build:
+      context: .docker/node
+      args:
+        http_proxy: "${http_proxy}"
+        https_proxy: "${https_proxy}"
+    environment:
+      http_proxy: "${http_proxy}"
+      https_proxy: "${https_proxy}"
+      no_proxy: "localhost,127.0.0.1{{#if webContainer}},web{{/if}},{{#if dbContainer}}db{{/if}},{{#if mapserverContainer}}mapserver{{/if}}"
+    volumes:
+      - ".:/app"
+      - "node-cache:/home/node/.cache"
+{{/if ~}}
 {{#if phingContainer}}
   builder:
     build:
@@ -115,3 +130,6 @@ volumes:
 {{#if_eq dbImage 'mysql'}}
   mysql: ~
 {{/if_eq ~}}
+{{#if nodeContainer}}
+  node-cache: ~
+{{/if}}

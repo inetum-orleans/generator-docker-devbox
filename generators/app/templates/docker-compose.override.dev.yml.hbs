@@ -28,6 +28,14 @@ services:
       - "{{portPrefix}}06:3306"
   {{/if_eq ~}}
 {{/if ~}}
+{{#if nodeContainer}}
+  node:
+    environment:
+      VIRTUAL_HOST: node.{{project}}.app
+    networks:
+      - default
+      - nginx-proxy
+{{/if ~}}
 {{#if mapserverContainer}}
   mapserver:
     restart: unless-stopped
