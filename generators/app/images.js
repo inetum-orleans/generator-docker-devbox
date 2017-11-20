@@ -120,6 +120,7 @@ images = [
           type: 'list',
           name: 'postgresVersion',
           message: 'PostgreSQL Version',
+          default: '9.6',
           store: true,
           choices: ['10.0', '9.6', '9.5', '9.4', '9.3']
         }
