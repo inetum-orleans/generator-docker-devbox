@@ -102,8 +102,10 @@ RUN mv drupal.phar /usr/local/bin/drupal && \
 RUN curl https://www.postgresql.org/media/keys/ACCC4CF8.asc -L | apt-key add -
 RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main" >> /etc/apt/sources.list.d/postgresql.list
 RUN apt-get update && apt-get install -y postgresql-client-9.6
-COPY ./include/.pgpass /root/.pgpass
-RUN chmod 0600 /root/.pgpass
+
+ENV PGPASSFILE=/.pgpass
+COPY .pgpass /.pgpass
+RUN chmod 600 /.pgpass
 {{/if_eq ~}}
 
 {{#if_eq dbImage 'mysql' ~}}
