@@ -76,10 +76,13 @@ services:
       args:
         http_proxy: "${http_proxy}"
         https_proxy: "${https_proxy}"
+        no_proxy: "${no_proxy},{{#if webContainer}},web{{/if}},{{#if dbContainer}}db{{/if}},{{#if mapserverContainer}}mapserver{{/if}}"
+        GROUP_ID: "${GROUP_ID}"
+        USER_ID: "${USER_ID}"
     environment:
       http_proxy: "${http_proxy}"
       https_proxy: "${https_proxy}"
-      no_proxy: "localhost,127.0.0.1{{#if webContainer}},web{{/if}},{{#if dbContainer}}db{{/if}},{{#if mapserverContainer}}mapserver{{/if}}"
+      no_proxy: "${no_proxy},{{#if webContainer}},web{{/if}},{{#if dbContainer}}db{{/if}},{{#if mapserverContainer}}mapserver{{/if}}"
     volumes:
       - ".:/app"
       - "node-cache:/home/node/.cache"
