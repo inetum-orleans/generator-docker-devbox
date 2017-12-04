@@ -11,6 +11,7 @@
 #######################################################################
 if [ -z "$BASH_ENTER_ALIAS_ONLY" ]; then
   autostash COMPOSE_PROJECT_DIR=$PWD
+  autostash COMPOSE_PROJECT_NAME={{projectName}}
 
   # Define DOCKER_DEVBOX_ENV to customize environment configuration files
   autostash DOCKER_DEVBOX_ENV="${DOCKER_DEVBOX_ENV:-dev}"
