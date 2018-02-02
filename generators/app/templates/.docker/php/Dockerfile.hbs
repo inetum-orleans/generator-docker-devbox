@@ -36,7 +36,7 @@ RUN docker-php-ext-install pdo pdo_mysql
 {{/if}}
 
 RUN if [ ! -z "$http_proxy" ]; then pear config-set http_proxy ${http_proxy}; fi;
-RUN yes | pecl install xdebug \
+RUN yes | pecl install xdebug{{#if_eq phpVersion '5.6'}}-2.5.5{{/if_eq}} \
     && echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" > /usr/local/etc/php/conf.d/xdebug.ini \
     && echo "xdebug.remote_enable=on" >> /usr/local/etc/php/conf.d/xdebug.ini \
     && echo "xdebug.remote_autostart=off" >> /usr/local/etc/php/conf.d/xdebug.ini
