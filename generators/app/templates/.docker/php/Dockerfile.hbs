@@ -89,6 +89,7 @@ RUN composer config -g github-oauth.github.com db14c113decece351f1e20cf012ce0b3c
 # Install prestissimo
 RUN composer global require hirak/prestissimo
 
+{{#if drupalInit ~}}
 # Download drupalconsole
 RUN curl https://drupalconsole.com/installer -L -o drupal.phar
 
@@ -96,6 +97,7 @@ RUN curl https://drupalconsole.com/installer -L -o drupal.phar
 RUN mv drupal.phar /usr/local/bin/drupal && \
     chmod +x /usr/local/bin/drupal
 
+{{/if}}
 {{#if dbContainer ~}}
 {{#if_eq dbImage 'postgres' ~}}
 # PSQL Client for drush commands
