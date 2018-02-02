@@ -43,7 +43,7 @@ class Container {
     return image.additionalPromptsEntries.map(prompt => {
       return Object.assign({}, prompt, {
         when: answers => {
-          return answers[this.imageVariable] === image.name || !answers[this.imageVariable];
+          return answers[this.containerVariable] && (!answers[this.imageVariable] || answers[this.imageVariable] === image.name);
         }
       });
     });
