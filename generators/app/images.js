@@ -108,7 +108,7 @@ images = [
           name: 'phpVersion',
           message: 'PHP Version',
           store: true,
-          choices: ['7.1', '7.0', '5.6']
+          choices: ['7.2', '7.1', '7.0', '5.6']
         }
       ]
     })
