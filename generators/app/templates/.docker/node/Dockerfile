@@ -4,6 +4,33 @@ MAINTAINER {{authorName}} <{{authorEmail}}>
 ARG GROUP_ID=1000
 ARG USER_ID=1000
 
+COPY .ca-certificates/* /usr/local/share/ca-certificates/
+RUN update-ca-certificates
+
+ENV NODE_EXTRA_CA_CERTS=/etc/ssl/certs/ca-certificates.crt
+
+# Mise à jour de yarn basé sur le script de l'image officielle
+ENV YARN_VERSION 1.5.1
+
+RUN rm -Rf /opt/yarn \
+  && rm /usr/local/bin/yarn && rm /usr/local/bin/yarnpkg \
+  && set -ex \
+  && for key in \
+    6A010C5166006599AA17F08146C2130DFD2497F5 \
+  ; do \
+    gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$key" || \
+    gpg --keyserver hkp://ipv4.pool.sks-keyservers.net --recv-keys "$key" || \
+    gpg --keyserver hkp://pgp.mit.edu:80 --recv-keys "$key" ; \
+  done \
+  && curl -fSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" \
+  && curl -fSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz.asc" \
+  && gpg --batch --verify yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz \
+  && mkdir -p /opt/yarn \
+  && tar -xzf yarn-v$YARN_VERSION.tar.gz -C /opt/yarn --strip-components=1 \
+  && ln -s /opt/yarn/bin/yarn /usr/local/bin/yarn \
+  && ln -s /opt/yarn/bin/yarn /usr/local/bin/yarnpkg \
+  && rm yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz
+
 # Fix permissions to match host user
 RUN usermod -u ${USER_ID:-1000} node && groupmod -g ${GROUP_ID:-1000} node
 
@@ -17,8 +44,4 @@ WORKDIR /app
 
 USER node
 
-# Workaround for https://github.com/yarnpkg/yarn/issues/4877
-RUN npm config set http-proxy ${http_proxy}
-RUN npm config set https-proxy ${https_proxy}
-
-
+RUN yarn config set cafile ${NODE_EXTRA_CA_CERTS} --global

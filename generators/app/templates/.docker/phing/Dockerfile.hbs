@@ -1,6 +1,9 @@
 FROM php:7.1-cli
 MAINTAINER {{authorName}} <{{authorEmail}}>
 
+COPY .ca-certificates/* /usr/local/share/ca-certificates/
+RUN update-ca-certificates
+
 # Register the COMPOSER_HOME environment variable
 ENV COMPOSER_HOME /composer
 
@@ -44,7 +47,6 @@ RUN chmod +x /usr/bin/docker-compose
 
 RUN apt-get install zip -y
 
-#COPY php.ini /usr/local/etc/php
 RUN chown -R ${HOST_UID:-1000}:${HOST_GID:-1000} ${COMPOSER_HOME}
 
 RUN usermod -u ${HOST_UID:-1000} www-data

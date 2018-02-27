@@ -11,7 +11,7 @@ RUN mkdir /workdir
 VOLUME /workdir
 
 ENV PGPASSFILE=/.pgpass
-COPY .pgpass /.pgpass
+COPY postgres/.pgpass /.pgpass
 RUN chmod 600 /.pgpass
 
 # Fix permissions to match host user

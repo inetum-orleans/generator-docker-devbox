@@ -53,15 +53,9 @@ services:
   mailcatcher:
     restart: unless-stopped
     build:
-      context: .docker/mailcatcher
-      args:
-       http_proxy: ${http_proxy}
-       https_proxy: ${https_proxy}
-       no_proxy: ${no_proxy}
+      context: .docker
+      dockerfile: mailcatcher/Dockerfile
     environment:
-      - http_proxy=${http_proxy}
-      - https_proxy=${https_proxy}
-      - no_proxy=${no_proxy}
       - VIRTUAL_HOST=mailcatcher.{{projectName}}.rec.etudes.local
     networks:
       - default

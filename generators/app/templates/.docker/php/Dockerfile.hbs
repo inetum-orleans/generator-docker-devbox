@@ -1,6 +1,9 @@
 FROM php:{{phpVersion}}-apache
 MAINTAINER {{authorName}} <{{authorEmail}}>
 
+COPY .ca-certificates/* /usr/local/share/ca-certificates/
+RUN update-ca-certificates
+
 # === Apache + PHP ===
 RUN apt-get update
 
@@ -35,7 +38,6 @@ RUN docker-php-ext-install pdo pdo_mysql
 {{/if_eq ~}}
 {{/if}}
 
-RUN if [ ! -z "$http_proxy" ]; then pear config-set http_proxy ${http_proxy}; fi;
 RUN yes | pecl install xdebug{{#if_eq phpVersion '5.6'}}-2.5.5{{/if_eq}} \
     && echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" > /usr/local/etc/php/conf.d/xdebug.ini \
     && echo "xdebug.remote_enable=on" >> /usr/local/etc/php/conf.d/xdebug.ini \
@@ -53,8 +55,7 @@ RUN a2enmod rewrite
 RUN a2enmod proxy
 RUN a2enmod proxy_http
 
-COPY apache.conf /etc/apache2/sites-enabled/000-default.conf
-#COPY include/* /etc/apache2/conf-available/
+COPY php/apache.conf /etc/apache2/sites-enabled/000-default.conf
 
 # === Composer ===
 # Time Zone
@@ -106,7 +107,7 @@ RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main" >> /etc
 RUN apt-get update && apt-get install -y postgresql-client-9.6
 
 ENV PGPASSFILE=/.pgpass
-COPY .pgpass /.pgpass
+COPY php/.pgpass /.pgpass
 RUN chmod 600 /.pgpass
 {{/if_eq ~}}
 

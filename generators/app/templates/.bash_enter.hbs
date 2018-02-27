@@ -18,10 +18,20 @@ if [ -z "$BASH_ENTER_ALIAS_ONLY" ]; then
   # Define DOCKER_DEVBOX_ENV to customize environment configuration files
   autostash DOCKER_DEVBOX_ENV="${DOCKER_DEVBOX_ENV:-dev}"
 
+  if [ ! -d .docker/.ca-certificates ]; then
+      echo -n "Copying CA Certificates from host to docker build context ... "
+      # Copy host CA certificates to .docker directory for usage in Dockerfile
+      mkdir -p .docker
+      cp -a -L /etc/ssl/certs .docker/.ca-certificates
+      rm -f .docker/.ca-certificates/*.0
+      rm -f .docker/.ca-certificates/*.crt
+      for file in .docker/.ca-certificates/*.pem; do
+          mv "$file" ".docker/.ca-certificates/$(basename "$file" .pem).crt"
+      done
+      echo "OK!"
+  fi
+
   ln -rfs "docker-compose.override.$DOCKER_DEVBOX_ENV.yml" "docker-compose.override.yml"
-{{#if mapserverContainer}}
-  ln -rfs "mapserver/mapserver.$DOCKER_DEVBOX_ENV.map" "mapserver/mapserver.map"
-{{/if}}
 fi
 
 _docker_devbox_map_workdir() {
