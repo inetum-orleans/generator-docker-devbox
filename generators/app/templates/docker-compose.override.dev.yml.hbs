@@ -1,8 +1,7 @@
 version: "2"
 networks:
   nginx-proxy:
-    external:
-      name: nginx-proxy
+    external: true
 services:
 {{#if webContainer}}
   web:
@@ -31,7 +30,7 @@ services:
 {{#if nodeContainer}}
   node:
     environment:
-      VIRTUAL_HOST: node.{{project}}.test
+      VIRTUAL_HOST: node.{{projectName}}.test
     networks:
       - default
       - nginx-proxy
