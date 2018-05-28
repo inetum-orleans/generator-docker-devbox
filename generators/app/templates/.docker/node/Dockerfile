@@ -10,7 +10,7 @@ RUN update-ca-certificates
 ENV NODE_EXTRA_CA_CERTS=/etc/ssl/certs/ca-certificates.crt
 
 # Mise à jour de yarn basé sur le script de l'image officielle
-ENV YARN_VERSION 1.5.1
+ENV YARN_VERSION 1.7.0
 
 RUN rm -Rf /opt/yarn \
   && rm /usr/local/bin/yarn && rm /usr/local/bin/yarnpkg \
