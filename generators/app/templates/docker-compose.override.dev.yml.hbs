@@ -12,7 +12,7 @@ services:
     networks:
       - default
       - nginx-proxy
-    ports :
+    ports:
       - "{{portPrefix}}80:80"
   {{/if_eq ~}}
 {{/if ~}}

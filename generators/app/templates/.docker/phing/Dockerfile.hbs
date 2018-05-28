@@ -54,8 +54,3 @@ RUN groupmod -g ${HOST_GID:-1000} www-data
 
 RUN groupadd -g 998 docker
 RUN usermod -a -G docker www-data
-
-#CMD ["php", "/composer/vendor/phing/phing/bin/phing", "-v"]
-#CMD ["echo", "'bouh'"]
-
-#ENTRYPOINT ["/bin/sh", "-c"]
