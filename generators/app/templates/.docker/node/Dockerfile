@@ -28,6 +28,9 @@ RUN rm -Rf /opt/yarn \
   && ln -s /opt/yarn/bin/yarn /usr/local/bin/yarnpkg \
   && rm yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz
 
+# Allow nodeJS to run server on port < 1024
+RUN setcap 'cap_net_bind_service=+ep' $(which node)
+
 # Fix permissions to match host user
 RUN usermod -u ${HOST_UID:-1000} node && groupmod -g ${HOST_GID:-1000} node
 
