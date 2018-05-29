@@ -43,7 +43,7 @@ class Container {
     return image.additionalPromptsEntries.map(prompt => {
       return Object.assign({}, prompt, {
         when: answers => {
-          return answers[this.containerVariable] && (!answers[this.imageVariable] || answers[this.imageVariable] === image.name);
+          return answers[prompt.name] === undefined && answers[this.containerVariable] && (!answers[this.imageVariable] || answers[this.imageVariable] === image.name);
         }
       });
     });
@@ -99,43 +99,43 @@ class ContainerGroup extends Container {
   }
 }
 
+prompts = {
+  phpVersion: {
+    type: 'list',
+    name: 'phpVersion',
+    message: 'PHP Version',
+    store: true,
+    choices: ['7.2', '7.1', '7.0', '5.6']
+  },
+  postgresVersion: {
+    type: 'list',
+    name: 'postgresVersion',
+    message: 'PostgreSQL Version',
+    default: '9.6',
+    store: true,
+    choices: ['10.0', '9.6', '9.5', '9.4', '9.3']
+  },
+  mysqlVersion:  {
+    type: 'list',
+    name: 'mysqlVersion',
+    message: 'MySQL Version',
+    store: true,
+    choices: ['5.7', '5.6', '5.5']
+  }
+}
+
 images = [
   new ContainerGroup('web', [
     new Container('php', {
-      prompts: [
-        {
-          type: 'list',
-          name: 'phpVersion',
-          message: 'PHP Version',
-          store: true,
-          choices: ['7.2', '7.1', '7.0', '5.6']
-        }
-      ]
+      prompts: [prompts.phpVersion]
     })
   ]),
   new ContainerGroup('db', [
     new Container('postgres', {
-      prompts: [
-        {
-          type: 'list',
-          name: 'postgresVersion',
-          message: 'PostgreSQL Version',
-          default: '9.6',
-          store: true,
-          choices: ['10.0', '9.6', '9.5', '9.4', '9.3']
-        }
-      ]
+      prompts: [prompts.postgresVersion]
     }),
     new Container('mysql', {
-      prompts: [
-        {
-          type: 'list',
-          name: 'mysqlVersion',
-          message: 'MySQL Version',
-          store: true,
-          choices: ['5.7', '5.6', '5.5']
-        }
-      ]
+      prompts: [prompts.mysqlVersion]
     })
   ]),
   new Container('node', {
@@ -143,7 +143,8 @@ images = [
   }),
   new Container('mailcatcher'),
   new Container('phing', {
-    default: false
+    default: false,
+    prompts: [prompts.phpVersion]
   }),
   new Container('node-sass', {
     default: false

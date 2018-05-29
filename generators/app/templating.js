@@ -1,7 +1,6 @@
-var extend = require('deep-extend');
-var ejs = require('ejs');
+const extend = require('deep-extend');
 
-var Handlebars = require('handlebars');
+const Handlebars = require('handlebars');
 Handlebars.registerHelper('if_eq', function (a, b, opts) {
   if (a === b) return opts.fn(this);
   return opts.inverse(this);

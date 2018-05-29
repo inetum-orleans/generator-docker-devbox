@@ -7,7 +7,6 @@ const shelljs = require('shelljs');
 const images = require('./images');
 const inits = require('./inits');
 const templating = require('./templating');
-const utils = require('./utils');
 
 const gulpRename = require('gulp-rename');
 

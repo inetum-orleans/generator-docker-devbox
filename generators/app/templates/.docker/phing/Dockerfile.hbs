@@ -1,4 +1,4 @@
-FROM php:7.1-cli
+FROM php:{{phpVersion}}-cli
 MAINTAINER {{authorName}} <{{authorEmail}}>
 
 COPY .ca-certificates/* /usr/local/share/ca-certificates/
@@ -13,9 +13,6 @@ ENV PATH /composer/vendor/bin:$PATH
 # Allow Composer to be run as root
 ENV COMPOSER_ALLOW_SUPERUSER 1
 
-RUN apt-get update \
-  && apt-get install git curl -y
-
 # Setup the Composer installer
 RUN curl -o /tmp/composer-setup.php https://getcomposer.org/installer \
   && curl -o /tmp/composer-setup.sig https://composer.github.io/installer.sig \
@@ -23,34 +20,31 @@ RUN curl -o /tmp/composer-setup.php https://getcomposer.org/installer \
 
 # Install Composer
 RUN php /tmp/composer-setup.php --no-ansi --install-dir=/usr/local/bin --filename=composer --snapshot && rm -rf /tmp/composer-setup.php
+RUN apt-get install git zip unzip -y
 
 # Github token
 RUN composer config -g github-oauth.github.com db14c113decece351f1e20cf012ce0b3c8612cd5
 
+# Install prestissimo
+RUN composer global require hirak/prestissimo
+
 # Install phing
 RUN composer global require phing/phing pear/archive_tar --prefer-dist --no-progress --no-suggest
-
-#ENV         PHING_UID  1000
-#ENV         PHING_GID  1000
-
 RUN chmod +x ${COMPOSER_HOME}/vendor/phing/phing/bin/phing && chown ${HOST_UID:-1000}:${HOST_GID:-1000} ${COMPOSER_HOME}/vendor/phing/phing/bin/phing
 
 # Docker CLI
-RUN curl -L -O https://download.docker.com/linux/static/stable/x86_64/docker-17.09.0-ce.tgz \
-  && tar xzvf docker-17.09.0-ce.tgz \
+RUN curl -L -O https://download.docker.com/linux/static/stable/x86_64/docker-18.03.1-ce.tgz \
+  && tar xzvf docker-18.03.1-ce \
   && cp docker/* /usr/bin/ \
   && chmod +x /usr/bin/docker
 
+RUN groupadd -g 998 docker
+RUN usermod -a -G docker www-data
+
 # Docker compose
-RUN curl -L https://github.com/docker/compose/releases/download/1.16.1/docker-compose-`uname -s`-`uname -m` -o /usr/bin/docker-compose
+RUN curl -L https://github.com/docker/compose/releases/download/1.21.2/docker-compose-`uname -s`-`uname -m` -o /usr/bin/docker-compose
 RUN chmod +x /usr/bin/docker-compose
-
-RUN apt-get install zip -y
-
-RUN chown -R ${HOST_UID:-1000}:${HOST_GID:-1000} ${COMPOSER_HOME}
 
 RUN usermod -u ${HOST_UID:-1000} www-data
 RUN groupmod -g ${HOST_GID:-1000} www-data
-
-RUN groupadd -g 998 docker
-RUN usermod -a -G docker www-data
+RUN chown -R ${HOST_UID:-1000}:${HOST_GID:-1000} $COMPOSER_HOME

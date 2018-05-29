@@ -1,10 +1,5 @@
 const utils = require('./utils');
 
-const shelljs = require('shelljs');
-
-const path = require('path');
-
-
 class Init {
   constructor(name, options = {}) {
     this.name = name;
