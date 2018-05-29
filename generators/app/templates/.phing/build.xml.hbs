@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="{{projectName}}" default="build" basedir=".">
+    <!-- <autoloader autoloaderpath="../vendor/autoload.php"/> -->
+    <tstamp>
+        <format property="date-livraison" pattern="%Y%m%d-%H%M"/>
+    </tstamp>
+
+    <target name="build">
+        <phingcall target="cleanup"/>
+        <phingcall target="composer-install"/>
+        <phingcall target="dist"/>
+    </target>
+
+    <target name="cleanup" depends="cleanup-git, cleanup-files"/>
+
+    <target name="cleanup-files" depends="get-env">
+        <echo msg="Suppression de fichiers non nécessaires"/>
+        <delete dir="${build.folder}/.docker"/>
+        <delete dir="${build.folder}/.phing"/>
+        <delete>
+            <fileset dir="${build.folder}">
+                <include name="docker-compose*.yml"/>
+            </fileset>
+        </delete>
+        <delete>
+            <fileset dir="${build.folder}">
+                <include name=".*"/>
+            </fileset>
+        </delete>
+        <delete file="${build.folder}/README.md"/>
+    </target>
+
+    <!-- cleaning source git files -->
+    <target name="cleanup-git" depends="get-env">
+        <delete file="${build.folder}/.gitignore"/>
+        <delete dir="${build.folder}/.git" includeemptydirs="true" verbose="true" failonerror="false"/>
+    </target>
+
+    <!-- composer install -->
+    <target name="composer-install" depends="git-clone, get-env">
+        <echo msg="composer install --ignore-platform-reqs --prefer-dist"/>
+        <exec command="composer install --ignore-platform-reqs --prefer-dist" dir="${build.folder}" logoutput="true" checkreturn="true"/>
+    </target>
+
+    <target name="get-env" description="get the environment for an action">
+        <!-- has the environment been set already? -->
+        <fileset id="environment-file">
+            <include name=".environment"/>
+        </fileset>
+        <if>
+            <referenceexists ref="environment-file"/>
+            <then>
+                <loadfile file=".environment" property="environment" failonerror="false"/>
+            </then>
+            <else>
+                <!-- die with an error message -->
+                <fail message="No environment file exists" />
+            </else>
+        </if>
+
+        <if>
+            <not>
+                <isset property="environment" />
+            </not>
+            <then>
+                <!-- prompt the user to select from a list of supported environments -->
+                <input propertyname="environment" validargs="dev,rec,prod" promptChar=":">Enter environment </input>
+                <echo msg="${environment}" file=".environment"/>
+            </then>
+        </if>
+
+        <!-- make sure the properties file for the environment exists -->
+        <available file="./build.properties.${environment}.yml" property="env_prop_exists" type="file" />
+        <if>
+            <equals arg1="${env_prop_exists}" arg2="true" />
+            <then>
+                <!-- parse the properties files -->
+                <property file="./build.properties.${environment}.yml"/>
+            </then>
+            <else>
+                <!-- die with an error message -->
+                <fail message="No properties file for selected environment exists (./build.properties.${environment}.yml)" />
+            </else>
+        </if>
+    </target>
+
+    <!-- remove previous build -->
+    <target name="clean" depends="get-env">
+        <fileset id="build-folder">
+            <include name="${build.folder}"/>
+        </fileset>
+        <if>
+            <referenceexists ref="build-folder"/>
+            <then>
+                <!-- If dir exists -->
+                <delete dir="${build.folder}" failonerror="false"/>
+            </then>
+        </if>
+    </target>
+
+    <!-- git clone -->
+    <target name="git-clone" depends="clean, get-env">
+        <echo msg="Clone du repository - branch ${git.branch} - ${git.url}"/>
+        <exec command="git clone ${git.url} ${build.folder}" logoutput="true" checkreturn="true"/>
+        <exec command="git checkout ${git.branch}" dir="${build.folder}" logoutput="true" checkreturn="true"/>
+    </target>
+
+    <!-- Gestion des permissions sur les dossiers et fichiers -->
+    <target name="permissions" depends="folder-permissions"/>
+
+    <target name="folder-permissions">
+        <echo msg="Gestion des permissions sur les dossiers et fichiers"/>
+        <exec command="chown -R ${chown.gid}:${chown.uid}" dir="${build.folder}" />
+        <exec command="find . -type d -exec chmod u=rwx,g=rx,o= '{}' \;" dir="${build.folder}" />
+        <exec command="find . -type f -exec chmod u=rw,g=r,o= '{}' \;" dir="${build.folder}" />
+    </target>
+
+    <!-- creating an archive -->
+    <target name="dist" depends="permissions">
+        <exec command="git fetch`" dir="${build.folder}"/>
+        <exec outputProperty="latestVersion" command="git describe --tags `git rev-list --tags --max-count=1`" dir="${build.folder}"/>
+        <tar destfile="{{projectName}}-${date-livraison}-${environment}-${latestVersion}.tar.gz" compression="gzip">
+            <fileset dir="${build.folder}">
+                <include name="*"/>
+            </fileset>
+        </tar>
+    </target>
+</project>

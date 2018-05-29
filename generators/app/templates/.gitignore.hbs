@@ -7,6 +7,9 @@ mapserver/mapserver.map
 {{#if drupalInit ~}}
 web/sites/default/settings.php
 {{/if}}
+{{#if phingContainer ~}}
+.phing/.environment
+{{/if}}
 init/
 .docker/.ca-certificates
 .bash_enter_env

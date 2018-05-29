@@ -135,6 +135,13 @@ module.exports = class extends Generator {
           this.destinationRoot(),
           this.props
         );
+
+        templating.copyTpl(
+          this.fs,
+          this.templatePath(`**/.${imageName}/**/*`),
+          this.destinationRoot(),
+          this.props
+        );
       }
     }
 

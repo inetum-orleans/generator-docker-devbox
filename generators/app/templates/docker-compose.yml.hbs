@@ -46,8 +46,9 @@ services:
     entrypoint: "/bin/true"
     volumes:
       - "${COMPOSE_PROJECT_DIR}:/app"
+{{#if phingContainer}}
       - "${COMPOSE_PROJECT_DIR}/.phing:/build"
-    privileged: true
+{{/if ~}}
 {{/if ~}}
 {{#if nodeContainer}}
   node:
@@ -62,10 +63,13 @@ services:
       - "node-cache:/home/node/.cache"
 {{/if ~}}
 {{#if phingContainer}}
-  builder:
+  phing:
     build:
       context: .docker
       dockerfile: phing/Dockerfile
+      args:
+        DOCKER_VERSION: ${DOCKER_VERSION}
+        DOCKER_COMPOSE_VERSION: ${DOCKER_COMPOSE_VERSION}
     environment:
       - COMPOSE_PROJECT_DIR=${COMPOSE_PROJECT_DIR}
       - BUILD_WORKING_DIR=/app

@@ -14,6 +14,8 @@ BASH_ENTER_ENV_FILE=".bash_enter_env" ; [ -f $BASH_ENTER_ENV_FILE ] && . $BASH_E
 if [ -z "$BASH_ENTER_ALIAS_ONLY" ]; then
   autostash COMPOSE_PROJECT_DIR=$PWD
   autostash COMPOSE_PROJECT_NAME={{projectName}}
+  autostash DOCKER_VERSION=$(docker --version | sed -rn "s/Docker version (.*?), build .*/\1/p")
+  autostash DOCKER_COMPOSE_VERSION=$(docker-compose --version | sed -rn "s/docker-compose version (.*?), build .*/\1/p")
 
   # Define DOCKER_DEVBOX_ENV to customize environment configuration files
   autostash DOCKER_DEVBOX_ENV="${DOCKER_DEVBOX_ENV:-dev}"
@@ -83,7 +85,7 @@ _alias_yarn() {
 }
 {{/if}}
 {{#if phingContainer ~}}
-_alias_phing() { docker-compose run --rm --user www-data --entrypoint php --workdir="$(_docker_devbox_map_workdir "/app")" builder /composer/vendor/phing/phing/bin/phing  $@;}
+_alias_phing() { docker-compose run --rm --user www-data --entrypoint php --workdir="$(_docker_devbox_map_workdir "/app")" phing /composer/vendor/phing/phing/bin/phing  $@;}
 {{/if}}
 {{#if nodeSassContainer ~}}
 _alias_node-sass() { docker-compose run --rm node-sass $@;}
@@ -119,11 +121,5 @@ if [ -f "./init/init.sh" ] && [ -f ./init/.should-initialize ] && [ -z "$BASH_EN
   else
       echo "Initialization skipped"
   fi
-fi
-{{/if}}
-
-{{#if drupalInit}}
-if [ -f "web/sites/default/settings.$DOCKER_DEVBOX_ENV.php" ]; then
-  ln -rfs "web/sites/default/settings.$DOCKER_DEVBOX_ENV.php" "web/sites/default/settings.php"
 fi
 {{/if}}

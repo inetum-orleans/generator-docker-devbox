@@ -1,9 +1,6 @@
 FROM node:carbon
 MAINTAINER {{authorName}} <{{authorEmail}}>
 
-ARG GROUP_ID=1000
-ARG USER_ID=1000
-
 COPY .ca-certificates/* /usr/local/share/ca-certificates/
 RUN update-ca-certificates
 
@@ -32,12 +29,12 @@ RUN rm -Rf /opt/yarn \
   && rm yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz
 
 # Fix permissions to match host user
-RUN usermod -u ${USER_ID:-1000} node && groupmod -g ${GROUP_ID:-1000} node
+RUN usermod -u ${HOST_UID:-1000} node && groupmod -g ${HOST_GID:-1000} node
 
-RUN mkdir -p /home/node/.cache/yarn && chown -R $USER_ID:$GROUP_ID /home/node/.cache
+RUN mkdir -p /home/node/.cache/yarn && chown -R $HOST_UID:$HOST_GID /home/node/.cache
 VOLUME /home/node/.cache
 
-RUN mkdir /app && chown -R $USER_ID:$GROUP_ID /app
+RUN mkdir /app && chown -R $HOST_UID:$HOST_GID /app
 VOLUME /app
 
 WORKDIR /app

@@ -1,12 +1,10 @@
-FROM node:boron
+FROM node:carbon
 MAINTAINER {{authorName}} <{{authorEmail}}>
 
 COPY .ca-certificates/* /usr/local/share/ca-certificates/
 RUN update-ca-certificates
 
-RUN npm install -g node-sass
-RUN npm install -g chokidar-cli
-RUN npm install -g compass-importer
+RUN npm install -g node-sass chokidar-cli compass-importer
 
 RUN mkdir -p /app && chown -R node:node /app
 VOLUME /app
