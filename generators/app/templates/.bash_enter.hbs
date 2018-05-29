@@ -19,6 +19,7 @@ if [ -z "$BASH_ENTER_ALIAS_ONLY" ]; then
 
   # Define DOCKER_DEVBOX_ENV to customize environment configuration files
   autostash DOCKER_DEVBOX_ENV="${DOCKER_DEVBOX_ENV:-dev}"
+  autostash DOCKER_DEVBOX_ENV_LIST="rec dev" # Supported environments (symlinks)
 
   echo -n "Copying CA Certificates from host to docker build context ... "
   # Copy host CA certificates to .docker directory for usage in Dockerfile
@@ -30,7 +31,34 @@ if [ -z "$BASH_ENTER_ALIAS_ONLY" ]; then
   done
   echo "OK!"
 
-  ln -rfs "docker-compose.override.$DOCKER_DEVBOX_ENV.yml" "docker-compose.override.yml"
+  _docker_devbox_env_symlink() {
+    FILEPATH="$1"
+
+    DIRNAME=$(dirname -- "$FILEPATH")
+    FILENAME=$(basename -- "$FILEPATH")
+    EXTENSION="${FILENAME##*.}"
+    FILENAME="${FILENAME%.*}"
+
+    ACTIVE_ENV=0
+    MESSAGE="[symlink] $DIRNAME/$FILENAME.$DOCKER_DEVBOX_ENV.$EXTENSION -> $DIRNAME/$FILENAME.$EXTENSION. (Symlink has not been created)"
+
+    for ENV in $DOCKER_DEVBOX_ENV_LIST; do
+      if [ "$ENV" = "$DOCKER_DEVBOX_ENV" ]; then
+        ACTIVE_ENV=1;
+      fi
+      if [ $ACTIVE_ENV = 1 ]; then
+        if [ -f "$DIRNAME/$FILENAME.$ENV.$EXTENSION" ]; then
+          ln -rfs "$DIRNAME/$FILENAME.$ENV.$EXTENSION" "$DIRNAME/$FILENAME.$EXTENSION"
+          MESSAGE="[symlink] $DIRNAME/$FILENAME.$ENV.$EXTENSION -> $DIRNAME/$FILENAME.$EXTENSION"
+          break
+        fi
+      fi
+    done
+
+    echo "$MESSAGE"
+  }
+
+  _docker_devbox_env_symlink "docker-compose.override.yml"
 fi
 
 _docker_devbox_map_workdir() {
