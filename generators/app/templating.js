@@ -6,11 +6,6 @@ Handlebars.registerHelper('if_eq', function (a, b, opts) {
   return opts.inverse(this);
 });
 
-// (Yes, I know eval is dangerous)
-function evalPrecompiledTemplate(s) {
-  return eval('(function(){return ' + s + '}());');
-}
-
 function copyTpl(fs, from, to, context, tplSettings, options) {
   context = context || {};
 
