@@ -50,8 +50,6 @@ RUN a2enmod rewrite
 RUN a2enmod proxy
 RUN a2enmod proxy_http
 
-COPY php/apache.conf /etc/apache2/sites-enabled/000-default.conf
-
 # === Composer ===
 # Time Zone
 # RUN echo "date.timezone=${PHP_TIMEZONE:-UTC}" > $PHP_INI_DIR/conf.d/date_timezone.ini

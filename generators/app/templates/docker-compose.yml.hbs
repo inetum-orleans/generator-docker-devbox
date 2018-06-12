@@ -9,6 +9,7 @@ services:
     volumes:
       - "${COMPOSE_PROJECT_DIR}:/var/www/html"
       - "composer-cache:/composer/cache"
+      - "${COMPOSE_PROJECT_DIR}/.docker/php/apache.conf:/etc/apache2/sites-enabled/000-default.conf"
   {{/if_eq ~}}
 {{/if ~}}
 {{#if dbContainer}}
