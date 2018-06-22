@@ -60,7 +60,7 @@ services:
         GROUP_ID: "${GROUP_ID}"
         USER_ID: "${USER_ID}"
     volumes:
-      - ".:/app"
+      - "${COMPOSE_PROJECT_DIR}:/app"
       - "node-cache:/home/node/.cache"
 {{/if ~}}
 {{#if phingContainer}}

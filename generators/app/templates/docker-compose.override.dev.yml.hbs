@@ -63,7 +63,7 @@ services:
       context: .docker
       dockerfile: maven/Dockerfile
     volumes:
-      - ".:/usr/src/app"
+      - "${COMPOSE_PROJECT_DIR}:/usr/src/app"
       - "maven:/var/www/.m2"
 {{/if ~}}
 {{#if mavenContainer}}
