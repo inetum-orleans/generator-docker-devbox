@@ -12,6 +12,12 @@
 BASH_ENTER_ENV_FILE=".bash_enter_env" ; [ -f $BASH_ENTER_ENV_FILE ] && . $BASH_ENTER_ENV_FILE
 
 if [ -z "$BASH_ENTER_ALIAS_ONLY" ]; then
+  autostash export USER_ID=$(id -u)
+  autostash export GROUP_ID=$(id -g)
+  autostash export USER_NAME=$(id -un)
+  autostash export GROUP_NAME=$(id -gn)
+  autostash export HOST_IP=${HOST_IP-127.0.0.1}
+
   autostash COMPOSE_PROJECT_DIR=$PWD
   autostash COMPOSE_PROJECT_NAME={{projectName}}
   autostash DOCKER_VERSION=$(docker --version | sed -rn "s/Docker version (.*?), build .*/\1/p")
@@ -60,6 +66,8 @@ if [ -z "$BASH_ENTER_ALIAS_ONLY" ]; then
 
   _docker_devbox_env_symlink "docker-compose.override.yml"
 fi
+
+
 
 _docker_devbox_map_workdir() {
   CONTAINER_PROJECT_DIR="$1"
