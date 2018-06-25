@@ -97,7 +97,7 @@ _alias_pg_dump() { docker-compose run --user postgres --workdir="$(_docker_devbo
 _alias_pg_restore() { docker-compose run --user postgres --workdir="$(_docker_devbox_map_workdir "/workdir")" db pg_restore -h db -U {{projectName}} -d {{projectName}} $@;}
 {{/if_eq}}
 {{#if_eq dbImage "mysql" ~}}
-_alias_mysql() { docker-compose exec --user root db mysql -U root $@;}
+_alias_mysql() { docker-compose exec --user root db mysql -uroot -p $@;}
 {{/if_eq}}
 {{#if nodeContainer ~}}
 _alias_node() { docker-compose run --rm --workdir="$(_docker_devbox_map_workdir "/app")" node node $@;}
