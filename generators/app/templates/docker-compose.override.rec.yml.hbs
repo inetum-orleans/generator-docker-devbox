@@ -9,7 +9,7 @@ services:
     restart: unless-stopped
     environment:
       - XDEBUG_CONFIG=idekey=remote-debug remote_host=${HOST_IP}
-      - VIRTUAL_HOST={{projectName}}.${DOCKER_DEVBOX_DOMAIN}
+      - VIRTUAL_HOST=${DOCKER_DEVBOX_DOMAIN_PREFIX}.${DOCKER_DEVBOX_DOMAIN}
     networks:
       - default
       - nginx-proxy
@@ -32,7 +32,7 @@ services:
 {{#if nodeContainer}}
   node:
     environment:
-      - VIRTUAL_HOST: node.{{projectName}}.${DOCKER_DEVBOX_DOMAIN}
+      - VIRTUAL_HOST: node.${DOCKER_DEVBOX_DOMAIN_PREFIX}.${DOCKER_DEVBOX_DOMAIN}
     networks:
       - default
       - nginx-proxy
@@ -41,7 +41,7 @@ services:
   mapserver:
     restart: unless-stopped
     environment:
-      - VIRTUAL_HOST=mapserver.{{projectName}}.${DOCKER_DEVBOX_DOMAIN}
+      - VIRTUAL_HOST=mapserver.${DOCKER_DEVBOX_DOMAIN_PREFIX}.${DOCKER_DEVBOX_DOMAIN}
     networks:
       - default
       - nginx-proxy
@@ -55,7 +55,7 @@ services:
       context: .docker
       dockerfile: mailcatcher/Dockerfile
     environment:
-      - VIRTUAL_HOST=mailcatcher.{{projectName}}.${DOCKER_DEVBOX_DOMAIN}
+      - VIRTUAL_HOST=mailcatcher.${DOCKER_DEVBOX_DOMAIN_PREFIX}.${DOCKER_DEVBOX_DOMAIN}
     networks:
       - default
       - nginx-proxy

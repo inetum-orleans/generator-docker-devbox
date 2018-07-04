@@ -9,7 +9,9 @@
 #
 # See http://smartcd.org for more ideas about what can be put here
 #######################################################################
-BASH_ENTER_ENV_FILE=".bash_enter_env" ; [ -f $BASH_ENTER_ENV_FILE ] && . $BASH_ENTER_ENV_FILE
+BASH_ENTER_ENV_FILE=".bash_enter_env"
+cp -n $BASH_ENTER_ENV_FILE.dist $BASH_ENTER_ENV_FILE
+[ -f $BASH_ENTER_ENV_FILE ] && . $BASH_ENTER_ENV_FILE
 
 if [ -z "$BASH_ENTER_ALIAS_ONLY" ]; then
   autostash export USER_ID=$(id -u)
