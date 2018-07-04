@@ -19,13 +19,11 @@ if [ -z "$BASH_ENTER_ALIAS_ONLY" ]; then
   autostash export HOST_IP=${HOST_IP-127.0.0.1}
 
   autostash COMPOSE_PROJECT_DIR=$PWD
-  autostash COMPOSE_PROJECT_NAME={{projectName}}
   autostash DOCKER_VERSION=$(docker --version | sed -rn "s/Docker version (.*?), build .*/\1/p")
   autostash DOCKER_COMPOSE_VERSION=$(docker-compose --version | sed -rn "s/docker-compose version (.*?), build .*/\1/p")
 
   # Define DOCKER_DEVBOX_ENV to customize environment configuration files
   autostash DOCKER_DEVBOX_ENV="${DOCKER_DEVBOX_ENV:-dev}"
-  autostash DOCKER_DEVBOX_ENV_LIST="rec dev" # Supported environments (symlinks)
 
   echo -n "Copying CA Certificates from host to docker build context ... "
   # Copy host CA certificates to .docker directory for usage in Dockerfile
@@ -67,8 +65,6 @@ if [ -z "$BASH_ENTER_ALIAS_ONLY" ]; then
   _docker_devbox_env_symlink "docker-compose.override.yml"
 fi
 
-
-
 _docker_devbox_map_workdir() {
   CONTAINER_PROJECT_DIR="$1"
 
@@ -103,7 +99,7 @@ _alias_mysql() { docker-compose exec --user root db mysql -uroot -p $@;}
 _alias_node() { docker-compose run --rm --workdir="$(_docker_devbox_map_workdir "/app")" node node $@;}
 _alias_npm() {
   if [ "$1" == "run" ] && [ "$2" == "dev" ]; then
-    PORTS=" -p {{portPrefix}}88:80"
+    PORTS=" -p ${DOCKER_DEVBOX_PORT_PREFIX}88:80"
     echo "Port mapping:$PORTS"
   else
     PORTS=""
@@ -112,7 +108,7 @@ _alias_npm() {
 }
 _alias_yarn() {
   if [ "$1" == "dev" ] || ([ "$1" == "run" ] && [ "$2" == "dev" ]); then
-    PORTS=" -p {{portPrefix}}88:80"
+    PORTS=" -p ${DOCKER_DEVBOX_PORT_PREFIX}88:80"
     echo "Port mapping:$PORTS"
   else
     PORTS=""

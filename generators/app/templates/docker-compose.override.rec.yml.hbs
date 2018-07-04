@@ -9,12 +9,12 @@ services:
     restart: unless-stopped
     environment:
       - XDEBUG_CONFIG=idekey=remote-debug remote_host=${HOST_IP}
-      - VIRTUAL_HOST={{projectName}}.rec.etudes.local
+      - VIRTUAL_HOST={{projectName}}.${DOCKER_DEVBOX_DOMAIN}
     networks:
       - default
       - nginx-proxy
-    ports :
-      - "{{portPrefix}}80:80"
+    ports:
+      - "${DOCKER_DEVBOX_PORT_PREFIX}80:80"
   {{/if_eq ~}}
 {{/if ~}}
 {{#if dbContainer}}
@@ -22,17 +22,17 @@ services:
     restart: unless-stopped
   {{#if_eq dbImage 'postgres'}}
     ports:
-      - "{{portPrefix}}32:5432"
+      - "${DOCKER_DEVBOX_PORT_PREFIX}32:5432"
   {{/if_eq ~}}
   {{#if_eq dbImage 'mysql'}}
     ports:
-      - "{{portPrefix}}06:3306"
+      - "${DOCKER_DEVBOX_PORT_PREFIX}06:3306"
   {{/if_eq ~}}
 {{/if ~}}
 {{#if nodeContainer}}
   node:
     environment:
-      VIRTUAL_HOST: node.{{projectName}}.rec.etudes.local
+      - VIRTUAL_HOST: node.{{projectName}}.${DOCKER_DEVBOX_DOMAIN}
     networks:
       - default
       - nginx-proxy
@@ -41,12 +41,12 @@ services:
   mapserver:
     restart: unless-stopped
     environment:
-      - VIRTUAL_HOST=mapserver.{{projectName}}.rec.etudes.local
+      - VIRTUAL_HOST=mapserver.{{projectName}}.${DOCKER_DEVBOX_DOMAIN}
     networks:
       - default
       - nginx-proxy
     ports:
-      - "{{portPrefix}}85:80"
+      - "${DOCKER_DEVBOX_PORT_PREFIX}85:80"
 {{/if ~}}
 {{#if mailcatcherContainer}}
   mailcatcher:
@@ -55,8 +55,21 @@ services:
       context: .docker
       dockerfile: mailcatcher/Dockerfile
     environment:
-      - VIRTUAL_HOST=mailcatcher.{{projectName}}.rec.etudes.local
+      - VIRTUAL_HOST=mailcatcher.{{projectName}}.${DOCKER_DEVBOX_DOMAIN}
     networks:
       - default
       - nginx-proxy
+{{/if ~}}
+{{#if mavenContainer}}
+  maven:
+    build:
+      context: .docker
+      dockerfile: maven/Dockerfile
+    volumes:
+      - "${COMPOSE_PROJECT_DIR}:/usr/src/app"
+      - "maven:/var/www/.m2"
+{{/if ~}}
+{{#if mavenContainer}}
+volumes:
+  maven: ~
 {{/if ~}}
