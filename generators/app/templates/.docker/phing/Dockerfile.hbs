@@ -34,7 +34,7 @@ RUN chmod +x ${COMPOSER_HOME}/vendor/phing/phing/bin/phing && chown ${HOST_UID:-
 
 # Docker CLI
 ARG DOCKER_VERSION=18.03.1-ce
-RUN curl -L -O https://download.docker.com/linux/static/stable/x86_64/${DOCKER_VERSION}.tgz \
+RUN curl -L -O https://download.docker.com/linux/static/stable/x86_64/docker-${DOCKER_VERSION}.tgz \
   && tar xzvf ${DOCKER_VERSION}.tgz \
   && cp docker/* /usr/bin/ \
   && chmod +x /usr/bin/docker
