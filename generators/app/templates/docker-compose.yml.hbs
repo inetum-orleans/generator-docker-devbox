@@ -44,9 +44,14 @@ services:
     build:
       context: .docker
       dockerfile: node-sass/Dockerfile
+      args:
+        GROUP_ID: "${GROUP_ID}"
+        USER_ID: "${USER_ID}"
     entrypoint: "/bin/true"
     volumes:
       - "${COMPOSE_PROJECT_DIR}:/app"
+      - "node-sass-cache:/home/node/.cache"
+      - "node-sass-npm-packages:/home/node/.npm-packages"
 {{#if phingContainer}}
       - "${COMPOSE_PROJECT_DIR}/.phing:/build"
 {{/if ~}}
@@ -62,6 +67,7 @@ services:
     volumes:
       - "${COMPOSE_PROJECT_DIR}:/app"
       - "node-cache:/home/node/.cache"
+      - "node-npm-packages:/home/node/.npm-packages"
 {{/if ~}}
 {{#if phingContainer}}
   phing:
@@ -101,4 +107,9 @@ volumes:
 {{/if_eq ~}}
 {{#if nodeContainer}}
   node-cache: ~
+  node-npm-packages: ~
+{{/if}}
+{{#if nodeSassContainer}}
+  node-sass-cache: ~
+  node-sass-npm-packages: ~
 {{/if}}
