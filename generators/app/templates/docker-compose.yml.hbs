@@ -1,4 +1,4 @@
-version: "2"
+version: "2.2"
 services:
 {{#if webContainer}}
   web:
@@ -6,6 +6,7 @@ services:
     build:
       context: .docker
       dockerfile: php/Dockerfile
+    init: true
     volumes:
       - "${COMPOSE_PROJECT_DIR}:/var/www/html"
       - "composer-cache:/composer/cache"
@@ -18,6 +19,7 @@ services:
     build:
       context: .docker
       dockerfile: postgres/Dockerfile
+    init: true
     environment:
       - POSTGRES_USER={{projectName}}
       - POSTGRES_PASSWORD={{projectName}}
@@ -29,6 +31,7 @@ services:
     build:
       context: .docker
       dockerfile: mysql/Dockerfile
+    init: true
     environment:
       - MYSQL_ROOT_PASSWORD={{projectName}}
       - MYSQL_DATABASE={{projectName}}
@@ -47,6 +50,7 @@ services:
       args:
         GROUP_ID: "${GROUP_ID}"
         USER_ID: "${USER_ID}"
+    init: true
     entrypoint: "/bin/true"
     volumes:
       - "${COMPOSE_PROJECT_DIR}:/app"
@@ -64,6 +68,7 @@ services:
       args:
         GROUP_ID: "${GROUP_ID}"
         USER_ID: "${USER_ID}"
+    init: true
     volumes:
       - "${COMPOSE_PROJECT_DIR}:/app"
       - "node-cache:/home/node/.cache"
@@ -77,6 +82,7 @@ services:
       args:
         DOCKER_VERSION: ${DOCKER_VERSION}
         DOCKER_COMPOSE_VERSION: ${DOCKER_COMPOSE_VERSION}
+    init: true
     environment:
       - COMPOSE_PROJECT_DIR=${COMPOSE_PROJECT_DIR}
       - BUILD_WORKING_DIR=/app
@@ -92,6 +98,7 @@ services:
     build:
       context: .docker
       dockerfile: mapserver/Dockerfile
+    init: true
     volumes:
       - "${COMPOSE_PROJECT_DIR}/mapserver:/etc/mapserver"
 {{/if ~}}

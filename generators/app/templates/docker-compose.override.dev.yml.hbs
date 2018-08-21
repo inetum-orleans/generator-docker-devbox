@@ -1,4 +1,4 @@
-version: "2"
+version: "2.2"
 networks:
   nginx-proxy:
     external: true
@@ -51,6 +51,7 @@ services:
     build:
       context: .docker
       dockerfile: mailcatcher/Dockerfile
+    init: true
     environment:
       - VIRTUAL_HOST=mailcatcher.${DOCKER_DEVBOX_DOMAIN_PREFIX}.${DOCKER_DEVBOX_DOMAIN}
     networks:
@@ -62,6 +63,7 @@ services:
     build:
       context: .docker
       dockerfile: maven/Dockerfile
+    init: true
     volumes:
       - "${COMPOSE_PROJECT_DIR}:/usr/src/app"
       - "maven:/var/www/.m2"
