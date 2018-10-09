@@ -1,4 +1,11 @@
 FROM camptocamp/mapserver:7.0
 MAINTAINER {{authorName}} <{{authorEmail}}>
 
+RUN apt-get update && apt-get install -y libcap2-bin && setcap cap_net_bind_service=+ep /usr/sbin/apache2 && \
+  rm -rf /var/lib/apt/lists/* &&\
+  apt-get purge -y libcap2-bin
+
+COPY mapserver/start-server /usr/local/bin
+RUN chmod +x /usr/local/bin/start-server && chmod ugo+r /usr/local/bin/start-server
+
 VOLUME /etc/mapserver/

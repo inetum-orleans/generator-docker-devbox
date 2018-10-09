@@ -101,6 +101,7 @@ services:
     init: true
     volumes:
       - "${COMPOSE_PROJECT_DIR}/mapserver:/etc/mapserver"
+    user: "${USER_ID}"
 {{/if ~}}
 volumes:
 {{#if_eq webImage 'php'}}
