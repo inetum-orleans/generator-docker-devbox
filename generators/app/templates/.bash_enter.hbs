@@ -53,7 +53,7 @@ if [ -z "$BASH_ENTER_ALIAS_ONLY" ]; then
         ACTIVE_ENV=1;
       fi
       if [ $ACTIVE_ENV = 1 ]; then
-        if [ -f "$DIRNAME/$FILENAME.$ENV.$EXTENSION" ]; then
+        if [ -f "$DIRNAME/$FILENAME.$ENV.$EXTENSION" ] && ([ ! -f "$DIRNAME/$FILENAME.$EXTENSION" ] || [ -h "$DIRNAME/$FILENAME.$EXTENSION" ]); then
           ln -rfs "$DIRNAME/$FILENAME.$ENV.$EXTENSION" "$DIRNAME/$FILENAME.$EXTENSION"
           MESSAGE="[symlink] $DIRNAME/$FILENAME.$ENV.$EXTENSION -> $DIRNAME/$FILENAME.$EXTENSION"
           break
