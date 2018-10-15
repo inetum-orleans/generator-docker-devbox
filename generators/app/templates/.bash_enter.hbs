@@ -86,7 +86,7 @@ _alias_php() { docker-compose run --rm --user www-data --entrypoint php --workdi
 _alias_composer() { docker-compose run --rm --user www-data --entrypoint composer --workdir="$(_docker_devbox_map_workdir "/var/www/html")" web $@;}
 {{#if drupalInit ~}}
 _alias_drush() { docker-compose run --rm --user www-data --entrypoint php --workdir="$(_docker_devbox_map_workdir "/var/www/html")" web /var/www/html/vendor/drush/drush/drush $@;}
-_alias_drupal() { docker-compose run --rm --user www-data --entrypoint php --workdir="$(_docker_devbox_map_workdir "/var/www/html")" web /var/www/html/vendor/drupal/console/bin/drupal $@;}
+_alias_drupal() { docker-compose run --rm --user root --entrypoint php --workdir="$(_docker_devbox_map_workdir "/var/www/html")" web /var/www/html/vendor/drupal/console/bin/drupal $@;}
 {{/if}}
 {{/if_eq}}
 {{#if_eq dbImage "postgres" ~}}
@@ -100,6 +100,10 @@ _alias_pg_restore-postgres() { docker-compose run --user postgres --workdir="$(_
 {{#if_eq dbImage "mysql" ~}}
 _alias_mysql() { docker-compose exec --user root db mysql -uroot -p $@;}
 {{/if_eq}}
+{{#if_eq dbImage "mariadb" ~}}
+_alias_mysql() { docker-compose exec --user root db mysql -uroot -p $@;}
+{{/if_eq}}
+
 {{#if nodeContainer ~}}
 _alias_node() { docker-compose run --rm --workdir="$(_docker_devbox_map_workdir "/app")" node node $@;}
 _alias_npm() {

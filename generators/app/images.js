@@ -107,6 +107,13 @@ prompts = {
     store: true,
     choices: ['7.2', '7.1', '7.0', '5.6']
   },
+  phpFpmVersion: {
+    type: 'list',
+    name: 'phpFpmVersion',
+    message: 'PHP-FPM Version',
+    store: true,
+    choices: ['7.2-fpm', '7.1-fpm']
+  },
   postgresVersion: {
     type: 'list',
     name: 'postgresVersion',
@@ -121,12 +128,29 @@ prompts = {
     message: 'MySQL Version',
     store: true,
     choices: ['5.7', '5.6', '5.5']
+  },
+  mariaDbVersion: {
+    type: 'list',
+    name: 'mariaDbVersion',
+    message: 'MariaDB Version',
+    store: true,
+    choices: ['latest', '10.2', '10.1', '10.0', '5.5']
+  },
+  solrVersion: {
+    type: 'list',
+    name: 'solrVersion',
+    message: 'SolR Version',
+    store: true,
+    choices: ['latest']
   }
 }
 
 images = [
   new ContainerGroup('web', [
     new Container('php', {
+      prompts: [prompts.phpVersion]
+    }),
+    new Container('php-fpm', {
       prompts: [prompts.phpVersion]
     })
   ]),
@@ -136,7 +160,10 @@ images = [
     }),
     new Container('mysql', {
       prompts: [prompts.mysqlVersion]
-    })
+    }),
+    new Container('mariadb', {
+      prompts: [prompts.mysqlVersion]
+    }),
   ]),
   new Container('node', {
     default: false
@@ -153,6 +180,12 @@ images = [
     default: false
   }),
   new Container('maven', {
+    default: false
+  }),
+  new Container('selenium', {
+    default: false
+  }),
+  new Container('solr', {
     default: false
   })
 ];
