@@ -88,6 +88,7 @@ RUN mv drupal.phar /usr/local/bin/drupal && \
 {{#if dbContainer ~}}
 {{#if_eq dbImage 'postgres' ~}}
 # PSQL Client for drush commands
+RUN apt-get update -y && apt-get install -y gnupg && rm -rf /var/lib/apt/lists/*
 RUN curl https://www.postgresql.org/media/keys/ACCC4CF8.asc -L | apt-key add -
 RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ stretch-pgdg main" >> /etc/apt/sources.list.d/postgresql.list
 RUN apt-get update -y && apt-get install -y postgresql-client-9.6 && rm -rf /var/lib/apt/lists/*
