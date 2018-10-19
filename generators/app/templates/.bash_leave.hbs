@@ -1,17 +1,15 @@
-########################################################################
-# This is a smartcd script.  Commands you type will be run when you
-# enter this directory.  The string __PATH__ will be replaced with
-# the current path.  Some examples are editing your $PATH or creating
-# a temporary alias:
-#
-#     autostash PATH=__PATH__/bin:$PATH
-#     autostash alias restart="service stop; sleep 1; service start"
-#
-# See http://smartcd.org for more ideas about what can be put here
-#######################################################################
+#!/usr/bin/env bash
 
-ALIAS_FUNCTIONS=$(declare -F | sed -r 's/^declare -f //' | awk -F= '/^_?alias_/{print $1 }')
-DOCKER_DEVBOX_FUNCTIONS=$(declare -F | sed -r 's/^declare -f //' | awk -F= '/^_?docker_devbox_/{print $1 }')
+if [[ $(basename "$BASH_SOURCE") = .bash_leave ]]; then
+  DOCKER_DEVBOX_DIR=$(dirname "$BASH_SOURCE")
+else
+  DOCKER_DEVBOX_DIR=$PWD
+fi
+export DOCKER_DEVBOX_DIR=$DOCKER_DEVBOX_DIR
 
-for func in $ALIAS_FUNCTIONS; do unset -f $func; done
-for func in $DOCKER_DEVBOX_FUNCTIONS; do unset -f $func; done
+if [ -d "$DOCKER_DEVBOX_DIR"/.bash_leave.d ]; then
+  for leave_script in "$DOCKER_DEVBOX_DIR"/.bash_leave.d/*
+  do
+    source $leave_script
+  done
+fi

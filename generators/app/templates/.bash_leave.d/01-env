@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+BASH_ENTER_ENV_USER_FILE="~/.docker-devbox/.bash_enter.env"
+[ -f "$BASH_ENTER_ENV_USER_FILE" ] && . "$BASH_ENTER_ENV_USER_FILE"
+
+BASH_ENTER_ENV_FILE="$DOCKER_DEVBOX_DIR/.bash_enter.env"
+cp -n "$BASH_ENTER_ENV_FILE.dist" "$BASH_ENTER_ENV_FILE"
+[ -f "$BASH_ENTER_ENV_FILE" ] && . "$BASH_ENTER_ENV_FILE"

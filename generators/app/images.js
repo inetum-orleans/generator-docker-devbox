@@ -5,6 +5,7 @@ class Container {
     this.name = name;
     this.additionalPromptsEntries = options.prompts || [];
     this.default = options.default;
+    this.files = options.files || []
   }
 
   prompts() {
@@ -127,33 +128,40 @@ prompts = {
 images = [
   new ContainerGroup('web', [
     new Container('php', {
-      prompts: [prompts.phpVersion]
+      prompts: [prompts.phpVersion],
+      files: ['.bin/php', '.bin/composer']
     })
   ]),
   new ContainerGroup('db', [
     new Container('postgres', {
-      prompts: [prompts.postgresVersion]
+      prompts: [prompts.postgresVersion],
+      files: ['.bin/psql', '.bin/psql-postgres', '.bin/pg_dump', '.bin/pg_dump-postgres', '.bin/pg_restore', '.bin/pg_restore-postgres']
     }),
     new Container('mysql', {
-      prompts: [prompts.mysqlVersion]
+      prompts: [prompts.mysqlVersion],
+      files: ['.bin/mysql']
     })
   ]),
   new Container('node', {
-    default: false
+    default: false,
+    files: ['.bin/node', '.bin/npm', '.bin/yarn']
   }),
   new Container('mailcatcher'),
   new Container('phing', {
     default: false,
-    prompts: [prompts.phpVersion]
+    prompts: [prompts.phpVersion],
+    files: ['.bin/phing']
   }),
   new Container('node-sass', {
-    default: false
+    default: false,
+    files: ['.bin/node-sass']
   }),
   new Container('mapserver', {
     default: false
   }),
   new Container('maven', {
-    default: false
+    default: false,
+    files: ['.bin/mvn']
   })
 ];
 

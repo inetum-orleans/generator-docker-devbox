@@ -1,4 +1,5 @@
 const extend = require('deep-extend');
+const path = require('path');
 
 const Handlebars = require('handlebars');
 Handlebars.registerHelper('if_eq', function (a, b, opts) {
@@ -34,6 +35,26 @@ function copyTpl(fs, from, to, context, tplSettings, options) {
   }
 }
 
+function copyAllTpl(generator, includes) {
+  for (const defaultInclude of includes) {
+    let destination;
+    if (defaultInclude.indexOf('*') > -1) {
+      destination = generator.destinationRoot();
+    } else {
+      destination = path.join(generator.destinationRoot(), defaultInclude);
+    }
+
+    copyTpl(
+      generator.fs,
+      generator.templatePath(`${defaultInclude}`),
+      destination,
+      generator.props
+    )
+  }
+
+}
+
 module.exports = {
-  copyTpl
+  copyTpl,
+  copyAllTpl
 };

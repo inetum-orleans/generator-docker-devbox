@@ -1,8 +1,10 @@
 FROM node:carbon
 MAINTAINER {{authorName}} <{{authorEmail}}>
 
+\{{#if DOCKER_DEVBOX_CA_CERTIFICATES}}
 COPY .ca-certificates/* /usr/local/share/ca-certificates/
 RUN update-ca-certificates
+\{{/if}}
 
 ENV NODE_EXTRA_CA_CERTS=/etc/ssl/certs/ca-certificates.crt
 
@@ -22,10 +24,14 @@ RUN mkdir /app && chown -R ${HOST_UID:-1000}:${HOST_GID:-1000} /app
 WORKDIR /app
 
 USER node
+
 RUN yarn config set cafile ${NODE_EXTRA_CA_CERTS} --global
 RUN npm config set prefix /home/node/.npm-packages
 ENV PATH="${PATH}:/home/node/.npm-packages/bin"
+RUN npm install -g node-sass chokidar-cli compass-importer
 
+VOLUME /app
 VOLUME /home/node/.npm-packages
 VOLUME /home/node/.cache
-VOLUME /app
+
+ENTRYPOINT ["node-sass"]

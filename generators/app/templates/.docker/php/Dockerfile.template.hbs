@@ -1,8 +1,10 @@
 FROM php:{{phpVersion}}-apache
 MAINTAINER {{authorName}} <{{authorEmail}}>
 
+\{{#if DOCKER_DEVBOX_CA_CERTIFICATES}}
 COPY .ca-certificates/* /usr/local/share/ca-certificates/
 RUN update-ca-certificates
+\{{/if}}
 
 # GD
 RUN apt-get update -y && apt-get install -y libpng-dev libfreetype6-dev libjpeg62-turbo-dev && rm -rf /var/lib/apt/lists/* \
@@ -28,7 +30,7 @@ RUN apt-get update -y && apt-get install -y libpq-dev && rm -rf /var/lib/apt/lis
 {{/if_eq ~}}
 
 {{#if_eq dbImage 'mysql' ~}}
-# TODO: PDO mysql
+# PDO mysql
 RUN docker-php-ext-install pdo pdo_mysql
 {{/if_eq ~}}
 {{/if}}

@@ -1,30 +1,31 @@
-'use strict';
-const Generator = require('yeoman-generator');
-const chalk = require('chalk');
-const yosay = require('yosay');
-const shelljs = require('shelljs');
+'use strict'
+const Generator = require('yeoman-generator')
+const chalk = require('chalk')
+const yosay = require('yosay')
+const shelljs = require('shelljs')
+const path = require('path')
 
-const images = require('./images');
-const inits = require('./inits');
-const templating = require('./templating');
+const images = require('./images')
+const inits = require('./inits')
+const templating = require('./templating')
 
-const gulpRename = require('gulp-rename');
+const gulpRename = require('gulp-rename')
 
 module.exports = class extends Generator {
   prompting() {
     // Have Yeoman greet the user.
     this.log(
       yosay('Welcome to the epic ' + chalk.red('generator-docker-devbox') + ' generator!')
-    );
+    )
 
     this.gitInfo = {
       authorName: shelljs
-        .exec('git config user.name', {silent: true})
+        .exec('git config user.name', { silent: true })
         .stdout.replace(/\n/g, ''),
       authorEmail: shelljs
-        .exec('git config user.email', {silent: true})
+        .exec('git config user.email', { silent: true })
         .stdout.replace(/\n/g, '')
-    };
+    }
 
     const prompts = [
       {
@@ -53,41 +54,43 @@ module.exports = class extends Generator {
         name: 'portPrefix',
         message: 'Prefix of docker-compose port mappings [10-655]',
         default: () => {
-          return Math.floor(Math.random() * (655 - 10)) + 10;
+          return Math.floor(Math.random() * (655 - 10)) + 10
         },
         required: true,
         validate: input => {
-          const intInput = parseInt(input);
-          return intInput > 9 && intInput < 655;
+          const intInput = parseInt(input)
+          return intInput > 9 && intInput < 655
         },
         store: true
       }
-    ];
+    ]
 
     for (const image of images) {
-      const imagePrompts = image.prompts();
+      const imagePrompts = image.prompts()
       if (imagePrompts) {
-        prompts.push(...imagePrompts);
+        prompts.push(...imagePrompts)
       }
     }
 
     for (const init of inits) {
-      const initPrompts = init.prompts();
+      const initPrompts = init.prompts()
       if (initPrompts) {
-        prompts.push(...initPrompts);
+        prompts.push(...initPrompts)
       }
     }
 
     return this.prompt(prompts).then(props => {
       // To access props later use this.props.someAnswer;
 
+      props.projectName = props.projectName.replace(/ /g, "-");
+
       for (const groupOrImage of images) {
         if (!props[groupOrImage.imageVariable]) {
           if (groupOrImage.images && groupOrImage.images.length === 1) {
             // When there's a single image in the group, no prompt is shown to choose image.
-            props[groupOrImage.imageVariable] = groupOrImage.images[0].name;
+            props[groupOrImage.imageVariable] = groupOrImage.images[0].name
           } else {
-            props[groupOrImage.imageVariable] = groupOrImage.name;
+            props[groupOrImage.imageVariable] = groupOrImage.name
           }
         }
 
@@ -96,52 +99,72 @@ module.exports = class extends Generator {
         }
       }
 
-      props.init = false;
+      props.init = false
       for (const init of inits) {
         if (props[init.initVariable]) {
-          props.init = true;
+          props.init = true
         }
       }
 
-      this.props = props;
-    });
+      this.props = props
+    })
   }
 
   writing() {
     this.registerTransformStream(
       gulpRename(function (path) {
         if (path.extname === '.hbs') {
-          const splitBasename = path.basename.split('.');
-          path.extname = (splitBasename.length > 1 ? '.' : '') + splitBasename.pop();
-          path.basename = splitBasename.join('.');
+          const splitBasename = path.basename.split('.')
+          path.extname = (splitBasename.length > 1 ? '.' : '') + splitBasename.pop()
+          path.basename = splitBasename.join('.')
         }
       })
-    );
-
-    templating.copyTpl(
-      this.fs,
-      this.templatePath('*'),
-      this.destinationRoot(),
-      this.props
-    );
+    )
 
     for (const image of images) {
       if (this.props[image.imageVariable]) {
-        const imageName = this.props[image.imageVariable];
+        if (image.before) {
+          image.before(this)
+        }
+      }
+    }
+
+    for (const init of inits) {
+      if (this.props[init.initVariable]) {
+        if (init.before) {
+          init.before(this)
+        }
+      }
+    }
+
+    const defaultIncludes = [
+      '*',
+      '.bin/dc', '.bin/run', '.bin/system',
+      '**/*.d/*']
+
+    templating.copyAllTpl(this, defaultIncludes)
+
+    for (const image of images) {
+      if (this.props[image.imageVariable]) {
+        const imageName = this.props[image.imageVariable]
 
         templating.copyTpl(
           this.fs,
           this.templatePath(`**/${imageName}/**/*`),
           this.destinationRoot(),
           this.props
-        );
+        )
 
         templating.copyTpl(
           this.fs,
           this.templatePath(`**/.${imageName}/**/*`),
           this.destinationRoot(),
           this.props
-        );
+        )
+
+        if (image.files) {
+          templating.copyAllTpl(this, image.files)
+        }
       }
     }
 
@@ -151,19 +174,39 @@ module.exports = class extends Generator {
         this.templatePath('init/*'),
         this.destinationPath('init'),
         this.props
-      );
+      )
     }
 
     for (const init of inits) {
       if (this.props[init.initVariable]) {
-        const initName = init.name;
+        const initName = init.name
 
         templating.copyTpl(
           this.fs,
           this.templatePath(`**/init/init.d/${initName}.*`),
           this.destinationRoot(),
           this.props
-        );
+        )
+
+        if (init.files) {
+          templating.copyAllTpl(this, init.files)
+        }
+      }
+    }
+
+    for (const image of images) {
+      if (this.props[image.imageVariable]) {
+        if (image.after) {
+          image.after(this)
+        }
+      }
+    }
+
+    for (const init of inits) {
+      if (this.props[init.initVariable]) {
+        if (init.after) {
+          init.after(this)
+        }
       }
     }
   }
@@ -171,7 +214,7 @@ module.exports = class extends Generator {
   init() {
     for (const init of inits) {
       if (this.props[init.initVariable]) {
-        init.init(this);
+        init.init(this)
       }
     }
   }
@@ -181,4 +224,4 @@ module.exports = class extends Generator {
     // rm -Rf .git/
     // Run composer install & co
   }
-};
+}

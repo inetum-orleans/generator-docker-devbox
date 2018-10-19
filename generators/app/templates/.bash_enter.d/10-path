@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+if [ -d "$DOCKER_DEVBOX_DIR/.bin" ] ; then
+  chmod +x "$DOCKER_DEVBOX_DIR/.bin"/*
+  export PATH="$DOCKER_DEVBOX_DIR/.bin:$PATH"
+fi

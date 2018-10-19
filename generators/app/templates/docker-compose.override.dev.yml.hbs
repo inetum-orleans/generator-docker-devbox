@@ -30,14 +30,13 @@ services:
 {{#if nodeContainer}}
   node:
     environment:
-      - VIRTUAL_HOST: node.${DOCKER_DEVBOX_DOMAIN_PREFIX}.${DOCKER_DEVBOX_DOMAIN}
+      - VIRTUAL_HOST=node.${DOCKER_DEVBOX_DOMAIN_PREFIX}.${DOCKER_DEVBOX_DOMAIN}
     networks:
       - default
       - nginx-proxy
 {{/if ~}}
 {{#if mapserverContainer}}
   mapserver:
-    restart: unless-stopped
     environment:
       - VIRTUAL_HOST=mapserver.${DOCKER_DEVBOX_DOMAIN_PREFIX}.${DOCKER_DEVBOX_DOMAIN}
     networks:
@@ -48,6 +47,7 @@ services:
 {{/if ~}}
 {{#if mailcatcherContainer}}
   mailcatcher:
+    restart: ${DOCKER_DEVBOX_RESTART_POLICY}
     build:
       context: .docker
       dockerfile: mailcatcher/Dockerfile

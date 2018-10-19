@@ -5,6 +5,7 @@ class Init {
     this.name = name;
     this.additionalPromptsEntries = options.prompts || [];
     this.default = options.default;
+    this.files = options.files || [];
   }
 
   init(props) {
@@ -70,7 +71,14 @@ inits = [
         default: 'standard',
         choices: ['standard', 'gfi']
       }
-    ]
+    ],
+    files: ['.bin/drush', '.bin/drupal'],
+    before: (generator) => {
+      if (generator.props.get('nodeSassContainer')) {
+        this.files.push('.bin/build-sass')
+        this.files.push('.bin/watch-sass')
+      }
+    }
   })
 ];
 

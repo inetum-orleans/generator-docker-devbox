@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+CA_CERTIFICATES_DIR="$DOCKER_DEVBOX_DIR/.docker/.ca-certificates"
+FILE_COUNT=0
+
+if [ ! -z "$DOCKER_DEVBOX_CA_CERTIFICATES" ]; then
+  rm -Rf "/$CA_CERTIFICATES_DIR"
+  mkdir -p "$CA_CERTIFICATES_DIR"
+
+  rm -f "$CA_CERTIFICATES_DIR/.empty"
+
+  for CERT in $DOCKER_DEVBOX_CA_CERTIFICATES; do
+    cp -L "$CERT" "$CA_CERTIFICATES_DIR"
+  done
+
+  for pem in "$CA_CERTIFICATES_DIR"/*.pem; do
+    mv "$pem" "$CA_CERTIFICATES_DIR/$(basename "$pem" .pem).crt"
+  done
+
+  if [ ! -z "$(ls -A "$CA_CERTIFICATES_DIR")" ]; then
+    for cert in "$CA_CERTIFICATES_DIR"/*; do
+      echo "[50-ca-certificates] $(basename "$cert")"
+      FILE_COUNT=$((FILE_COUNT+1))
+    done
+  fi
+
+  if [ "$FILE_COUNT" == "0" ]; then
+    echo "[50-ca-certificates] No certificates found at $DOCKER_DEVBOX_CA_CERTIFICATES"
+  fi
+fi
+
+if [ "$FILE_COUNT" == "0" ]; then
+  echo "[50-ca-certificates] Creating .empty file"
+  touch "$CA_CERTIFICATES_DIR/.empty"
+fi

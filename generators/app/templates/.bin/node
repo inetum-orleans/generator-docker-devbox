@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+run --workdir="$(_docker_devbox_map_workdir "/app")" node node "$@"

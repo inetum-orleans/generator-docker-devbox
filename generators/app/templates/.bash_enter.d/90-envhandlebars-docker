@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+TEMPLATES=$(find .docker -name '*.template')
+for template in $TEMPLATES; do
+  system envhandlebars <"$template"> "${template%.*}"
+done

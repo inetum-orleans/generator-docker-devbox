@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+run --entrypoint node-sass --workdir=/app/web/themes/{{projectName}} node-sass scss -r -o css --importer /usr/local/lib/node_modules/compass-importer/index.js --sourceComments true --source-map true --follow --output-style expanded "$@"

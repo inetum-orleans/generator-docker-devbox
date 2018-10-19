@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+remove_from_path() {
+   local p d
+   p=":$1:"
+   d=":$PATH:"
+   d=${d//$p/:}
+   d=${d/#:/}
+   PATH=${d/%:/}
+}
+remove_from_path "$DOCKER_DEVBOX_DIR/.bin"
+export PATH=$PATH

@@ -23,15 +23,15 @@ rm -Rf drupal-project.tmp/.env
 rm -Rf drupal-project.tmp/docker-compose.*
 {{/if_eq}}
 
-if [ -f "$COMPOSE_PROJECT_DIR/.gitignore" ] && [ -f "drupal-project.tmp/.gitignore" ]; then
-  echo -e >> $COMPOSE_PROJECT_DIR/.gitignore
-  cat drupal-project.tmp/.gitignore >> $COMPOSE_PROJECT_DIR/.gitignore
+if [ -f "$DOCKER_DEVBOX_DIR/.gitignore" ] && [ -f "drupal-project.tmp/.gitignore" ]; then
+  echo -e >> $DOCKER_DEVBOX_DIR/.gitignore
+  cat drupal-project.tmp/.gitignore >> $DOCKER_DEVBOX_DIR/.gitignore
 fi
 
-cp -Rf drupal-project.tmp/. $COMPOSE_PROJECT_DIR
+cp -Rf drupal-project.tmp/. $DOCKER_DEVBOX_DIR
 rm -Rf drupal-project.tmp
 
-cd $COMPOSE_PROJECT_DIR
+cd $DOCKER_DEVBOX_DIR
 {{#if_eq drupalInitProfil 'gfi'}}
 echo "Init Drupal: composer install"
 composer install

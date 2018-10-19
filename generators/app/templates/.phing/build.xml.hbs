@@ -65,7 +65,7 @@
             </not>
             <then>
                 <!-- prompt the user to select from a list of supported environments -->
-                <input propertyname="environment" validargs="dev,rec,prod" promptChar=":">Enter environment </input>
+                <input propertyname="environment" validargs="dev,stage,prod" promptChar=":">Enter environment </input>
                 <echo msg="${environment}" file=".environment"/>
             </then>
         </if>

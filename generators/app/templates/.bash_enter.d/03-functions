@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+_docker_devbox_map_workdir() {
+  CONTAINER_PROJECT_DIR="$1"
+
+  RELATIVE_PATH="${PWD/$DOCKER_DEVBOX_DIR/}"
+  CONTAINER_PWD="$CONTAINER_PROJECT_DIR$RELATIVE_PATH"
+  echo $CONTAINER_PWD
+}
+export -f _docker_devbox_map_workdir

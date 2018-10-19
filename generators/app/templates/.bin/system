@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+. "$DOCKER_DEVBOX_DIR/.bash_leave.d/90-cleanup-path"
+
+$@
+
+. "$DOCKER_DEVBOX_DIR/.bash_enter.d/10-path"

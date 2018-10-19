@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+BASH_ENTER_ENV_FILE="$DOCKER_DEVBOX_DIR/.bash_enter.env"
+cp -n "$BASH_ENTER_ENV_FILE.dist" "$BASH_ENTER_ENV_FILE"
+[ -f "$BASH_ENTER_ENV_FILE" ] && . "$BASH_ENTER_ENV_FILE"
+
+export USER_ID=$(id -u)
+export GROUP_ID=$(id -g)
+export USER_NAME=$(id -un)
+export GROUP_NAME=$(id -gn)
+export HOST_IP=${HOST_IP-127.0.0.1}
+
+export COMPOSE_PROJECT_DIR="$DOCKER_DEVBOX_DIR"
+export DOCKER_VERSION=$(docker --version | sed -rn "s/Docker version (.*?), build .*/\1/p")
+export DOCKER_COMPOSE_VERSION=$(docker-compose --version | sed -rn "s/docker-compose version (.*?), build .*/\1/p")
+
+# Define DOCKER_DEVBOX_ENV to customize environment configuration files
+export DOCKER_DEVBOX_ENV="${DOCKER_DEVBOX_ENV:-dev}"
+export DOCKER_DEVBOX_ENV_LIST="${DOCKER_DEVBOX_ENV_LIST:-prod stage dev}" # Supported environments (symlinks)
