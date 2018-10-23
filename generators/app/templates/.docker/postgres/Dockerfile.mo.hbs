@@ -1,5 +1,5 @@
 FROM postgres:{{postgresVersion}}
-MAINTAINER {{authorName}} <{{authorEmail}}>
+{{#if authorName}}LABEL maintainer {{authorName}}{{#if authorEmail}} <{{authorEmail}}>{{/if}}{{/if}}
 
 RUN apt-get update \
       && apt-get install -y --no-install-recommends \

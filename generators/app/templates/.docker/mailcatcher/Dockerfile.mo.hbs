@@ -1,5 +1,5 @@
 FROM alpine:3.6
-MAINTAINER {{authorName}} <{{authorEmail}}>
+{{#if authorName}}LABEL maintainer {{authorName}}{{#if authorEmail}} <{{authorEmail}}>{{/if}}{{/if}}
 
 \{{#DOCKER_DEVBOX_CA_CERTIFICATES}}
 COPY .ca-certificates/* /usr/local/share/ca-certificates/

@@ -1,2 +1,2 @@
 FROM mysql/mysql-server:{{mysqlVersion}}
-MAINTAINER {{authorName}} <{{authorEmail}}>
+{{#if authorName}}LABEL maintainer {{authorName}}{{#if authorEmail}} <{{authorEmail}}>{{/if}}{{/if}}

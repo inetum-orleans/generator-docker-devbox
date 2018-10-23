@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
-if [ -f "./init/init.sh" ] && [ -f ./init/.should-initialize ]; then
+if [ -f "./.init/init.sh" ] && [ -f ./.init/.should-initialize ]; then
   read -p "Project is not initialized. Do you want to initialize it ? [y/N]: " -n 1 -r
   echo
   if [[ $REPLY =~ ^[Yy]$ ]]
   then
-      echo "Running initialization script: ./init/init.sh"
-      ./init/init.sh
+      echo "Running initialization script: ./.init/init.sh"
+      ./.init/init.sh
       if [ $? -eq 0 ]; then
         echo "Initialization succeded"
       else

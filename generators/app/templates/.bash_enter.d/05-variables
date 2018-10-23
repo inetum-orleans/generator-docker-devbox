@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 
-BASH_ENTER_ENV_FILE="$DOCKER_DEVBOX_DIR/.bash_enter.env"
-cp -n "$BASH_ENTER_ENV_FILE.dist" "$BASH_ENTER_ENV_FILE"
-[ -f "$BASH_ENTER_ENV_FILE" ] && . "$BASH_ENTER_ENV_FILE"
-
 export USER_ID=$(id -u)
 export GROUP_ID=$(id -g)
 export USER_NAME=$(id -un)

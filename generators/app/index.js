@@ -172,8 +172,8 @@ module.exports = class extends Generator {
     if (this.props.init) {
       templating.copyTpl(
         this.fs,
-        this.templatePath('init/*'),
-        this.destinationPath('init'),
+        this.templatePath('.init/*'),
+        this.destinationPath('.init'),
         this.props
       )
     }
@@ -184,7 +184,7 @@ module.exports = class extends Generator {
 
         templating.copyTpl(
           this.fs,
-          this.templatePath(`**/init/init.d/${initName}.*`),
+          this.templatePath(`**/.init/init.d/${initName}.*`),
           this.destinationRoot(),
           this.props
         )

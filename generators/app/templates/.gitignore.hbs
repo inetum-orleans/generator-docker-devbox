@@ -2,7 +2,7 @@
 *.iml
 docker-compose.override.yml
 {{#if mapserverContainer ~}}
-mapserver/mapserver.map
+.docker/mapserver/mapserver.map
 {{/if}}
 {{#if drupalInit ~}}
 web/sites/default/settings.php
@@ -10,7 +10,7 @@ web/sites/default/settings.php
 {{#if phingContainer ~}}
 .phing/.environment
 {{/if}}
-init/
+.init/
 .docker/.ca-certificates
 .docker/**/*.template
 .bash_enter.env
