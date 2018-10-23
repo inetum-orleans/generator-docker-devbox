@@ -139,8 +139,9 @@ module.exports = class extends Generator {
 
     const defaultIncludes = [
       '*',
-      '.bin/dc', '.bin/run', '.bin/system',
-      '**/*.d/*']
+      '.bin/dc', '.bin/run', '.bin/system', '.bin/yo', '.bin/mo',
+      '**/*.d/*'
+    ]
 
     templating.copyAllTpl(this, defaultIncludes)
 

@@ -1,10 +1,10 @@
 FROM php:{{phpVersion}}-cli
 MAINTAINER {{authorName}} <{{authorEmail}}>
 
-\{{#if DOCKER_DEVBOX_CA_CERTIFICATES}}
+\{{#DOCKER_DEVBOX_CA_CERTIFICATES}}
 COPY .ca-certificates/* /usr/local/share/ca-certificates/
 RUN update-ca-certificates
-\{{/if}}
+\{{/DOCKER_DEVBOX_CA_CERTIFICATES}}
 
 # Register the COMPOSER_HOME environment variable
 ENV COMPOSER_HOME /composer

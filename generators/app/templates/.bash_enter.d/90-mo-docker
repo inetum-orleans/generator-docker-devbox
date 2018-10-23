@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+TEMPLATES=$(find .docker -name '*.mo')
+for template in $TEMPLATES; do
+  mo <"$template"> "${template%.*}"
+done
