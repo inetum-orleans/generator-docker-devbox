@@ -1,18 +1,21 @@
 # generator-docker-devbox
-> Générateur Yeoman pour les environnements dockerisés via docker-devbox
+> Yeoman Generator for dockerized dev environment.
 
 ## Installation
 
-First, install [Yeoman](http://yeoman.io) and generator-docker-devbox using [npm](https://www.npmjs.com/) (we assume you have pre-installed [node.js](https://nodejs.org/)).
+First, install [Yeoman](http://yeoman.io) and generator-docker-devbox using [npm](https://www.npmjs.com/) 
+(we assume you have pre-installed [node.js](https://nodejs.org/)).
 
 ```bash
 npm install -g yo
-npm install -g https://glbaso01.asogfi.fr/PoleDigital/generator-docker-devbox/repository/archive.tar.gz
+npm install -g generator-docker-devbox
 ```
 
 Then generate your new project:
 
 ```bash
+mkdir my-project
+cd my-project
 yo docker-devbox
 ```
 
@@ -21,7 +24,7 @@ yo docker-devbox
 Use [npm link](https://docs.npmjs.com/cli/link) to use local installation of generator
 
 ```bash
-git clone https://glbaso01.asogfi.fr/PoleDigital/generator-docker-devbox
+git clone https://github.com/GFI-Informatique/generator-docker-devbox
 cd generator-docker-devbox
 npm link
 ```
