@@ -1,5 +1,5 @@
 # generator-docker-devbox
-> Yeoman Generator for dockerized dev environment.
+> Yeoman Generator for dockerized development environment.
 
 ## Installation
 

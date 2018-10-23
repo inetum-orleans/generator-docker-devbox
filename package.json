@@ -1,8 +1,8 @@
 {
   "name": "generator-docker-devbox",
   "version": "0.2.0",
-  "description": "Générateur Yeoman pour les environnements dockerisés via docker-devbox",
-  "homepage": "https://glbaso01.asogfi.fr/PoleDigital/generator-docker-devbox",
+  "description": "Yeoman Generator for dockerized development environment",
+  "homepage": "https://github.com/GFI-Informatique/generator-docker-devbox",
   "author": {
     "name": "GFI Orléans - Pôle Digital",
     "email": "pole-digital-centre@gfi.fr",
@@ -21,20 +21,20 @@
     "yeoman-generator"
   ],
   "devDependencies": {
-    "yeoman-test": "^1.7.2",
-    "yeoman-assert": "^3.1.1",
     "eslint": "^4.19.1",
-    "prettier": "^1.13.0",
     "husky": "^0.14.3",
-    "jest": "^23.0.1",
-    "jest-cli": "^23.0.1",
-    "yo": "^2.0.2"
+    "jest": "^23.6.0",
+    "jest-cli": "^23.6.0",
+    "prettier": "^1.14.3",
+    "yeoman-assert": "^3.1.1",
+    "yeoman-test": "^1.9.1",
+    "yo": "^2.0.5"
   },
   "dependencies": {
     "chalk": "^2.4.1",
-    "glob": "^7.1.2",
+    "glob": "^7.1.3",
     "gulp-rename": "<1.2.3",
-    "handlebars": "^4.0.11",
+    "handlebars": "^4.0.12",
     "shelljs": "^0.8.2",
     "yeoman-generator": "^2.0.5",
     "yosay": "^2.0.2"
@@ -42,6 +42,6 @@
   "jest": {
     "testEnvironment": "node"
   },
-  "repository": "https://glbaso01.asogfi.fr/PoleDigital/generator-docker-devbox.git",
+  "repository": "https://github.com/GFI-Informatique/generator-docker-devbox",
   "license": "MIT"
 }
