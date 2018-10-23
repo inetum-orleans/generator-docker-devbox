@@ -26,10 +26,7 @@ if [ ! -z "$DOCKER_DEVBOX_CA_CERTIFICATES" ]; then
 
   if [ "$FILE_COUNT" == "0" ]; then
     echo "[50-ca-certificates] No certificates found at $DOCKER_DEVBOX_CA_CERTIFICATES"
+    echo "[50-ca-certificates] Creating .empty file"
+    touch "$CA_CERTIFICATES_DIR/.empty"
   fi
-fi
-
-if [ "$FILE_COUNT" == "0" ]; then
-  echo "[50-ca-certificates] Creating .empty file"
-  touch "$CA_CERTIFICATES_DIR/.empty"
 fi
