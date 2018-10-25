@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-if [ "$1" == "run" ] && [ "$2" == "dev" ]; then
+if [ "$1" == "run" ] && [ "$2" == "serve" ]; then
   PORTS=" -p ${DOCKER_DEVBOX_PORT_PREFIX}88:80"
   echo "Port mapping:$PORTS"
 else
