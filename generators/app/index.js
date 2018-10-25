@@ -139,6 +139,7 @@ module.exports = class extends Generator {
 
     const defaultIncludes = [
       '*',
+      '.cfssl-cli/*',
       '.bin/dc', '.bin/run', '.bin/system', '.bin/yo', '.bin/mo',
       '**/*.d/*'
     ]

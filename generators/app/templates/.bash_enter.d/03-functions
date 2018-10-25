@@ -7,4 +7,29 @@ _docker_devbox_map_workdir() {
   CONTAINER_PWD="$CONTAINER_PROJECT_DIR$RELATIVE_PATH"
   echo $CONTAINER_PWD
 }
+
+_docker_devbox_cp_file_if_different() {
+
+SRC="$1"
+DEST="$2"
+
+if [ -f "$SRC" ] && [ ! -f "$DEST" ]; then
+  cp -f "$SRC" "$DEST"
+  return 0
+else
+  if [ ! -f "$SRC" ] && [ -f "$DEST" ]; then
+    rm "$DEST"
+    return 0
+  else
+    if [ -f "$SRC" ] && [ -f "$DEST" ] && ! cmp -s "$SRC" "$DEST"; then
+      cp -f "$SRC" "$DEST"
+      return 0
+    fi
+  fi
+fi
+
+return 1
+}
+
+
 export -f _docker_devbox_map_workdir

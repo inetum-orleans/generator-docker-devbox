@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+SHOULD_RESTART_CONTAINER=0
+
+PROJECT_NGINX_PROXY_PATH="$DOCKER_DEVBOX_DIR/.nginx-proxy"
+USER_NGINX_PROXY_PATH="$HOME/.nginx-proxy"
+
+CERT_KEY="${PROJECT_NGINX_PROXY_PATH}/certs/${DOCKER_DEVBOX_DOMAIN_PREFIX}.${DOCKER_DEVBOX_DOMAIN}.key"
+CERT_KEY_DEST="${USER_NGINX_PROXY_PATH}/certs/${DOCKER_DEVBOX_DOMAIN_PREFIX}.${DOCKER_DEVBOX_DOMAIN}.key"
+
+CERT_CRT="${PROJECT_NGINX_PROXY_PATH}/certs/${DOCKER_DEVBOX_DOMAIN_PREFIX}.${DOCKER_DEVBOX_DOMAIN}.crt"
+CERT_CRT_DEST="${USER_NGINX_PROXY_PATH}/certs/${DOCKER_DEVBOX_DOMAIN_PREFIX}.${DOCKER_DEVBOX_DOMAIN}.crt"
+
+VIRTUALHOST="${PROJECT_NGINX_PROXY_PATH}/vhost.d/virtualhost"
+VIRTUALHOST_DEST="${USER_NGINX_PROXY_PATH}/vhost.d/${DOCKER_DEVBOX_DOMAIN_PREFIX}.${DOCKER_DEVBOX_DOMAIN}"
+
+VIRTUALHOST_LOCATION="${PROJECT_NGINX_PROXY_PATH}/vhost.d/virtualhost_location"
+VIRTUALHOST_LOCATION_DEST="${USER_NGINX_PROXY_PATH}/vhost.d/${DOCKER_DEVBOX_DOMAIN_PREFIX}.${DOCKER_DEVBOX_DOMAIN}_location"
+
+if _docker_devbox_cp_file_if_different "$CERT_KEY" "$CERT_KEY_DEST"; then
+  SHOULD_RESTART_CONTAINER=1
+fi
+
+if _docker_devbox_cp_file_if_different "$CERT_CRT" "$CERT_CRT_DEST"; then
+  SHOULD_RESTART_CONTAINER=1
+fi
+
+if _docker_devbox_cp_file_if_different "$VIRTUALHOST" "$VIRTUALHOST_DEST"; then
+ SHOULD_RESTART_CONTAINER=1
+fi
+
+if _docker_devbox_cp_file_if_different "$VIRTUALHOST_LOCATION" "$VIRTUALHOST_LOCATION_DEST"; then
+  SHOULD_RESTART_CONTAINER=1
+fi
+
+if [ "$SHOULD_RESTART_CONTAINER" = "1" ]; then
+  echo "[62-nginx-proxy-config] nginx-proxy configuration has been applied. Restarting nginx-container ..."
+  docker restart nginx-proxy
+fi
