@@ -111,7 +111,7 @@ services:
     init: true
     restart: ${DOCKER_DEVBOX_RESTART_POLICY}
     environment:
-      LISTEN_PORT_80: 1
+      - LISTEN_PORT_80=1
     volumes:
       - "${COMPOSE_PROJECT_DIR}/.docker/mapserver:/etc/mapserver"
     user: "${USER_ID}"
