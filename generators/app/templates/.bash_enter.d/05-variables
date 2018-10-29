@@ -7,6 +7,18 @@ export GROUP_NAME=$(id -gn)
 export HOST_IP=${HOST_IP-127.0.0.1}
 
 export COMPOSE_PROJECT_DIR="$DOCKER_DEVBOX_DIR"
+
+if [ -z ${COMPOSE_PROJECT_NAME+x} ]; then
+    # If COMPOSE_PROJECT_NAME is not defined, build it from directory name.
+    name=$(basename "${COMPOSE_PROJECT_DIR,,}")
+    export COMPOSE_PROJECT_NAME="${name//[ _.-]/}"
+fi
+
+if [ -z ${COMPOSE_NETWORK_NAME+x} ]; then
+    # If COMPOSE_NETWORK_NAME is not defined, build it from project name.
+    export COMPOSE_NETWORK_NAME="$COMPOSE_PROJECT_NAME""_default"
+fi
+
 export DOCKER_VERSION=$(docker --version | sed -rn "s/Docker version (.*?), build .*/\1/p")
 export DOCKER_COMPOSE_VERSION=$(docker-compose --version | sed -rn "s/docker-compose version (.*?), build .*/\1/p")
 
