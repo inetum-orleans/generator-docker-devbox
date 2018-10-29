@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+RECURSIVE_MARKER="[*]"
+RECURSIVE_MARKER_LENGTH=${#RECURSIVE_MARKER}
+
+if [ ! -z "${DOCKER_DEVBOX_MO_DIRS}" ]; then
+  for TEMPLATE_DIR in $DOCKER_DEVBOX_MO_DIRS; do
+    maxdepth=" -maxdepth 1"
+    if [ "${TEMPLATE_DIR:(-$RECURSIVE_MARKER_LENGTH)}" = "$RECURSIVE_MARKER" ]; then
+      strlen=$(expr ${#TEMPLATE_DIR} - ${#RECURSIVE_MARKER})
+      TEMPLATE_DIR="${TEMPLATE_DIR:0:($strlen)}"
+      maxdepth=""
+    fi
+
+    if [ -d "$TEMPLATE_DIR" ]; then
+      TEMPLATES=$(find "$TEMPLATE_DIR"$maxdepth -type f -name '*.mo' -o -name '*.mo.*')
+      for template in $TEMPLATES; do
+        target=$(echo $template | sed -re 's/(.*).mo((.|$).*)/\1\2/g')
+        mo <"$template"> "$target"
+        echo "[30-mo] $template -> $target"
+      done
+    fi
+  done
+fi
