@@ -8,8 +8,7 @@ fi
 export DOCKER_DEVBOX_DIR=$DOCKER_DEVBOX_DIR
 
 if [ -d "$DOCKER_DEVBOX_DIR"/.bash_leave.d ]; then
-  for leave_script in "$DOCKER_DEVBOX_DIR"/.bash_leave.d/*
-  do
+  for leave_script in "$DOCKER_DEVBOX_DIR"/.bash_leave.d/*; do
     source $leave_script
   done
 fi

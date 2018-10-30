@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+if [[ $(basename "$BASH_SOURCE") = .bash_enter ]]; then
+  DOCKER_DEVBOX_DIR=$(dirname "$BASH_SOURCE")
+else
+  DOCKER_DEVBOX_DIR=$PWD
+fi
+export DOCKER_DEVBOX_DIR=$DOCKER_DEVBOX_DIR
+
+if [ -d "$DOCKER_DEVBOX_DIR"/.bash_enter.d ]; then
+  for enter_script in "$DOCKER_DEVBOX_DIR"/.bash_enter.d/*; do
+    . $enter_script
+  done
+fi
