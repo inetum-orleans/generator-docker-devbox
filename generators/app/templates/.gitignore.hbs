@@ -1,14 +1,17 @@
-docker-compose.override.yml
+/docker-compose.override.yml
 {{#if mapserverContainer ~}}
-.docker/mapserver/mapserver.map
+/.docker/mapserver/mapserver.map
 {{/if}}
+{{#if mailcatcherContainer ~}}
+/.docker/mailcatcher/ssmtp.conf
+{{/if}}
+/.docker/.ca-certificates
+/.docker/**/Dockerfile.mo
 {{#if drupalInit ~}}
 web/sites/default/settings.php
 {{/if}}
 {{#if phingContainer ~}}
-.phing/.environment
+/.phing/.environment
 {{/if}}
-.init/
-.docker/.ca-certificates
-.docker/**/*.mo
-.bash_enter.env
+/.init/
+/.bash_enter.env
