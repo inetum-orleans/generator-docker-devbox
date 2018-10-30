@@ -1,0 +1,23 @@
+#####################################################
+# Project specific variables for .bash_enter script #
+#####################################################
+
+# List of supported environments
+export DOCKER_DEVBOX_ENV_LIST="prod stage dev"
+
+# List of files to symlink based on environment
+export DOCKER_DEVBOX_ENV_SYMLINKS="docker-compose.override.yml{{#if mapserverContainer}} .docker/mapserver/mapserver.map{{/if}}"
+
+# List of directories containing *.mo.* files to pass through mo templating.
+# Directories ending with "[*]" will be processed recursively.
+export DOCKER_DEVBOX_MO_DIRS="$DOCKER_DEVBOX_DIR/.docker[*]"
+
+###########################################
+# Global variables for .bash_enter script #
+###########################################
+
+# CA Certificates to copy inside containers. Should be provided as global environment variable.
+# export DOCKER_DEVBOX_CA_CERTIFICATES="/etc/ssl/certs/GFI*.pem /etc/ssl/certs/*.local.pem"
+
+# Docker registry to push images. Should be provided as global environment variable.
+# export DOCKER_DEVBOX_REGISTRY=docker-registry.etudes.local/
