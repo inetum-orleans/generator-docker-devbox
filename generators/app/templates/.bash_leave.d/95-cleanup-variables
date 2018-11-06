@@ -5,7 +5,6 @@ unset USER_ID
 unset GROUP_ID
 unset USER_NAME
 unset GROUP_NAME
-unset HOST_IP
 
 unset COMPOSE_PROJECT_DIR
 unset COMPOSE_PROJECT_NAME
