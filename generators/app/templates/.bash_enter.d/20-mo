@@ -17,7 +17,7 @@ if [ ! -z "${DOCKER_DEVBOX_MO_DIRS}" ]; then
       for template in $TEMPLATES; do
         target=$(echo $template | sed -re 's/(.*).mo((.|$).*)/\1\2/g')
         mo <"$template"> "$target"
-        echo "[30-mo] $template -> $target"
+        echo "[20-mo] $template -> $target"
       done
     fi
   done
