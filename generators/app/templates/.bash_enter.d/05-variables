@@ -4,7 +4,7 @@ export USER_ID=$(id -u)
 export GROUP_ID=$(id -g)
 export USER_NAME=$(id -un)
 export GROUP_NAME=$(id -gn)
-export HOST_IP=${HOST_IP-127.0.0.1}
+export HOST_IP=${HOST_IP-localhost}
 
 export COMPOSE_PROJECT_DIR="$DOCKER_DEVBOX_DIR"
 
