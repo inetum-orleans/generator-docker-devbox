@@ -162,6 +162,10 @@ images = [
   new Container('maven', {
     default: false,
     files: ['.bin/mvn']
+  }),
+  new Container('sonar-scanner', {
+    default: false,
+    files: ['.bin/sonar-scanner']
   })
 ];
 

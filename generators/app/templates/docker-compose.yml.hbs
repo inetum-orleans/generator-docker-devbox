@@ -116,6 +116,16 @@ services:
       - "${COMPOSE_PROJECT_DIR}/.docker/mapserver:/etc/mapserver"
     user: "${USER_ID}"
 {{/if ~}}
+{{#if sonarScannerContainer}}
+  sonar-scanner:
+    build:
+      context: .docker
+      dockerfile: sonar-scanner/Dockerfile
+    image: ${DOCKER_DEVBOX_REGISTRY}{{projectName}}/sonar-scanner
+    command: "--version"
+    volumes:
+      - "${COMPOSE_PROJECT_DIR}:/root/src"
+{{/if ~}}
 volumes:
 {{#if_eq webImage 'php'}}
   composer-cache: ~
