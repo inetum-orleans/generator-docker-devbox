@@ -1,6 +1,6 @@
 {
   "name": "generator-docker-devbox",
-  "version": "0.12.1",
+  "version": "0.12.2",
   "description": "Yeoman Generator for dockerized development environment",
   "homepage": "https://github.com/GFI-Informatique/generator-docker-devbox",
   "author": {
