@@ -4,7 +4,8 @@ export USER_ID=$(id -u)
 export GROUP_ID=$(id -g)
 export USER_NAME=$(id -un)
 export GROUP_NAME=$(id -gn)
-export HOST_IP=${HOST_IP-localhost}
+export DOCKER_DEVBOX_IP=$(ip addr show dev docker0 | grep -o "inet [0-9]*\.[0-9]*\.[0-9]*\.[0-9]*" | grep -o "[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*")
+export HOST_IP=${HOST_IP-${DOCKER_DEVBOX_IP}}
 
 export COMPOSE_PROJECT_DIR="$DOCKER_DEVBOX_DIR"
 
