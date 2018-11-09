@@ -1,2 +1,3 @@
-node_modules
-coverage
+/node_modules
+/generators
+/.rpt2_cache

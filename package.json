@@ -9,9 +9,21 @@
     "url": ""
   },
   "files": [
-    "generators"
+    "generators",
+    "src"
   ],
   "main": "generators/index.js",
+  "module": "generators/index.mjs",
+  "scripts": {
+    "lint": "tslint --project tsconfig.json -t codeFrame 'generators/**/*.ts' '__tests__/**/*.ts'",
+    "prebuild": "rimraf generators",
+    "build": "tsc",
+    "prestart": "rimrag generators",
+    "start": "concurrently 'tsc -w'",
+    "test": "jest --coverage --verbose",
+    "test:watch": "jest --coverage --watch",
+    "test:prod": "npm run lint && npm run test -- --no-cache"
+  },
   "keywords": [
     "docker-devbox",
     "docker",
@@ -21,11 +33,28 @@
     "yeoman-generator"
   ],
   "devDependencies": {
-    "eslint": "^5.7.0",
+    "@types/deep-extend": "^0.4.31",
+    "@types/gulp-rename": "0.0.33",
+    "@types/handlebars": "^4.0.39",
+    "@types/jest": "^23.3.9",
+    "@types/lodash": "^4.14.118",
+    "@types/node": "^10.12.3",
+    "@types/shelljs": "^0.8.0",
+    "@types/yeoman-generator": "^3.0.0",
+    "@types/yosay": "0.0.29",
+    "concurrently": "^4.0.1",
+    "cpx": "^1.5.0",
     "husky": "^1.1.2",
     "jest": "^23.6.0",
     "jest-cli": "^23.6.0",
+    "lodash": "^4.17.11",
     "prettier": "^1.14.3",
+    "rimraf": "^2.6.2",
+    "ts-jest": "^23.10.4",
+    "tslint": "^5.11.0",
+    "tslint-config-prettier": "^1.15.0",
+    "tslint-config-standard": "^8.0.1",
+    "typescript": "^3.1.6",
     "yeoman-assert": "^3.1.1",
     "yeoman-test": "^1.9.1",
     "yo": "^2.0.5"
@@ -36,6 +65,7 @@
     "gulp-rename": "<1.2.3",
     "handlebars": "^4.0.12",
     "shelljs": "^0.8.2",
+    "source-map-support": "^0.5.9",
     "yeoman-generator": "^3.1.1",
     "yosay": "^2.0.2"
   },

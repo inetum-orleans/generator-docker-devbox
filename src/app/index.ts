@@ -1,18 +1,26 @@
-'use strict'
-const Generator = require('yeoman-generator')
+require('source-map-support').install();
+
+import { Answers, Question } from 'yeoman-generator'
+import * as Generator from 'yeoman-generator'
+import * as gulpRename from 'gulp-rename'
 const chalk = require('chalk')
 const yosay = require('yosay')
 const shelljs = require('shelljs')
-const path = require('path')
 
-const images = require('./images')
-const inits = require('./inits')
-const templating = require('./templating')
+import images, { ContainerGroup } from './images'
+import inits from './inits'
+import { copyAllTpl, copyTpl } from './templating'
 
-const gulpRename = require('gulp-rename')
+interface GitInfo {
+  authorName: string,
+  authorEmail: string
+}
 
-module.exports = class extends Generator {
-  prompting() {
+class AppGenerator extends Generator {
+  gitInfo!: GitInfo
+  answers!: Answers
+
+  prompting () {
     // Have Yeoman greet the user.
     this.log(
       yosay('Welcome to the epic ' + chalk.red('generator-docker-devbox') + ' generator!')
@@ -21,13 +29,13 @@ module.exports = class extends Generator {
     this.gitInfo = {
       authorName: shelljs
         .exec('git config user.name', { silent: true })
-        .stdout.replace(/\n/g, ''),
+        .stdout.toString().replace(/\n/g, ''),
       authorEmail: shelljs
         .exec('git config user.email', { silent: true })
-        .stdout.replace(/\n/g, '')
+        .stdout.toString().replace(/\n/g, '')
     }
 
-    const prompts = [
+    const prompts: Question[] = [
       {
         type: 'input',
         name: 'projectName',
@@ -56,8 +64,7 @@ module.exports = class extends Generator {
         default: () => {
           return Math.floor(Math.random() * (655 - 10)) + 10
         },
-        required: true,
-        validate: input => {
+        validate: (input: string) => {
           const intInput = parseInt(input)
           return intInput > 9 && intInput < 655
         },
@@ -79,42 +86,42 @@ module.exports = class extends Generator {
       }
     }
 
-    return this.prompt(prompts).then(props => {
-      // To access props later use this.props.someAnswer;
+    return this.prompt(prompts).then((answers: Answers) => {
+      // To access answers later use this.answers.someAnswer;
 
-      props.projectName = props.projectName.replace(/ /g, "-");
+      answers.projectName = answers.projectName.replace(/ /g, '-')
 
       for (const groupOrImage of images) {
-        if (!props[groupOrImage.imageVariable]) {
-          if (groupOrImage.images && groupOrImage.images.length === 1) {
+        if (!answers[groupOrImage.imageVariable]) {
+          if (groupOrImage instanceof ContainerGroup && groupOrImage.images.length === 1) {
             // When there's a single image in the group, no prompt is shown to choose image.
-            props[groupOrImage.imageVariable] = groupOrImage.images[0].name
+            answers[groupOrImage.imageVariable] = groupOrImage.images[0].name
           } else {
-            props[groupOrImage.imageVariable] = groupOrImage.name
+            answers[groupOrImage.imageVariable] = groupOrImage.name
           }
         }
 
-        if (!props[groupOrImage.containerVariable]) {
-          delete props[groupOrImage.imageVariable]
+        if (!answers[groupOrImage.containerVariable]) {
+          delete answers[groupOrImage.imageVariable]
         }
       }
 
-      props.init = false
+      answers.init = false
       for (const init of inits) {
-        if (props[init.initVariable]) {
-          props.init = true
+        if (answers[init.initVariable]) {
+          answers.init = true
         }
       }
 
-      this.props = props
+      this.answers = answers
     })
   }
 
-  writing() {
+  writing () {
     this.registerTransformStream(
       gulpRename(function (path) {
         if (path.extname === '.hbs') {
-          const splitBasename = path.basename.split('.')
+          const splitBasename = path.basename ? path.basename.split('.') : ['']
           path.extname = (splitBasename.length > 1 ? '.' : '') + splitBasename.pop()
           path.basename = splitBasename.join('.')
         }
@@ -122,7 +129,7 @@ module.exports = class extends Generator {
     )
 
     for (const image of images) {
-      if (this.props[image.imageVariable]) {
+      if (this.answers[image.imageVariable]) {
         if (image.before) {
           image.before(this)
         }
@@ -130,7 +137,7 @@ module.exports = class extends Generator {
     }
 
     for (const init of inits) {
-      if (this.props[init.initVariable]) {
+      if (this.answers[init.initVariable]) {
         if (init.before) {
           init.before(this)
         }
@@ -144,60 +151,60 @@ module.exports = class extends Generator {
       '**/*.d/*'
     ]
 
-    templating.copyAllTpl(this, defaultIncludes)
+    copyAllTpl(this, defaultIncludes)
 
     for (const image of images) {
-      if (this.props[image.imageVariable]) {
-        const imageName = this.props[image.imageVariable]
+      if (this.answers[image.imageVariable]) {
+        const imageName = this.answers[image.imageVariable]
 
-        templating.copyTpl(
+        copyTpl(
           this.fs,
           this.templatePath(`**/${imageName}/**/*`),
           this.destinationRoot(),
-          this.props
+          this.answers
         )
 
-        templating.copyTpl(
+        copyTpl(
           this.fs,
           this.templatePath(`**/.${imageName}/**/*`),
           this.destinationRoot(),
-          this.props
+          this.answers
         )
 
         if (image.files) {
-          templating.copyAllTpl(this, image.files)
+          copyAllTpl(this, image.files)
         }
       }
     }
 
-    if (this.props.init) {
-      templating.copyTpl(
+    if (this.answers.init) {
+      copyTpl(
         this.fs,
         this.templatePath('.init/*'),
         this.destinationPath('.init'),
-        this.props
+        this.answers
       )
     }
 
     for (const init of inits) {
-      if (this.props[init.initVariable]) {
+      if (this.answers[init.initVariable]) {
         const initName = init.name
 
-        templating.copyTpl(
+        copyTpl(
           this.fs,
           this.templatePath(`**/.init/init.d/${initName}.*`),
           this.destinationRoot(),
-          this.props
+          this.answers
         )
 
         if (init.files) {
-          templating.copyAllTpl(this, init.files)
+          copyAllTpl(this, init.files)
         }
       }
     }
 
     for (const image of images) {
-      if (this.props[image.imageVariable]) {
+      if (this.answers[image.imageVariable]) {
         if (image.after) {
           image.after(this)
         }
@@ -205,7 +212,7 @@ module.exports = class extends Generator {
     }
 
     for (const init of inits) {
-      if (this.props[init.initVariable]) {
+      if (this.answers[init.initVariable]) {
         if (init.after) {
           init.after(this)
         }
@@ -213,17 +220,19 @@ module.exports = class extends Generator {
     }
   }
 
-  init() {
+  init () {
     for (const init of inits) {
-      if (this.props[init.initVariable]) {
+      if (this.answers[init.initVariable] && init.init) {
         init.init(this)
       }
     }
   }
 
-  install() {
+  install () {
     // git clone {{drupalRepositoryUrl}} .
     // rm -Rf .git/
     // Run composer install & co
   }
 }
+
+export default AppGenerator
