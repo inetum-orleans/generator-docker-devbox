@@ -16,7 +16,7 @@
     "lint": "tslint --project tsconfig.json -t codeFrame 'generators/**/*.ts' '__tests__/**/*.ts'",
     "clean": "del-cli 'generators/**/*.js' 'generators/**/*.js.map' '!generators/**/templates/**/*'",
     "prebuild": "npm run clean",
-    "build": "npm run lint && tsc",
+    "build": "tsc",
     "prestart": "npm run clean",
     "start": "tsc -w",
     "test": "jest --coverage --verbose",

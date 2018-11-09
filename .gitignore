@@ -1,3 +1,5 @@
-node_modules
+/node_modules
+/coverage
+/generators/**/*.js
 /generators/**/*.js.map
 !/generators/**/templates/**

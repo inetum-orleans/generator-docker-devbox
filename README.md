@@ -1,4 +1,7 @@
 # generator-docker-devbox
+
+![Build Status](https://img.shields.io/travis/gfi-centre-ouest/generator-docker-devbox.svg)
+
 > Yeoman Generator for dockerized development environment.
 
 ## Installation

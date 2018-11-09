@@ -1,6 +1,5 @@
 require('source-map-support').install();
 
-import { Answers, Question } from 'yeoman-generator'
 import * as Generator from 'yeoman-generator'
 import * as gulpRename from 'gulp-rename'
 const chalk = require('chalk')
@@ -18,7 +17,7 @@ interface GitInfo {
 
 class AppGenerator extends Generator {
   gitInfo!: GitInfo
-  answers!: Answers
+  answers!: Generator.Answers
 
   prompting () {
     // Have Yeoman greet the user.
@@ -35,7 +34,7 @@ class AppGenerator extends Generator {
         .stdout.toString().replace(/\n/g, '')
     }
 
-    const prompts: Question[] = [
+    const prompts: Generator.Question[] = [
       {
         type: 'input',
         name: 'projectName',
@@ -65,7 +64,7 @@ class AppGenerator extends Generator {
           return Math.floor(Math.random() * (655 - 10)) + 10
         },
         validate: (input: string) => {
-          const intInput = parseInt(input)
+          const intInput = parseInt(input, 10)
           return intInput > 9 && intInput < 655
         },
         store: true
@@ -86,7 +85,7 @@ class AppGenerator extends Generator {
       }
     }
 
-    return this.prompt(prompts).then((answers: Answers) => {
+    return this.prompt(prompts).then((answers: Generator.Answers) => {
       // To access answers later use this.answers.someAnswer;
 
       answers.projectName = answers.projectName.replace(/ /g, '-')
@@ -146,7 +145,6 @@ class AppGenerator extends Generator {
 
     const defaultIncludes = [
       '*',
-      '.cfssl-cli/*',
       '.bin/dc', '.bin/run', '.bin/system', '.bin/yo', '.bin/mo',
       '**/*.d/*'
     ]

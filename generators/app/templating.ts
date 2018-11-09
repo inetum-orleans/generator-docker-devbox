@@ -15,7 +15,7 @@ export function copyTpl (fs: MemFsEditor, from: string, to: string, context?: {}
 
   options = extend(options || {}, { globOptions: { dot: true } })
 
-  try {
+  if (fs.exists(from)) {
     fs.copy(
       from,
       to,
@@ -31,10 +31,6 @@ export function copyTpl (fs: MemFsEditor, from: string, to: string, context?: {}
         }
       })
     )
-  } catch (err) {
-    if (err.code !== 'ERR_ASSERTION') {
-      throw err
-    }
   }
 }
 
