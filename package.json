@@ -66,6 +66,7 @@
     "yosay": "^2.0.2"
   },
   "jest": {
+    "preset": "ts-jest",
     "testEnvironment": "node"
   },
   "repository": "https://github.com/gfi-centre-ouest/generator-docker-devbox",

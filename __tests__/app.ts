@@ -1,7 +1,7 @@
 'use strict';
 const path = require('path');
-const assert = require('yeoman-assert');
-const helpers = require('yeoman-test');
+import * as assert from 'yeoman-assert';
+import * as helpers from 'yeoman-test';
 
 describe('generator-docker-devbox:app', () => {
   beforeAll(() => {
@@ -11,7 +11,6 @@ describe('generator-docker-devbox:app', () => {
   });
 
   it('todo', () => {
-    //assert.file(['dummyfile.txt']);
     console.log('No test at the moment')
   });
 });
