@@ -86,16 +86,6 @@ declare module 'yeoman-assert' {
    * @example
    * assert.noFileContent('models/user.js', /App\.User = DS\.Model\.extend/);
    * assert.noFileContent('models/user.js', 'App.User = DS.Model.extend');
-   *
-   * @also
-   *
-   * Assert that each file in an array of file-regex pairs does not match its corresponding regex
-   * @param {Array}         pairs    - an array of arrays, where each subarray is a [String, RegExp] pair
-   * var arg = [
-   *   [ 'models/user.js', /App\.User \ DS\.Model\.extend/ ],
-   *   [ 'controllers/user.js', /App\.UserController = Ember\.ObjectController\.extend/ ]
-   * ]
-   * assert.noFileContent(arg);
    */
 
   export function noFileContent (file: string, reg: RegExp | string): void

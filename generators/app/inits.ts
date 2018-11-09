@@ -1,7 +1,8 @@
 import { Answers, Question } from 'yeoman-generator'
 import { Files } from './images'
-const camelCase  = require('lodash/camelCase')
 import AppGenerator from '.'
+
+const camelCase = require('lodash/camelCase')
 
 export interface InitOptions {
   prompts?: Question[]

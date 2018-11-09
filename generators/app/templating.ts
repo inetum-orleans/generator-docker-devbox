@@ -1,3 +1,5 @@
+import { AssertionError } from 'assert'
+
 const extend = require('deep-extend')
 const path = require('path')
 
@@ -10,13 +12,13 @@ Handlebars.registerHelper('if_eq', function (this: any, a: any, b: any, opts: an
   return opts.inverse(this)
 })
 
-export function copyTpl (fs: MemFsEditor, from: string, to: string, context?: {}, tplSettings?: {}, options?: {}) {
-  context = context || {}
+export function copyTpl (generator: AppGenerator, from: string, to: string, tplSettings?: {}, options?: {}) {
+  const context = generator.answers || {}
 
   options = extend(options || {}, { globOptions: { dot: true } })
 
-  if (fs.exists(from)) {
-    fs.copy(
+  try {
+    generator.fs.copy(
       from,
       to,
       extend(options, {
@@ -31,12 +33,18 @@ export function copyTpl (fs: MemFsEditor, from: string, to: string, context?: {}
         }
       })
     )
+  } catch (err) {
+    if (!(err instanceof AssertionError)) {
+      throw err
+    }
+    // No files maches from glob
   }
 }
 
 export function copyAllTpl (generator: AppGenerator, includes: string[]) {
   for (const defaultInclude of includes) {
     let destination
+
     if (defaultInclude.indexOf('*') > -1) {
       destination = generator.destinationRoot()
     } else {
@@ -44,10 +52,9 @@ export function copyAllTpl (generator: AppGenerator, includes: string[]) {
     }
 
     copyTpl(
-      generator.fs,
+      generator,
       generator.templatePath(`${defaultInclude}`),
-      destination,
-      generator.answers
+      destination
     )
   }
 

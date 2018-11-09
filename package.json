@@ -54,7 +54,7 @@
     "tslint-config-standard": "^8.0.1",
     "typescript": "^3.1.6",
     "yeoman-assert": "^3.1.1",
-    "yeoman-test": "^1.9.1",
+    "yeoman-test": "^2.0.0",
     "yo": "^2.0.5"
   },
   "dependencies": {

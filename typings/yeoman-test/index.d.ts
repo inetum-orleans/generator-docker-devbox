@@ -27,9 +27,9 @@ declare module 'yeoman-test' {
      */
     toPromise (): Promise<string>
 
-    then (): Function
+    then (cb: (p: string) => void): Promise<string>
 
-    catch (): Function
+    catch (err: any): Promise<string>
 
     /**
      * Clean the provided directory, then change directory into it
@@ -58,7 +58,7 @@ declare module 'yeoman-test' {
      * @param {Function} [cb] - callback who'll receive the folder path as argument
      * @return {this} run context instance
      */
-    inTmpDirfunction (cb?: Function): this
+    inTmpDir (cb?: (dir: string) => any): this
 
     /**
      * Clean the directory used for tests inside inDir/inTmpDir
@@ -219,6 +219,6 @@ export function registerDependencies(env: Env, dependencies: (Dependency)[]): vo
  * @return {RunContext}
  */
 
-export function run(GeneratorOrNamespace: string | typeof Generator, settings?: {}): any
+export function run(GeneratorOrNamespace: string | typeof Generator, settings?: {}): RunContext
 
 }

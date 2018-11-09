@@ -1,23 +1,28 @@
-require('source-map-support').install();
+require('source-map-support').install()
 
+const path = require('path')
 import * as Generator from 'yeoman-generator'
 import * as gulpRename from 'gulp-rename'
-const chalk = require('chalk')
-const yosay = require('yosay')
-const shelljs = require('shelljs')
-
 import images, { ContainerGroup } from './images'
 import inits from './inits'
 import { copyAllTpl, copyTpl } from './templating'
+
+const chalk = require('chalk')
+const yosay = require('yosay')
 
 interface GitInfo {
   authorName: string,
   authorEmail: string
 }
 
-class AppGenerator extends Generator {
+export default class AppGenerator extends Generator {
   gitInfo!: GitInfo
   answers!: Generator.Answers
+
+  paths () {
+    // It seems yeoman can't setup sourceRoot automatically, don't know why :(
+    this.sourceRoot(path.join(__dirname, 'templates'))
+  }
 
   prompting () {
     // Have Yeoman greet the user.
@@ -26,12 +31,8 @@ class AppGenerator extends Generator {
     )
 
     this.gitInfo = {
-      authorName: shelljs
-        .exec('git config user.name', { silent: true })
-        .stdout.toString().replace(/\n/g, ''),
-      authorEmail: shelljs
-        .exec('git config user.email', { silent: true })
-        .stdout.toString().replace(/\n/g, '')
+      authorName: this.user.git.name(),
+      authorEmail: this.user.git.email()
     }
 
     const prompts: Generator.Question[] = [
@@ -156,17 +157,15 @@ class AppGenerator extends Generator {
         const imageName = this.answers[image.imageVariable]
 
         copyTpl(
-          this.fs,
+          this,
           this.templatePath(`**/${imageName}/**/*`),
           this.destinationRoot(),
-          this.answers
         )
 
         copyTpl(
-          this.fs,
+          this,
           this.templatePath(`**/.${imageName}/**/*`),
           this.destinationRoot(),
-          this.answers
         )
 
         if (image.files) {
@@ -177,10 +176,9 @@ class AppGenerator extends Generator {
 
     if (this.answers.init) {
       copyTpl(
-        this.fs,
+        this,
         this.templatePath('.init/*'),
         this.destinationPath('.init'),
-        this.answers
       )
     }
 
@@ -189,10 +187,9 @@ class AppGenerator extends Generator {
         const initName = init.name
 
         copyTpl(
-          this.fs,
+          this,
           this.templatePath(`**/.init/init.d/${initName}.*`),
           this.destinationRoot(),
-          this.answers
         )
 
         if (init.files) {
@@ -232,5 +229,3 @@ class AppGenerator extends Generator {
     // Run composer install & co
   }
 }
-
-export default AppGenerator

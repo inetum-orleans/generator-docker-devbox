@@ -1,4 +1,4 @@
-const camelCase  = require('lodash/camelCase')
+const camelCase = require('lodash/camelCase')
 import { Answers, Question } from 'yeoman-generator'
 import AppGenerator from './index'
 
