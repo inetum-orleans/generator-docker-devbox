@@ -1,5 +1,5 @@
 {
-  "name": "generator-docker-devbox",
+  "name": "@gfi-centre-ouest/generator-docker-devbox",
   "version": "0.13.1",
   "description": "Yeoman Generator for dockerized development environment",
   "homepage": "https://github.com/gfi-centre-ouest/generator-docker-devbox",

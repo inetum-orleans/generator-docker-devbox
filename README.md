@@ -12,7 +12,7 @@ First, install [Yeoman](http://yeoman.io) and generator-docker-devbox using [npm
 
 ```bash
 npm install -g yo
-npm install -g generator-docker-devbox
+npm install -g @gfi-centre-ouest/generator-docker-devbox
 ```
 
 Then generate your new project:
