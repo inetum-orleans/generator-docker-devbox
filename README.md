@@ -24,7 +24,7 @@ yo docker-devbox
 Use [npm link](https://docs.npmjs.com/cli/link) to use local installation of generator
 
 ```bash
-git clone https://github.com/GFI-Informatique/generator-docker-devbox
+git clone https://github.com/gfi-centre-ouest/generator-docker-devbox
 cd generator-docker-devbox
 npm link
 ```

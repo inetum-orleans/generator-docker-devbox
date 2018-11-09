@@ -2,7 +2,7 @@
   "name": "generator-docker-devbox",
   "version": "0.12.2",
   "description": "Yeoman Generator for dockerized development environment",
-  "homepage": "https://github.com/GFI-Informatique/generator-docker-devbox",
+  "homepage": "https://github.com/gfi-centre-ouest/generator-docker-devbox",
   "author": {
     "name": "GFI Orléans - Pôle Digital",
     "email": "pole-digital-centre@gfi.fr",
@@ -68,6 +68,6 @@
   "jest": {
     "testEnvironment": "node"
   },
-  "repository": "https://github.com/GFI-Informatique/generator-docker-devbox",
+  "repository": "https://github.com/gfi-centre-ouest/generator-docker-devbox",
   "license": "MIT"
 }
