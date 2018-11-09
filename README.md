@@ -29,6 +29,12 @@ cd generator-docker-devbox
 npm link
 ```
 
+Then you need run the project in watch mod for TypeScript source changes to be compiled on change.
+
+```bash
+npm run start
+```
+
 ## Getting To Know Yeoman
 
  * Yeoman has a heart of gold.
