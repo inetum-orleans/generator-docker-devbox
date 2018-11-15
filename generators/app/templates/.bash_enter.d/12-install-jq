@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+JQ_EXE=$(which jq)
+
+if [ ! -x "$JQ_EXE" ]; then
+   echo "[12-install-jq] jq is not available. Downloading binary ..."
+   curl -Lso "$DOCKER_DEVBOX_DIR/.bin/jq" https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux32
+   chmod +x "$DOCKER_DEVBOX_DIR/.bin/jq"
+fi

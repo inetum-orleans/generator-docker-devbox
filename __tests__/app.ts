@@ -2,14 +2,19 @@ import * as assertYo from 'yeoman-assert'
 import * as helpers from 'yeoman-test'
 import AppGenerator from '../generators/app'
 
+const path = require('path')
+
 describe('generator-docker-devbox:app', () => {
 
   describe('Default answers', () => {
-    beforeAll(() => {
-      return helpers.run(AppGenerator).toPromise()
+    beforeAll(async () => {
+      const dir = await helpers.run(AppGenerator, {
+        resolved: require.resolve(path.join(__dirname, '../generators/app/index.js')),
+        namespace: 'generator-docker-devbox:app'
+      }).inTmpDir().toPromise()
     })
 
-    it('should have SmartCD entrypoint files', () => {
+    it('should have SmartCD entrypoint files', async () => {
       assertYo.file('.bash_enter')
     })
 
@@ -28,6 +33,7 @@ describe('generator-docker-devbox:app', () => {
         '.bash_enter.d/03-functions',
         '.bash_enter.d/05-variables',
         '.bash_enter.d/10-path',
+        '.bash_enter.d/12-install-jq',
         '.bash_enter.d/20-mo',
         '.bash_enter.d/30-env-symlinks',
         '.bash_enter.d/50-ca-certificates',

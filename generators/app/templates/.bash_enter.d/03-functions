@@ -7,9 +7,39 @@ _docker_devbox_map_workdir() {
   CONTAINER_PWD="$CONTAINER_PROJECT_DIR$RELATIVE_PATH"
   echo $CONTAINER_PWD
 }
+export -f _docker_devbox_map_workdir
+
+_docker_devbox_find_service_image() {
+    SERVICE="$1"
+    docker inspect $(docker-compose ps -q "${SERVICE}") | jq -r '.[0].Config.Image'
+}
+export -f _docker_devbox_find_service_image
+
+_docker_devbox_find_service_user() {
+    SERVICE="$1"
+    docker inspect $(docker-compose ps -q "${SERVICE}") | jq -r '.[0].Config.User'
+}
+export -f _docker_devbox_find_service_user
+
+_docker_devbox_find_service_networks() {
+    SERVICE="$1"
+    docker inspect $(docker-compose ps -q "${SERVICE}") | jq -r '.[0].NetworkSettings.Networks | keys |  join(" ")'
+}
+export -f _docker_devbox_find_service_networks
+
+_docker_devbox_find_service_volumes() {
+    SERVICE="$1"
+    docker inspect $(docker-compose ps -q "${SERVICE}") | jq -r '.[0].Mounts[] | [if (.Type == "volume") then .Name else .Source end, .Destination, .Mode] | join(":")'
+}
+export -f _docker_devbox_find_service_volumes
+
+_docker_devbox_find_image_entrypoint() {
+    IMAGE="$1"
+    docker inspect "${IMAGE}" | jq -r '.[0].Config.Entrypoint | join(" ")'
+}
+export -f _docker_devbox_find_image_entrypoint
 
 _docker_devbox_cp_file_if_different() {
-
 SRC="$1"
 DEST="$2"
 
@@ -30,6 +60,4 @@ fi
 
 return 1
 }
-
-
-export -f _docker_devbox_map_workdir
+export -f _docker_devbox_cp_file_if_different

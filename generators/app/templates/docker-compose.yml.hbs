@@ -122,7 +122,7 @@ services:
       context: .docker
       dockerfile: sonar-scanner/Dockerfile
     image: ${DOCKER_DEVBOX_REGISTRY}{{projectName}}/sonar-scanner
-    command: "--version"
+    command: /bin/true
     volumes:
       - "${COMPOSE_PROJECT_DIR}:/root/src"
 {{/if ~}}
