@@ -23,19 +23,19 @@ RUN apt-get update -y && apt-get install -y libldap2-dev && rm -rf /var/lib/apt/
 RUN docker-php-ext-install zip
 
 {{#if dbContainer ~}}
-{{#if_eq dbImage 'postgres' ~}}
+{{#eq dbImage 'postgres' ~}}
 # PDO PostgreSQL
 RUN apt-get update -y && apt-get install -y libpq-dev && rm -rf /var/lib/apt/lists/* \
 && docker-php-ext-install pdo pdo_pgsql
-{{/if_eq ~}}
+{{/eq ~}}
 
-{{#if_eq dbImage 'mysql' ~}}
+{{#eq dbImage 'mysql' ~}}
 # PDO mysql
 RUN docker-php-ext-install pdo pdo_mysql
-{{/if_eq ~}}
+{{/eq ~}}
 {{/if}}
 
-RUN yes | pecl install xdebug{{#if_eq phpVersion '5.6'}}-2.5.5{{/if_eq}} \
+RUN yes | pecl install xdebug{{#eq phpVersion '5.6'}}-2.5.5{{/eq}} \
     && echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" > /usr/local/etc/php/conf.d/xdebug.ini \
     && echo "xdebug.remote_enable=on" >> /usr/local/etc/php/conf.d/xdebug.ini \
     && echo "xdebug.remote_autostart=off" >> /usr/local/etc/php/conf.d/xdebug.ini
@@ -88,7 +88,7 @@ RUN mv drupal.phar /usr/local/bin/drupal && \
 
 {{/if}}
 {{#if dbContainer ~}}
-{{#if_eq dbImage 'postgres' ~}}
+{{#eq dbImage 'postgres' ~}}
 # PSQL Client for drush commands
 RUN apt-get update -y && apt-get install -y gnupg && rm -rf /var/lib/apt/lists/*
 RUN curl https://www.postgresql.org/media/keys/ACCC4CF8.asc -L | apt-key add -
@@ -98,12 +98,12 @@ RUN apt-get update -y && apt-get install -y postgresql-client-9.6 && rm -rf /var
 ENV PGPASSFILE=/.pgpass
 COPY php/.pgpass /.pgpass
 RUN chmod 600 /.pgpass
-{{/if_eq ~}}
+{{/eq ~}}
 
-{{#if_eq dbImage 'mysql' ~}}
+{{#eq dbImage 'mysql' ~}}
 # MySQL Client for drush commands
 RUN apt-get update -y && apt-get install -y mysql-client && rm -rf /var/lib/apt/lists/*
-{{/if_eq ~}}
+{{/eq ~}}
 {{/if}}
 
 # wkhtmltopdf

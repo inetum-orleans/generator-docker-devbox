@@ -1,16 +1,8 @@
 import { AssertionError } from 'assert'
+import AppGenerator from './index'
 
 const extend = require('deep-extend')
 const path = require('path')
-
-import * as Handlebars from 'handlebars'
-import AppGenerator from './index'
-import { MemFsEditor } from 'yeoman-generator'
-
-Handlebars.registerHelper('if_eq', function (this: any, a: any, b: any, opts: any) {
-  if (a === b) return opts.fn(this)
-  return opts.inverse(this)
-})
 
 export function copyTpl (generator: AppGenerator, from: string, to: string, tplSettings?: {}, options?: {}) {
   const context = generator.answers || {}
@@ -25,8 +17,8 @@ export function copyTpl (generator: AppGenerator, from: string, to: string, tplS
         process: function (contents: Buffer, filename: string) {
           if (filename.endsWith('.hbs')) {
             const precompileTplSettings = extend({ srcName: filename }, tplSettings)
-            const templateAst = (Handlebars.parse as any)(contents.toString(), precompileTplSettings)
-            const template = Handlebars.compile(templateAst)
+            const templateAst = (generator.handlebars.parse as any)(contents.toString(), precompileTplSettings)
+            const template = generator.handlebars.compile(templateAst)
             return template(context)
           }
           return contents

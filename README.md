@@ -20,7 +20,7 @@ Then generate your new project:
 ```bash
 mkdir my-project
 cd my-project
-yo docker-devbox
+yo @gfi-centre-ouest/docker-devbox
 ```
 
 ## Use local installation of generator for development

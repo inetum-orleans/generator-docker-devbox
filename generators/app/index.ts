@@ -1,8 +1,11 @@
+import * as handlebars from 'handlebars'
+
 require('source-map-support').install()
 
 const path = require('path')
 import * as Generator from 'yeoman-generator'
 import * as gulpRename from 'gulp-rename'
+import * as Handlebars  from 'handlebars'
 import images, { ContainerGroup } from './images'
 import inits from './inits'
 import { copyAllTpl, copyTpl } from './templating'
@@ -18,10 +21,20 @@ interface GitInfo {
 export default class AppGenerator extends Generator {
   gitInfo!: GitInfo
   answers!: Generator.Answers
+  handlebars!: typeof Handlebars
+  handlebarsHelpers!: any
 
   paths () {
     // It seems yeoman can't setup sourceRoot automatically, don't know why :(
     this.sourceRoot(path.join(__dirname, 'templates'))
+  }
+
+  initHandlebars() {
+    this.handlebars = Handlebars.create()
+
+    this.handlebarsHelpers = require('handlebars-helpers')({
+      handlebars: this.handlebars
+    });
   }
 
   prompting () {

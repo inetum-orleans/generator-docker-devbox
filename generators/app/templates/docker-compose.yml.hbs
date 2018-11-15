@@ -2,26 +2,26 @@ version: "2.2"
 services:
 {{#if webContainer}}
   web:
-  {{#if_eq webImage 'php'}}
+  {{#eq webImage 'php'}}
     build:
       context: .docker
       dockerfile: php/Dockerfile
-    image: ${DOCKER_DEVBOX_REGISTRY}{{projectName}}/web
+    image: ${DOCKER_DEVBOX_REGISTRY}{{lowercase projectName}}/web
     init: true
     restart: ${DOCKER_DEVBOX_RESTART_POLICY}
     volumes:
       - "${COMPOSE_PROJECT_DIR}:/var/www/html"
       - "${COMPOSE_PROJECT_DIR}/.docker/php/apache.conf:/etc/apache2/sites-enabled/000-default.conf"
       - "composer-cache:/composer/cache"
-  {{/if_eq ~}}
+  {{/eq ~}}
 {{/if ~}}
 {{#if dbContainer}}
   db:
-  {{#if_eq dbImage 'postgres'}}
+  {{#eq dbImage 'postgres'}}
     build:
       context: .docker
       dockerfile: postgres/Dockerfile
-    image: ${DOCKER_DEVBOX_REGISTRY}{{projectName}}/postgres
+    image: ${DOCKER_DEVBOX_REGISTRY}{{lowercase "projectName"}}/postgres
     init: true
     restart: ${DOCKER_DEVBOX_RESTART_POLICY}
     environment:
@@ -30,12 +30,12 @@ services:
     volumes:
       - "${COMPOSE_PROJECT_DIR}:/workdir" # Mount this volume to help loading/exporting dumps
       - "postgres:/var/lib/postgresql/data"
-  {{/if_eq ~}}
-  {{#if_eq dbImage 'mysql'}}
+  {{/eq ~}}
+  {{#eq dbImage 'mysql'}}
     build:
       context: .docker
       dockerfile: mysql/Dockerfile
-    image: ${DOCKER_DEVBOX_REGISTRY}{{projectName}}/mysql
+    image: ${DOCKER_DEVBOX_REGISTRY}{{lowercase projectName}}/mysql
     init: true
     restart: ${DOCKER_DEVBOX_RESTART_POLICY}
     environment:
@@ -46,7 +46,7 @@ services:
     volumes:
       - "${COMPOSE_PROJECT_DIR}:/workdir" # Mount this volume to help loading/exporting dumps
       - "mysql:/var/lib/mysql/"
-  {{/if_eq ~}}
+  {{/eq ~}}
 {{/if ~}}
 {{#if nodeSassContainer}}
   node-sass:
@@ -56,7 +56,7 @@ services:
       args:
         GROUP_ID: "${GROUP_ID}"
         USER_ID: "${USER_ID}"
-    image: ${DOCKER_DEVBOX_REGISTRY}{{projectName}}/node-sass
+    image: ${DOCKER_DEVBOX_REGISTRY}{{lowercase projectName}}/node-sass
     init: true
     entrypoint: "/bin/true"
     volumes:
@@ -75,7 +75,7 @@ services:
       args:
         GROUP_ID: "${GROUP_ID}"
         USER_ID: "${USER_ID}"
-    image: ${DOCKER_DEVBOX_REGISTRY}{{projectName}}/node
+    image: ${DOCKER_DEVBOX_REGISTRY}{{lowercase projectName}}/node
     init: true
     volumes:
       - "${COMPOSE_PROJECT_DIR}:/app"
@@ -90,7 +90,7 @@ services:
       args:
         DOCKER_VERSION: ${DOCKER_VERSION}
         DOCKER_COMPOSE_VERSION: ${DOCKER_COMPOSE_VERSION}
-    image: ${DOCKER_DEVBOX_REGISTRY}{{projectName}}/phing
+    image: ${DOCKER_DEVBOX_REGISTRY}{{lowercase projectName}}/phing
     init: true
     environment:
       - COMPOSE_PROJECT_DIR=${COMPOSE_PROJECT_DIR}
@@ -107,7 +107,7 @@ services:
     build:
       context: .docker
       dockerfile: mapserver/Dockerfile
-    image: ${DOCKER_DEVBOX_REGISTRY}{{projectName}}/mapserver
+    image: ${DOCKER_DEVBOX_REGISTRY}{{lowercase projectName}}/mapserver
     init: true
     restart: ${DOCKER_DEVBOX_RESTART_POLICY}
     environment:
@@ -121,21 +121,21 @@ services:
     build:
       context: .docker
       dockerfile: sonar-scanner/Dockerfile
-    image: ${DOCKER_DEVBOX_REGISTRY}{{projectName}}/sonar-scanner
+    image: ${DOCKER_DEVBOX_REGISTRY}{{lowercase projectName}}/sonar-scanner
     command: /bin/true
     volumes:
       - "${COMPOSE_PROJECT_DIR}:/root/src"
 {{/if ~}}
 volumes:
-{{#if_eq webImage 'php'}}
+{{#eq webImage 'php'}}
   composer-cache: ~
-{{/if_eq ~}}
-{{#if_eq dbImage 'postgres'}}
+{{/eq ~}}
+{{#eq dbImage 'postgres'}}
   postgres: ~
-{{/if_eq ~}}
-{{#if_eq dbImage 'mysql'}}
+{{/eq ~}}
+{{#eq dbImage 'mysql'}}
   mysql: ~
-{{/if_eq ~}}
+{{/eq ~}}
 {{#if nodeContainer}}
   node-cache: ~
   node-npm-packages: ~

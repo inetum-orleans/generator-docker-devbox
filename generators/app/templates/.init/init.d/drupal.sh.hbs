@@ -4,13 +4,13 @@ dc build
 dc down
 dc up -d
 
-{{#if_eq drupalInitProfil 'standard'}}
+{{#eq drupalInitProfil 'standard'}}
 echo "Init Drupal: composer create-project"
 rm -Rf drupal-project.tmp
 composer create-project drupal-composer/drupal-project drupal-project.tmp --stability dev --no-interaction
-{{/if_eq}}
+{{/eq}}
 
-{{#if_eq drupalInitProfil 'gfi'}}
+{{#eq drupalInitProfil 'gfi'}}
 echo "Init Drupal: git clone http://gitlab/PoleDigital/d8-gfi-core.git"
 rm -Rf drupal-project.tmp
 git clone http://gitlab/PoleDigital/d8-gfi-core.git drupal-project.tmp
@@ -21,7 +21,7 @@ rm -Rf drupal-project.tmp/.docker
 rm -Rf drupal-project.tmp/.bash_enter
 rm -Rf drupal-project.tmp/.env
 rm -Rf drupal-project.tmp/docker-compose.*
-{{/if_eq}}
+{{/eq}}
 
 if [ -f "$DOCKER_DEVBOX_DIR/.gitignore" ] && [ -f "drupal-project.tmp/.gitignore" ]; then
   echo -e >> $DOCKER_DEVBOX_DIR/.gitignore
@@ -32,15 +32,15 @@ cp -Rf drupal-project.tmp/. $DOCKER_DEVBOX_DIR
 rm -Rf drupal-project.tmp
 
 cd $DOCKER_DEVBOX_DIR
-{{#if_eq drupalInitProfil 'gfi'}}
+{{#eq drupalInitProfil 'gfi'}}
 echo "Init Drupal: composer install"
 composer install
-{{/if_eq}}
+{{/eq}}
 
 cd web
 
 echo "Init Drupal: drush site-install"
-drush site-install -y {{drupalInitProfil}} --locale=fr --account-name=gfi --account-pass=gfi --account-mail=pole-digital-centre@gfi.fr --db-url={{#if_eq dbImage 'postgres'}}pgsql{{/if_eq}}{{#if_eq dbImage 'mysql'}}mysql{{/if_eq}}://{{projectName}}:{{projectName}}@db/{{projectName}} --site-name='{{projectName}}'
+drush site-install -y {{drupalInitProfil}} --locale=fr --account-name=gfi --account-pass=gfi --account-mail=pole-digital-centre@gfi.fr --db-url={{#eq dbImage 'postgres'}}pgsql{{/eq}}{{#eq dbImage 'mysql'}}mysql{{/eq}}://{{projectName}}:{{projectName}}@db/{{projectName}} --site-name='{{projectName}}'
 
 echo "Init Drupal: create tmp directory"
 mkdir -p sites/default/files/tmp
