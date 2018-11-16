@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+if [ "$1" == "run" ] && [ "$2" == "serve" ]; then
+  PORTS=" -p ${DOCKER_DEVBOX_PORT_PREFIX}88:80"
+  echo "Port mapping:$PORTS"
+else
+  PORTS=""
+fi
+
+run$PORTS --workdir="$(_docker_devbox_map_workdir "/app")" {{service.name}} npm "$@"

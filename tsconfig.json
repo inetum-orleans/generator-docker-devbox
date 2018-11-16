@@ -10,8 +10,8 @@
     "outDir": "generators",
     "rootDir": "generators",
     "typeRoots": [
-      "node_modules/@types",
-      "typings"
+      "typings",
+      "node_modules/@types"
     ]
   },
   "include": [

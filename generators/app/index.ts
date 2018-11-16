@@ -1,161 +1,180 @@
-import * as handlebars from 'handlebars'
+import * as Generator from 'yeoman-generator'
+import { Templating } from './templating'
+import { ChoiceType } from 'inquirer'
+import { features } from './features'
+import { Feature, FeatureContext, Service } from './features/feature'
+import { newBuilder, Version } from '@gfi-centre-ouest/docker-compose-builder'
+import { DockerComposeFeature, DockerDevboxConfigBuilderOptions } from './features/docker'
+import * as yaml from 'js-yaml'
 
 require('source-map-support').install()
 
 const path = require('path')
-import * as Generator from 'yeoman-generator'
-import * as gulpRename from 'gulp-rename'
-import * as Handlebars  from 'handlebars'
-import images, { ContainerGroup } from './images'
-import inits from './inits'
-import { copyAllTpl, copyTpl } from './templating'
 
 const chalk = require('chalk')
 const yosay = require('yosay')
 
-interface GitInfo {
-  authorName: string,
-  authorEmail: string
+interface AnswersStart extends Generator.Answers {
+  projectName: string
+  authorName: string
+  authorEmail: string,
 }
 
+interface AnswersEnd extends Generator.Answers {
+  portPrefix: number
+}
+
+interface RawAnswersFeatures extends Generator.Answers {
+
+}
+
+export interface AnswersMain extends AnswersStart, AnswersEnd {
+  features: AnswersFeatures[]
+}
+
+export type AnswersFeatures = { [featureId: string]: AnswersFeature }
+
+export type AnswersFeature = Generator.Answers
+
 export default class AppGenerator extends Generator {
-  gitInfo!: GitInfo
-  answers!: Generator.Answers
-  handlebars!: typeof Handlebars
-  handlebarsHelpers!: any
+  answersMain!: AnswersMain
+  templating: Templating
+
+  constructor (args: string | string[], options: {}) {
+    super(args, options)
+    this.templating = new Templating(this.fs, this.destinationRoot())
+  }
 
   paths () {
     // It seems yeoman can't setup sourceRoot automatically, don't know why :(
     this.sourceRoot(path.join(__dirname, 'templates'))
   }
 
-  initHandlebars() {
-    this.handlebars = Handlebars.create()
-
-    this.handlebarsHelpers = require('handlebars-helpers')({
-      handlebars: this.handlebars
-    });
-  }
-
-  prompting () {
+  async prompting () {
     // Have Yeoman greet the user.
     this.log(
-      yosay('Welcome to the epic ' + chalk.red('generator-docker-devbox') + ' generator!')
+      yosay('Welcome to the epic ' + chalk.red('@gfi-centre-ouest/docker-devbox') + ' generator!')
     )
 
-    this.gitInfo = {
-      authorName: this.user.git.name(),
-      authorEmail: this.user.git.email()
-    }
+    const answersStart = await this._promptStart()
 
-    const prompts: Generator.Question[] = [
-      {
-        type: 'input',
-        name: 'projectName',
-        message: 'Technical project name',
-        default: this.appname,
-        store: true
-      },
-      {
-        type: 'input',
-        name: 'authorName',
-        message: 'Author name',
-        default: this.gitInfo.authorName,
-        store: true
-      },
-      {
-        type: 'input',
-        name: 'authorEmail',
-        message: 'Author email',
-        default: this.gitInfo.authorEmail,
-        store: true
-      },
-      {
-        type: 'input',
-        name: 'portPrefix',
-        message: 'Prefix of docker-compose port mappings [10-655]',
-        default: () => {
-          return Math.floor(Math.random() * (655 - 10)) + 10
-        },
-        validate: (input: string) => {
-          const intInput = parseInt(input, 10)
-          return intInput > 9 && intInput < 655
-        },
-        store: true
-      }
-    ]
+    const rawAnswersFeatures: RawAnswersFeatures[] = []
 
-    for (const image of images) {
-      const imagePrompts = image.prompts()
-      if (imagePrompts) {
-        prompts.push(...imagePrompts)
-      }
-    }
+    let featuresGroup = 0
+    while (true) {
+      let answersFeatures = await this._promptFeatures(featuresGroup, rawAnswersFeatures)
 
-    for (const init of inits) {
-      const initPrompts = init.prompts()
-      if (initPrompts) {
-        prompts.push(...initPrompts)
-      }
-    }
-
-    return this.prompt(prompts).then((answers: Generator.Answers) => {
-      // To access answers later use this.answers.someAnswer;
-
-      answers.projectName = answers.projectName.replace(/ /g, '-')
-
-      for (const groupOrImage of images) {
-        if (!answers[groupOrImage.imageVariable]) {
-          if (groupOrImage instanceof ContainerGroup && groupOrImage.images.length === 1) {
-            // When there's a single image in the group, no prompt is shown to choose image.
-            answers[groupOrImage.imageVariable] = groupOrImage.images[0].name
-          } else {
-            answers[groupOrImage.imageVariable] = groupOrImage.name
+      if (answersFeatures[`features~${featuresGroup}`]) {
+        for (const feature of features) {
+          if (answersFeatures[`features~${featuresGroup}`].indexOf(feature.name) > -1 && feature.questions) {
+            const featureQuestions = feature.questions()
+            if (featureQuestions) {
+              this._applyFeatureToQuestions(feature, featuresGroup, featureQuestions)
+              const featureAnswers = await this.prompt(featureQuestions)
+              Object.assign(answersFeatures, featureAnswers)
+            }
           }
         }
 
-        if (!answers[groupOrImage.containerVariable]) {
-          delete answers[groupOrImage.imageVariable]
+        rawAnswersFeatures.push(answersFeatures)
+
+        const answersMore = await this.prompt({
+          type: 'confirm',
+          name: `features~${featuresGroup}~more`,
+          default: false,
+          message: 'Do you need to duplicate some features ?',
+          store: true
+        })
+
+        if (!answersMore[`features~${featuresGroup}~more`]) {
+          break
+        }
+
+        featuresGroup++
+      } else {
+        break
+      }
+    }
+
+    const answersEnd = await this._promptEnd()
+
+    featuresGroup = 0
+    const allAnswersFeatures: AnswersFeatures[] = []
+    for (const answersFeatures of rawAnswersFeatures) {
+      const groupAnswersFeature: AnswersFeatures = {}
+      for (const feature of features) {
+        if (answersFeatures[`features~${featuresGroup}`].indexOf(feature.name) > -1) {
+          const answersFeature: AnswersFeature = {}
+          for (const key of Object.keys(answersFeatures)) {
+            if (key.indexOf(`features~${featuresGroup}~${feature.name}~`) === 0) {
+              const properKey = key.substr(`features~${featuresGroup}~${feature.name}~`.length, key.length)
+              answersFeature[properKey] = answersFeatures[key]
+            }
+          }
+          groupAnswersFeature[feature.name] = answersFeature
         }
       }
+      allAnswersFeatures.push(groupAnswersFeature)
+      featuresGroup++
+    }
 
-      answers.init = false
-      for (const init of inits) {
-        if (answers[init.initVariable]) {
-          answers.init = true
-        }
-      }
-
-      this.answers = answers
-    })
+    this.answersMain = { ...answersStart, ...answersEnd, features: allAnswersFeatures }
   }
 
-  writing () {
-    this.registerTransformStream(
-      gulpRename(function (path) {
-        if (path.extname === '.hbs') {
-          const splitBasename = path.basename ? path.basename.split('.') : ['']
-          path.extname = (splitBasename.length > 1 ? '.' : '') + splitBasename.pop()
-          path.basename = splitBasename.join('.')
-        }
-      })
-    )
+  async write () {
+    const featureById: { [featureId: string]: Feature } = {}
 
-    for (const image of images) {
-      if (this.answers[image.imageVariable]) {
-        if (image.before) {
-          image.before(this)
+    for (const feature of features) {
+      featureById[feature.name] = feature
+    }
+
+    const envFiles: string[] = ['docker-compose.override.yml']
+    const moDirectories: string[] = ['$DOCKER_DEVBOX_DIR/.docker[*]']
+
+    const builderOptions = new DockerDevboxConfigBuilderOptions()
+
+    const composeBuilder = newBuilder({ version: Version.v22 }, builderOptions)
+    const composeDevBuilder = newBuilder({ version: Version.v22 }, builderOptions)
+
+    let servicesByName: { [name: string]: Service<any> } = {}
+    for (const answersFeatures of this.answersMain.features) {
+      for (const featureId of Object.keys(answersFeatures)) {
+        const feature = featureById[featureId]
+        const service = feature.service(servicesByName)
+        servicesByName[service.name] = service
+
+        const context: FeatureContext<typeof feature> = {
+          ...this.answersMain,
+          ...answersFeatures[featureId],
+          service
+        }
+
+        feature.write(this.templating, context)
+
+        if (feature.envFiles) {
+          envFiles.push(...feature.envFiles(context))
+        }
+        if (feature.moDirectories) {
+          moDirectories.push(...feature.moDirectories(context))
+        }
+
+        const dockerComposeFeature = feature as unknown as DockerComposeFeature<typeof feature>
+
+        if (dockerComposeFeature.dockerComposeConfiguration) {
+          dockerComposeFeature.dockerComposeConfiguration(composeBuilder, context)
+          dockerComposeFeature.dockerComposeConfiguration(composeDevBuilder, context, true)
         }
       }
     }
 
-    for (const init of inits) {
-      if (this.answers[init.initVariable]) {
-        if (init.before) {
-          init.before(this)
-        }
-      }
-    }
+    const composeYaml = yaml.dump(composeBuilder.get(), { lineWidth: 9999 })
+    const composeDevYaml = yaml.dump(composeDevBuilder.get(), { lineWidth: 9999 })
+
+    const composeYamlRendered = this.templating.renderHandlebars(composeYaml, this.answersMain)
+    const composeDevYamlRendered = this.templating.renderHandlebars(composeDevYaml, this.answersMain)
+
+    this.fs.write('docker-compose.yml', composeYamlRendered)
+    this.fs.write('docker-compose.override.dev.yml', composeDevYamlRendered)
 
     const defaultIncludes = [
       '*',
@@ -163,82 +182,106 @@ export default class AppGenerator extends Generator {
       '**/*.d/*'
     ]
 
-    copyAllTpl(this, defaultIncludes)
+    this.templating.bulk(defaultIncludes, {
+      ...this.answersMain,
+      envFiles: envFiles.join(' '),
+      moDirectories: moDirectories.join(' ')
+    })
+  }
 
-    for (const image of images) {
-      if (this.answers[image.imageVariable]) {
-        const imageName = this.answers[image.imageVariable]
+  private async _promptStart () {
+    const prompts: Generator.Question[] = [
+      {
+        type: 'input',
+        name: 'projectName',
+        message: 'Technical project name',
+        default: this.appname,
+        validate: (v) => !!v,
+        store: true
+      },
+      {
+        type: 'input',
+        name: 'authorName',
+        message: 'Author name',
+        default: this.user.git.name(),
+        store: true
+      },
+      {
+        type: 'input',
+        name: 'authorEmail',
+        message: 'Author email',
+        default: this.user.git.email(),
+        store: true
+      }
+    ]
+    return this.prompt(prompts) as Promise<AnswersStart>
+  }
 
-        copyTpl(
-          this,
-          this.templatePath(`**/${imageName}/**/*`),
-          this.destinationRoot(),
-        )
+  private async _promptEnd () {
+    const prompts = {
+      type: 'input',
+      name: 'portPrefix',
+      message: 'Prefix of docker-compose port mappings [10-655]',
+      default: () => {
+        return Math.floor(Math.random() * (655 - 10)) + 10
+      },
+      validate: (input: string) => {
+        const intInput = parseInt(input, 10)
+        return intInput > 9 && intInput < 655
+      },
+      store: true
+    }
+    return this.prompt(prompts) as Promise<AnswersEnd>
 
-        copyTpl(
-          this,
-          this.templatePath(`**/.${imageName}/**/*`),
-          this.destinationRoot(),
-        )
+  }
 
-        if (image.files) {
-          copyAllTpl(this, image.files)
-        }
+  private _featureCount (featureId: string, rawAnswersFeatures: RawAnswersFeatures[]) {
+    if (!rawAnswersFeatures) return 0
+    let count = 0
+    for (const answersFeatures of rawAnswersFeatures) {
+      if (answersFeatures[featureId]) {
+        count++
+      }
+    }
+    return count
+  }
+
+  private async _promptFeatures (featuresGroup: number, rawAnswersFeatures: RawAnswersFeatures[]) {
+    const choicesFeature: ChoiceType[] = []
+
+    for (const feature of features) {
+      const featureCount = this._featureCount(feature.name, rawAnswersFeatures)
+      if (!featureCount || feature.duplicateAllowed) {
+        choicesFeature.push(feature.choice)
       }
     }
 
-    if (this.answers.init) {
-      copyTpl(
-        this,
-        this.templatePath('.init/*'),
-        this.destinationPath('.init'),
-      )
-    }
-
-    for (const init of inits) {
-      if (this.answers[init.initVariable]) {
-        const initName = init.name
-
-        copyTpl(
-          this,
-          this.templatePath(`**/.init/init.d/${initName}.*`),
-          this.destinationRoot(),
-        )
-
-        if (init.files) {
-          copyAllTpl(this, init.files)
-        }
-      }
-    }
-
-    for (const image of images) {
-      if (this.answers[image.imageVariable]) {
-        if (image.after) {
-          image.after(this)
-        }
-      }
-    }
-
-    for (const init of inits) {
-      if (this.answers[init.initVariable]) {
-        if (init.after) {
-          init.after(this)
-        }
-      }
+    if (choicesFeature) {
+      return this.prompt({
+        type: 'checkbox',
+        name: `features~${featuresGroup}`,
+        message: 'Features',
+        choices: choicesFeature,
+        store: true
+      }) as Promise<RawAnswersFeatures>
+    } else {
+      return { features: [] } as RawAnswersFeatures
     }
   }
 
-  init () {
-    for (const init of inits) {
-      if (this.answers[init.initVariable] && init.init) {
-        init.init(this)
-      }
-    }
+  private _applyFeatureToQuestion (feature: Feature, featuresGroup: number, question: Generator.Question) {
+    question.message = `${feature.label} > ${question.message}`
+    question.name = `features~${featuresGroup}~${feature.name}~${question.name}`
+    question.store = true
   }
 
-  install () {
-    // git clone {{drupalRepositoryUrl}} .
-    // rm -Rf .git/
-    // Run composer install & co
+  private _applyFeatureToQuestions (feature: Feature, featuresGroup: number, questions: Generator.Questions) {
+    if (Array.isArray(questions)) {
+      for (const question of questions) {
+        this._applyFeatureToQuestion(feature, featuresGroup, question)
+      }
+    } else if ((questions as Generator.Question).message) {
+      this._applyFeatureToQuestion(feature, featuresGroup, questions as Generator.Question)
+    }
   }
 }

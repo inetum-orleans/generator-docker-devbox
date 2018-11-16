@@ -6,11 +6,11 @@
 export DOCKER_DEVBOX_ENV_LIST="prod stage dev"
 
 # List of files to symlink based on environment
-export DOCKER_DEVBOX_ENV_SYMLINKS="docker-compose.override.yml{{#if mapserverContainer}} .docker/mapserver/mapserver.map{{/if}}"
+export DOCKER_DEVBOX_ENV_SYMLINKS="{{envFiles}}"
 
 # List of directories containing *.mo.* files to pass through mo templating.
 # Directories ending with "[*]" will be processed recursively.
-export DOCKER_DEVBOX_MO_DIRS="$DOCKER_DEVBOX_DIR/.docker[*]"
+export DOCKER_DEVBOX_MO_DIRS="{{moDirectories}}"
 
 ###########################################
 # Global variables for .bash_enter script #

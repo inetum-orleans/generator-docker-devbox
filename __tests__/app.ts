@@ -1,4 +1,4 @@
-import * as assertYo from 'yeoman-assert'
+import * as assert from 'yeoman-assert'
 import * as helpers from 'yeoman-test'
 import AppGenerator from '../generators/app'
 
@@ -7,19 +7,19 @@ const path = require('path')
 describe('generator-docker-devbox:app', () => {
 
   describe('Default answers', () => {
-    beforeAll(async () => {
-      const dir = await helpers.run(AppGenerator, {
-        resolved: require.resolve(path.join(__dirname, '../generators/app/index.js')),
+    beforeAll(() => {
+      return helpers.run(AppGenerator, {
+        resolved: require.resolve(path.join(__dirname, '../generators/app')),
         namespace: 'generator-docker-devbox:app'
-      }).inTmpDir().toPromise()
+      }).toPromise()
     })
 
-    it('should have SmartCD entrypoint files', async () => {
-      assertYo.file('.bash_enter')
+    it('should have SmartCD entrypoint files', () => {
+      assert.file('.bash_enter')
     })
 
     it('should have default .bin scripts', () => {
-      assertYo.file([
+      assert.file([
         '.bin/dc',
         '.bin/system',
         '.bin/yo',
@@ -28,7 +28,7 @@ describe('generator-docker-devbox:app', () => {
     })
 
     it('should have default .bash_enter.d scripts', () => {
-      assertYo.file([
+      assert.file([
         '.bash_enter.d/01-env',
         '.bash_enter.d/03-functions',
         '.bash_enter.d/05-variables',
@@ -44,7 +44,7 @@ describe('generator-docker-devbox:app', () => {
     })
 
     it('should have default .bash_leave.d scripts', () => {
-      assertYo.file([
+      assert.file([
         '.bash_leave.d/01-env',
         '.bash_leave.d/90-cleanup-path',
         '.bash_leave.d/95-cleanup-variables'

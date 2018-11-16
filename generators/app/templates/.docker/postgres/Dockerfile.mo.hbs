@@ -2,9 +2,9 @@ FROM postgres:{{postgresVersion}}
 {{#if authorName}}LABEL maintainer="{{authorName}}{{#if authorEmail}} <{{authorEmail}}>{{/if}}"{{/if}}
 
 RUN apt-get update \
-      && apt-get install -y --no-install-recommends \
-           postgresql \
-      && rm -rf /var/lib/apt/lists/*
+&& apt-get install -y --no-install-recommends \
+postgresql \
+&& rm -rf /var/lib/apt/lists/*
 
 # Mount this volume to help loading/exporting dumps
 RUN mkdir /workdir

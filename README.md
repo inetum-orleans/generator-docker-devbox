@@ -1,7 +1,7 @@
 # generator-docker-devbox
 
-![npm](https://img.shields.io/npm/v/@gfi-centre-ouest/generator-docker-devbox.svg)
-![Build Status](https://img.shields.io/travis/gfi-centre-ouest/generator-docker-devbox.svg)
+[![npm](https://img.shields.io/npm/v/@gfi-centre-ouest/generator-docker-devbox.svg)](https://www.npmjs.com/package/@gfi-centre-ouest/generator-docker-devbox)
+[![Build Status](https://img.shields.io/travis/gfi-centre-ouest/generator-docker-devbox.svg)](https://travis-ci.org/gfi-centre-ouest/generator-docker-devbox)
 
 > Yeoman Generator for dockerized development environment.
 

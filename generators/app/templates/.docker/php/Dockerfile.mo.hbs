@@ -23,22 +23,22 @@ RUN apt-get update -y && apt-get install -y libldap2-dev && rm -rf /var/lib/apt/
 RUN docker-php-ext-install zip
 
 {{#if dbContainer ~}}
-{{#eq dbImage 'postgres' ~}}
-# PDO PostgreSQL
-RUN apt-get update -y && apt-get install -y libpq-dev && rm -rf /var/lib/apt/lists/* \
-&& docker-php-ext-install pdo pdo_pgsql
-{{/eq ~}}
+  {{#eq dbImage 'postgres' ~}}
+    # PDO PostgreSQL
+    RUN apt-get update -y && apt-get install -y libpq-dev && rm -rf /var/lib/apt/lists/* \
+    && docker-php-ext-install pdo pdo_pgsql
+  {{/eq ~}}
 
-{{#eq dbImage 'mysql' ~}}
-# PDO mysql
-RUN docker-php-ext-install pdo pdo_mysql
-{{/eq ~}}
+  {{#eq dbImage 'mysql' ~}}
+    # PDO mysql
+    RUN docker-php-ext-install pdo pdo_mysql
+  {{/eq ~}}
 {{/if}}
 
 RUN yes | pecl install xdebug{{#eq phpVersion '5.6'}}-2.5.5{{/eq}} \
-    && echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" > /usr/local/etc/php/conf.d/xdebug.ini \
-    && echo "xdebug.remote_enable=on" >> /usr/local/etc/php/conf.d/xdebug.ini \
-    && echo "xdebug.remote_autostart=off" >> /usr/local/etc/php/conf.d/xdebug.ini
+&& echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" > /usr/local/etc/php/conf.d/xdebug.ini \
+&& echo "xdebug.remote_enable=on" >> /usr/local/etc/php/conf.d/xdebug.ini \
+&& echo "xdebug.remote_autostart=off" >> /usr/local/etc/php/conf.d/xdebug.ini
 
 # Enable Apache modules
 RUN a2enmod rewrite
@@ -65,8 +65,8 @@ ENV COMPOSER_ALLOW_SUPERUSER 1
 
 # Setup the Composer installer
 RUN curl -o /tmp/composer-setup.php https://getcomposer.org/installer \
-  && curl -o /tmp/composer-setup.sig https://composer.github.io/installer.sig \
-  && php -r "if (hash('SHA384', file_get_contents('/tmp/composer-setup.php')) !== trim(file_get_contents('/tmp/composer-setup.sig'))) { unlink('/tmp/composer-setup.php'); echo 'Invalid installer' . PHP_EOL; exit(1); }"
+&& curl -o /tmp/composer-setup.sig https://composer.github.io/installer.sig \
+&& php -r "if (hash('SHA384', file_get_contents('/tmp/composer-setup.php')) !== trim(file_get_contents('/tmp/composer-setup.sig'))) { unlink('/tmp/composer-setup.php'); echo 'Invalid installer' . PHP_EOL; exit(1); }"
 
 # Install Composer
 RUN php /tmp/composer-setup.php --no-ansi --install-dir=/usr/local/bin --filename=composer --snapshot && rm -rf /tmp/composer-setup.php
@@ -79,31 +79,31 @@ RUN composer config -g github-oauth.github.com db14c113decece351f1e20cf012ce0b3c
 RUN composer global require hirak/prestissimo
 
 {{#if drupalInit ~}}
-# Download drupalconsole
-RUN curl https://drupalconsole.com/installer -L -o drupal.phar
+  # Download drupalconsole
+  RUN curl https://drupalconsole.com/installer -L -o drupal.phar
 
-# Install drupalconsole
-RUN mv drupal.phar /usr/local/bin/drupal && \
-    chmod +x /usr/local/bin/drupal
+  # Install drupalconsole
+  RUN mv drupal.phar /usr/local/bin/drupal && \
+  chmod +x /usr/local/bin/drupal
 
 {{/if}}
 {{#if dbContainer ~}}
-{{#eq dbImage 'postgres' ~}}
-# PSQL Client for drush commands
-RUN apt-get update -y && apt-get install -y gnupg && rm -rf /var/lib/apt/lists/*
-RUN curl https://www.postgresql.org/media/keys/ACCC4CF8.asc -L | apt-key add -
-RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ stretch-pgdg main" >> /etc/apt/sources.list.d/postgresql.list
-RUN apt-get update -y && apt-get install -y postgresql-client-9.6 && rm -rf /var/lib/apt/lists/*
+  {{#eq dbImage 'postgres' ~}}
+    # PSQL Client for drush commands
+    RUN apt-get update -y && apt-get install -y gnupg && rm -rf /var/lib/apt/lists/*
+    RUN curl https://www.postgresql.org/media/keys/ACCC4CF8.asc -L | apt-key add -
+    RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ stretch-pgdg main" >> /etc/apt/sources.list.d/postgresql.list
+    RUN apt-get update -y && apt-get install -y postgresql-client-9.6 && rm -rf /var/lib/apt/lists/*
 
-ENV PGPASSFILE=/.pgpass
-COPY php/.pgpass /.pgpass
-RUN chmod 600 /.pgpass
-{{/eq ~}}
+    ENV PGPASSFILE=/.pgpass
+    COPY php/.pgpass /.pgpass
+    RUN chmod 600 /.pgpass
+  {{/eq ~}}
 
-{{#eq dbImage 'mysql' ~}}
-# MySQL Client for drush commands
-RUN apt-get update -y && apt-get install -y mysql-client && rm -rf /var/lib/apt/lists/*
-{{/eq ~}}
+  {{#eq dbImage 'mysql' ~}}
+    # MySQL Client for drush commands
+    RUN apt-get update -y && apt-get install -y mysql-client && rm -rf /var/lib/apt/lists/*
+  {{/eq ~}}
 {{/if}}
 
 # wkhtmltopdf
@@ -114,9 +114,9 @@ RUN rm -Rf wkhtmltox
 RUN apt-get update -y && apt-get install -y libxrender1 libfontconfig1 && rm -rf /var/lib/apt/lists/*
 
 {{#if mailcatcherContainer ~}}
-# Configure PHP mail with mailcatcher
-RUN apt-get update -y && apt-get install -y ssmtp && rm -rf /var/lib/apt/lists/*
-RUN echo "FromLineOverride=YES" >> /etc/ssmtp/ssmtp.conf && \
+  # Configure PHP mail with mailcatcher
+  RUN apt-get update -y && apt-get install -y ssmtp && rm -rf /var/lib/apt/lists/*
+  RUN echo "FromLineOverride=YES" >> /etc/ssmtp/ssmtp.conf && \
   echo "mailhub=mailcatcher" >> /etc/ssmtp/ssmtp.conf && \
   echo 'sendmail_path = "/usr/sbin/ssmtp -t"' > /usr/local/etc/php/conf.d/mail.ini
 {{/if}}

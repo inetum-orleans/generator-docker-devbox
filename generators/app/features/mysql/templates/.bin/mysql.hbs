@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+#TODO: This won't work ... Check postgreSQL script for example
+dc exec --user root {{service.name}} mysql -u{{projectName}} -p "$@"
