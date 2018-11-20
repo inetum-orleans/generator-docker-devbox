@@ -1,24 +1,39 @@
-import { DefaultFeature, Feature, FeatureContext } from '../feature'
-import { DockerComposeFeature } from '../docker'
+import { DefaultFeature, DockerComposeFeature, Feature, FeatureAsyncInit, FeatureContext } from '../feature'
 import { ConfigBuilder } from '@gfi-centre-ouest/docker-compose-builder'
 import * as Generator from 'yeoman-generator'
+import { RegistryClient } from '../../docker/registry'
 
-export class MySQL extends DefaultFeature implements Feature, DockerComposeFeature<MySQL> {
+export class MySQL extends DefaultFeature implements Feature, DockerComposeFeature<MySQL>, FeatureAsyncInit {
   name: string = 'mysql'
   label: string = 'MySQL'
   serviceName: string = 'db'
   directory: string = __dirname
   duplicateAllowed: boolean = true
 
-  questions? (): Generator.Questions {
-    return [{
-      type: 'list',
-      name: 'mysqlVersion',
-      message: 'MySQL Version',
-      choices: ['5.7', '5.6', '5.5'],
-      default: '5.7',
-      store: true
-    }]
+  asyncQuestions!: Generator.Questions
+
+  async initAsync () {
+    const registry = new RegistryClient()
+    const allTags = await registry.tagsList('mysql')
+
+    const tags = allTags
+      .filter(tag => /^\d+\.\d$/.test(tag))
+      .reverse()
+
+    this.asyncQuestions = [
+      {
+        type: 'list',
+        name: 'mysqlVersion',
+        message: 'MySQL version',
+        choices: tags,
+        default: tags[0],
+        store: true
+      }
+    ]
+  }
+
+  questions (): Generator.Questions {
+    return this.asyncQuestions
   }
 
   dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<MySQL>, dev?: boolean): void {

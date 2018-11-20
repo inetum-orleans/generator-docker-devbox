@@ -1,24 +1,43 @@
 import * as Generator from 'yeoman-generator'
-import { DefaultFeature, FeatureContext } from '../feature'
+import { DefaultFeature, DockerComposeFeature, FeatureAsyncInit, FeatureContext } from '../feature'
 import { ConfigBuilder } from '@gfi-centre-ouest/docker-compose-builder'
-import { DockerComposeFeature, DockerDevboxExt } from '../docker'
+import { DockerDevboxExt } from '../../docker'
+import { RegistryClient } from '../../docker/registry'
 
-export class PhpApache extends DefaultFeature implements DockerComposeFeature<PhpApache> {
+export class PhpApache extends DefaultFeature implements DockerComposeFeature<PhpApache>, FeatureAsyncInit {
   name: string = 'php-apache'
   label: string = 'Apache with PHP'
   serviceName: string = 'web'
   directory: string = __dirname
   duplicateAllowed: boolean = true
 
-  questions? (): Generator.Questions {
-    return [{
-      type: 'list',
-      name: 'phpVersion',
-      message: 'PHP Version',
-      choices: ['7.2', '7.1', '7.0', '5.6'],
-      default: '7.2',
-      store: true
-    }]
+  asyncQuestions!: Generator.Questions
+
+  async initAsync () {
+    const registry = new RegistryClient()
+    const allTags = await registry.tagsList('php')
+
+    const tags = allTags
+      .filter(tag => /-apache$/.test(tag))
+      .filter(tag => /^\d+\.\d+-/.test(tag))
+      .filter(tag => !/-rc.*/.test(tag))
+      .map(tag => tag.substring(0, tag.length - '-apache'.length))
+      .reverse()
+
+    this.asyncQuestions = [
+      {
+        type: 'list',
+        name: 'phpVersion',
+        message: 'PHP version',
+        choices: tags,
+        default: tags[0],
+        store: true
+      }
+    ]
+  }
+
+  questions (): Generator.Questions {
+    return this.asyncQuestions
   }
 
   dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<PhpApache>, dev?: boolean): void {

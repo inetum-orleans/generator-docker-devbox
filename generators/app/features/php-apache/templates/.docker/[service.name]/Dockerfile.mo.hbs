@@ -1,4 +1,4 @@
-FROM php:{{phpVersion}}-apache
+FROM php:{{tag}}
 {{#if authorName}}LABEL maintainer="{{authorName}}{{#if authorEmail}} <{{authorEmail}}>{{/if}}"{{/if}}
 
 \{{#DOCKER_DEVBOX_CA_CERTIFICATES}}

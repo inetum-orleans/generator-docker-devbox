@@ -6,11 +6,6 @@ import {
   ServiceBuilder,
   Version
 } from '@gfi-centre-ouest/docker-compose-builder'
-import { Feature, FeatureContext } from './feature'
-
-export interface DockerComposeFeature<F extends Feature> {
-  dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<F>, dev?: boolean): void
-}
 
 export class DockerDevboxConfigBuilderOptions extends DefaultConfigBuilderOptions {
   user: string = '${USER_ID}'

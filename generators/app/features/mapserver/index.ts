@@ -1,13 +1,41 @@
-import { DefaultFeature, FeatureContext } from '../feature'
-import { DockerComposeFeature, DockerDevboxExt } from '../docker'
+import { DefaultFeature, DockerComposeFeature, FeatureAsyncInit, FeatureContext } from '../feature'
 import { ConfigBuilder } from '@gfi-centre-ouest/docker-compose-builder'
+import { DockerDevboxExt } from '../../docker'
+import * as Generator from "yeoman-generator"
+import { RegistryClient } from '../../docker/registry'
 
-export class Mapserver extends DefaultFeature implements DockerComposeFeature<Mapserver> {
+export class Mapserver extends DefaultFeature implements DockerComposeFeature<Mapserver>, FeatureAsyncInit {
   name: string = 'mapserver'
   label: string = 'Mapserver'
   serviceName: string = 'mapserver'
   directory: string = __dirname
   duplicateAllowed: boolean = true
+
+  asyncQuestions!: Generator.Questions
+
+  async initAsync () {
+    const registry = new RegistryClient()
+    const allTags = await registry.tagsList('camptocamp/mapserver')
+
+    const tags = allTags
+      .filter(tag => /^\d+\.\d$/.test(tag))
+      .reverse()
+
+    this.asyncQuestions = [
+      {
+        type: 'list',
+        name: 'mapserverVersion',
+        message: 'Mapserver version',
+        choices: tags,
+        default: tags[0],
+        store: true
+      }
+    ]
+  }
+
+  questions (): Generator.Questions {
+    return this.asyncQuestions
+  }
 
   envFiles (context: FeatureContext<Mapserver>): string[] {
     return [`.docker/${context.service.name}/mapserver.map`]

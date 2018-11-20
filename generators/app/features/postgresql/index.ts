@@ -1,24 +1,39 @@
-import { DefaultFeature, Feature, FeatureContext } from '../feature'
-import { DockerComposeFeature } from '../docker'
+import { DefaultFeature, DockerComposeFeature, Feature, FeatureAsyncInit, FeatureContext } from '../feature'
 import { ConfigBuilder } from '@gfi-centre-ouest/docker-compose-builder'
 import * as Generator from 'yeoman-generator'
+import { RegistryClient } from '../../docker/registry'
 
-export class Postgres extends DefaultFeature implements Feature, DockerComposeFeature<Postgres> {
+export class Postgres extends DefaultFeature implements Feature, DockerComposeFeature<Postgres>, FeatureAsyncInit {
   name: string = 'postgresql'
   label: string = 'PostgreSQL'
   serviceName: string = 'db'
   directory: string = __dirname
   duplicateAllowed: boolean = true
 
-  questions? (): Generator.Questions {
-    return [{
-      type: 'list',
-      name: 'postgresVersion',
-      message: 'PostgreSQL Version',
-      choices: ['10.0', '9.6', '9.5', '9.4', '9.3'],
-      default: '9.6',
-      store: true
-    }]
+  asyncQuestions!: Generator.Questions
+
+  async initAsync () {
+    const registry = new RegistryClient()
+    const allTags = await registry.tagsList('postgres')
+
+    const tags = allTags
+      .filter(tag => /^\d+\.\d+$/.test(tag))
+      .reverse()
+
+    this.asyncQuestions = [
+      {
+        type: 'list',
+        name: 'postgresVersion',
+        message: 'PostgreSQL version',
+        choices: tags,
+        default: tags[0],
+        store: true
+      }
+    ]
+  }
+
+  questions () {
+    return this.asyncQuestions
   }
 
   dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<Postgres>, dev?: boolean): void {

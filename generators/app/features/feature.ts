@@ -3,6 +3,7 @@ import * as Generator from 'yeoman-generator'
 import { AnswersMain } from '..'
 import * as path from 'path'
 import { Templating } from '../templating'
+import { ConfigBuilder } from '@gfi-centre-ouest/docker-compose-builder'
 
 export interface Service<F extends Feature> {
   name: string
@@ -12,6 +13,14 @@ export interface Service<F extends Feature> {
 
 export interface FeatureContext<F extends Feature> extends AnswersMain, Generator.Answers {
   service: Service<F>
+}
+
+export interface DockerComposeFeature<F extends Feature> {
+  dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<F>, dev?: boolean): void
+}
+
+export interface FeatureAsyncInit {
+  initAsync (): Promise<void>
 }
 
 export interface Feature {
@@ -25,6 +34,7 @@ export interface Feature {
   appendFiles?: (string | RegExp)[]
 
   moDirectories? (context: FeatureContext<this>): string[]
+
   envFiles? (context: FeatureContext<this>): string[]
 
   /**
@@ -53,6 +63,7 @@ export abstract class DefaultFeature implements Feature {
   abstract label: string
   abstract serviceName?: string
   abstract directory: string
+
   excludeFiles?: (string | RegExp)[] = []
   appendFiles?: (string | RegExp)[] = ['.gitignore.hbs']
 

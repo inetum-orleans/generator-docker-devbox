@@ -2,9 +2,9 @@ import * as Generator from 'yeoman-generator'
 import { Templating } from './templating'
 import { ChoiceType } from 'inquirer'
 import { features } from './features'
-import { Feature, FeatureContext, Service } from './features/feature'
+import { DockerComposeFeature, Feature, FeatureAsyncInit, FeatureContext, Service } from './features/feature'
 import { newBuilder, Version } from '@gfi-centre-ouest/docker-compose-builder'
-import { DockerComposeFeature, DockerDevboxConfigBuilderOptions } from './features/docker'
+import { DockerDevboxConfigBuilderOptions } from './docker'
 import * as yaml from 'js-yaml'
 
 require('source-map-support').install()
@@ -60,13 +60,29 @@ export default class AppGenerator extends Generator {
 
     const rawAnswersFeatures: RawAnswersFeatures[] = []
 
+    const initializedFeatures: Feature[] = []
+
     let featuresGroup = 0
     while (true) {
       let answersFeatures = await this._promptFeatures(featuresGroup, rawAnswersFeatures)
 
+      const initFeaturesPromises: Promise<void>[] = []
+
       if (answersFeatures[`features~${featuresGroup}`]) {
         for (const feature of features) {
-          if (answersFeatures[`features~${featuresGroup}`].indexOf(feature.name) > -1 && feature.questions) {
+          const featureAsyncInit = (feature as unknown as FeatureAsyncInit)
+          if (featureAsyncInit.initAsync &&
+            answersFeatures[`features~${featuresGroup}`].indexOf(feature.name) > -1 &&
+            initializedFeatures.indexOf(feature) === -1) {
+            initFeaturesPromises.push(featureAsyncInit.initAsync())
+            initializedFeatures.push(feature)
+          }
+        }
+
+        await Promise.all(initFeaturesPromises)
+
+        for (const feature of features) {
+          if (feature.questions && answersFeatures[`features~${featuresGroup}`].indexOf(feature.name) > -1) {
             const featureQuestions = feature.questions()
             if (featureQuestions) {
               this._applyFeatureToQuestions(feature, featuresGroup, featureQuestions)

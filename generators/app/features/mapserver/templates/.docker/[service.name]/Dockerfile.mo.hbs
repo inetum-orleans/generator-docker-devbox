@@ -1,4 +1,4 @@
-FROM camptocamp/mapserver:7.0
+FROM camptocamp/mapserver:{{mapserverVersion}}
 {{#if authorName}}LABEL maintainer="{{authorName}}{{#if authorEmail}} <{{authorEmail}}>{{/if}}"{{/if}}
 
 VOLUME /etc/mapserver/

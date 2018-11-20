@@ -1,5 +1,4 @@
-import { DefaultFeature, Feature, FeatureContext } from '../feature'
-import { DockerComposeFeature } from '../docker'
+import { DefaultFeature, DockerComposeFeature, Feature, FeatureContext } from '../feature'
 import { ConfigBuilder } from '@gfi-centre-ouest/docker-compose-builder'
 
 export class SonarScanner extends DefaultFeature implements Feature, DockerComposeFeature<SonarScanner> {
