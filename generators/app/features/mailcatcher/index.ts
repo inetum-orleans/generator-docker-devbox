@@ -1,6 +1,7 @@
-import { DefaultFeature, DockerComposeFeature, FeatureContext } from '../feature'
+import { DefaultFeature, DockerComposeFeature } from '../feature'
 import { ConfigBuilder } from '@gfi-centre-ouest/docker-compose-builder'
 import { DockerDevboxExt } from '../../docker'
+import { FeatureContext } from '../../index'
 
 export class Mailcatcher extends DefaultFeature implements DockerComposeFeature<Mailcatcher> {
   name: string = 'mailcatcher'

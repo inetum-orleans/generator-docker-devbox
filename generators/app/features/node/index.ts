@@ -1,7 +1,8 @@
-import { DefaultFeature, DockerComposeFeature, Feature, FeatureAsyncInit, FeatureContext } from '../feature'
+import { DefaultFeature, DockerComposeFeature, Feature, FeatureAsyncInit } from '../feature'
 import { ConfigBuilder } from '@gfi-centre-ouest/docker-compose-builder'
-import * as Generator from "yeoman-generator"
+import * as Generator from 'yeoman-generator'
 import { RegistryClient } from '../../docker/registry'
+import { FeatureContext } from '../../index'
 
 export class Node extends DefaultFeature implements Feature, DockerComposeFeature<Node>, FeatureAsyncInit {
   name: string = 'node'

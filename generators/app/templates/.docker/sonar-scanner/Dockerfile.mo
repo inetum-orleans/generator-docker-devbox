@@ -1,5 +1,5 @@
 FROM newtmitch/sonar-scanner:3.2.0-alpine
-LABEL maintainer="Rémi Alvergnat <remi.alvergnat@gfi.fr>"
+{{#if authorName}}LABEL maintainer="{{authorName}}{{#if authorEmail}} <{{authorEmail}}>{{/if}}"{{/if}}
 
 {{#DOCKER_DEVBOX_CA_CERTIFICATES}}
 COPY .ca-certificates/* /usr/local/share/ca-certificates/

@@ -14,12 +14,15 @@ export interface BulkOptions {
   filepathDestinationTransformer?: (filepath: string) => string
 }
 
+/**
+ * Templating support for the generator.
+ */
 export class Templating {
-  private handlebars: typeof Handlebars
-  private handlebarsHelpers: any
+  handlebars: typeof Handlebars
+  handlebarsHelpers: { [name: string]: Handlebars.HelperDelegate }
 
   constructor (private fs: Generator.MemFsEditor,
-               private destinationRoot: string) {
+               public destinationRoot: string) {
     this.handlebars = Handlebars.create()
     this.handlebarsHelpers = handlebarsHelpers({ handlebars: this.handlebars })
   }
@@ -79,7 +82,6 @@ export class Templating {
   }
 
   copy (from: string, to: string, context: any, handlebarsOptions?: CompileOptions | RuntimeOptions, copyOptions?: CopyOptions) {
-    assert(this.fs.exists(from), 'Trying to copy from a source that does not exist: ' + from)
     to = this.removeTemplateExtension(to)
 
     this.fs.copy(
@@ -89,8 +91,7 @@ export class Templating {
     )
   }
 
-  write (from: string, to: string, context: any, handlebarsOptions?: CompileOptions) {
-    assert(this.fs.exists(from), 'Trying to write from a source that does not exist: ' + from)
+  copySingle (from: string, to: string, context: any, handlebarsOptions?: CompileOptions) {
     to = this.removeTemplateExtension(to)
 
     const fromContent = this.fs.read(from)
@@ -100,14 +101,13 @@ export class Templating {
 
   append (from: string, to: string, context: any, handlebarsOptions?: CompileOptions) {
     if (this.fs.exists(to)) {
-      assert(this.fs.exists(from), 'Trying to append from a source that does not exist: ' + from)
       to = this.removeTemplateExtension(to)
 
       const fromContent = this.fs.read(from)
       const renderedContent = this.render(fromContent, context, from, handlebarsOptions)
       this.fs.append(to, renderedContent)
     } else {
-      this.write(from, to, context, handlebarsOptions)
+      this.copySingle(from, to, context, handlebarsOptions)
     }
   }
 
@@ -144,7 +144,7 @@ export class Templating {
         if (append) {
           this.append(absoluteFromFilepath, absoluteToFilepath, context)
         } else {
-          this.write(absoluteFromFilepath, absoluteToFilepath, context)
+          this.copySingle(absoluteFromFilepath, absoluteToFilepath, context)
         }
       }
     }

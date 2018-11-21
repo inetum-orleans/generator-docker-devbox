@@ -1,8 +1,9 @@
-import { DefaultFeature, DockerComposeFeature, FeatureAsyncInit, FeatureContext } from '../feature'
+import { DefaultFeature, DockerComposeFeature, FeatureAsyncInit } from '../feature'
 import { ConfigBuilder } from '@gfi-centre-ouest/docker-compose-builder'
 import { DockerDevboxExt } from '../../docker'
-import * as Generator from "yeoman-generator"
+import * as Generator from 'yeoman-generator'
 import { RegistryClient } from '../../docker/registry'
+import { FeatureContext } from '../../index'
 
 export class Mapserver extends DefaultFeature implements DockerComposeFeature<Mapserver>, FeatureAsyncInit {
   name: string = 'mapserver'

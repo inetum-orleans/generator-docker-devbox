@@ -2,10 +2,11 @@ import * as Generator from 'yeoman-generator'
 import { Templating } from './templating'
 import { ChoiceType } from 'inquirer'
 import { features } from './features'
-import { DockerComposeFeature, Feature, FeatureAsyncInit, FeatureContext, Service } from './features/feature'
+import { DockerComposeFeature, Feature, FeatureAsyncInit, Service } from './features/feature'
 import { newBuilder, Version } from '@gfi-centre-ouest/docker-compose-builder'
 import { DockerDevboxConfigBuilderOptions } from './docker'
 import * as yaml from 'js-yaml'
+import { Helpers } from './helpers'
 
 require('source-map-support').install()
 
@@ -32,17 +33,27 @@ export interface AnswersMain extends AnswersStart, AnswersEnd {
   features: AnswersFeatures[]
 }
 
+export interface FeatureContext<F extends Feature> extends AnswersMain, Generator.Answers {
+  group: AnswersFeatures
+  service: Service<F>
+}
+
 export type AnswersFeatures = { [featureId: string]: AnswersFeature }
 
 export type AnswersFeature = Generator.Answers
 
+/**
+ * Main generator class, asks questions, read features and write project.
+ */
 export default class AppGenerator extends Generator {
   answersMain!: AnswersMain
   templating: Templating
+  helpers: Helpers
 
   constructor (args: string | string[], options: {}) {
     super(args, options)
     this.templating = new Templating(this.fs, this.destinationRoot())
+    this.helpers = new Helpers(this)
   }
 
   paths () {
@@ -161,11 +172,12 @@ export default class AppGenerator extends Generator {
 
         const context: FeatureContext<typeof feature> = {
           ...this.answersMain,
+          group: answersFeatures,
           ...answersFeatures[featureId],
           service
         }
 
-        feature.write(this.templating, context)
+        feature.write(this.templating, this.helpers, context)
 
         if (feature.envFiles) {
           envFiles.push(...feature.envFiles(context))

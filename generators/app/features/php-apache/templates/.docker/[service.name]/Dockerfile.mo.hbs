@@ -1,4 +1,4 @@
-FROM php:{{tag}}
+FROM php:{{phpVersion}}-apache
 {{#if authorName}}LABEL maintainer="{{authorName}}{{#if authorEmail}} <{{authorEmail}}>{{/if}}"{{/if}}
 
 \{{#DOCKER_DEVBOX_CA_CERTIFICATES}}
@@ -22,18 +22,16 @@ RUN apt-get update -y && apt-get install -y libldap2-dev && rm -rf /var/lib/apt/
 # Zip
 RUN docker-php-ext-install zip
 
-{{#if dbContainer ~}}
-  {{#eq dbImage 'postgres' ~}}
-    # PDO PostgreSQL
-    RUN apt-get update -y && apt-get install -y libpq-dev && rm -rf /var/lib/apt/lists/* \
-    && docker-php-ext-install pdo pdo_pgsql
-  {{/eq ~}}
+{{#hasFeature 'postgresql'}}
+# PDO PostgreSQL
+RUN apt-get update -y && apt-get install -y libpq-dev && rm -rf /var/lib/apt/lists/* \
+&& docker-php-ext-install pdo pdo_pgsql
+{{/hasFeature}}
 
-  {{#eq dbImage 'mysql' ~}}
-    # PDO mysql
-    RUN docker-php-ext-install pdo pdo_mysql
-  {{/eq ~}}
-{{/if}}
+{{#hasFeature 'mysql'}}
+# PDO mysql
+RUN docker-php-ext-install pdo pdo_mysql
+{{/hasFeature}}
 
 RUN yes | pecl install xdebug{{#eq phpVersion '5.6'}}-2.5.5{{/eq}} \
 && echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" > /usr/local/etc/php/conf.d/xdebug.ini \
@@ -78,33 +76,31 @@ RUN composer config -g github-oauth.github.com db14c113decece351f1e20cf012ce0b3c
 # Install prestissimo
 RUN composer global require hirak/prestissimo
 
-{{#if drupalInit ~}}
-  # Download drupalconsole
-  RUN curl https://drupalconsole.com/installer -L -o drupal.phar
+{{#hasFeature drupalInit ~}}
+# Download drupalconsole
+RUN curl https://drupalconsole.com/installer -L -o drupal.phar
 
-  # Install drupalconsole
-  RUN mv drupal.phar /usr/local/bin/drupal && \
-  chmod +x /usr/local/bin/drupal
+# Install drupalconsole
+RUN mv drupal.phar /usr/local/bin/drupal && \
+chmod +x /usr/local/bin/drupal
+{{/hasFeature}}
 
-{{/if}}
-{{#if dbContainer ~}}
-  {{#eq dbImage 'postgres' ~}}
-    # PSQL Client for drush commands
-    RUN apt-get update -y && apt-get install -y gnupg && rm -rf /var/lib/apt/lists/*
-    RUN curl https://www.postgresql.org/media/keys/ACCC4CF8.asc -L | apt-key add -
-    RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ stretch-pgdg main" >> /etc/apt/sources.list.d/postgresql.list
-    RUN apt-get update -y && apt-get install -y postgresql-client-9.6 && rm -rf /var/lib/apt/lists/*
+{{#hasFeature 'postgresql' ~}}
+# PSQL Client for drush commands
+RUN apt-get update -y && apt-get install -y gnupg && rm -rf /var/lib/apt/lists/*
+RUN curl https://www.postgresql.org/media/keys/ACCC4CF8.asc -L | apt-key add -
+RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ stretch-pgdg main" >> /etc/apt/sources.list.d/postgresql.list
+RUN apt-get update -y && apt-get install -y postgresql-client-9.6 && rm -rf /var/lib/apt/lists/*
 
-    ENV PGPASSFILE=/.pgpass
-    COPY {{service.name}}/.pgpass /.pgpass
-    RUN chmod 600 /.pgpass
-  {{/eq ~}}
+ENV PGPASSFILE=/.pgpass
+COPY {{service.name}}/.pgpass /.pgpass
+RUN chmod 600 /.pgpass
+{{/hasFeature}}
 
-  {{#eq dbImage 'mysql' ~}}
-    # MySQL Client for drush commands
-    RUN apt-get update -y && apt-get install -y mysql-client && rm -rf /var/lib/apt/lists/*
-  {{/eq ~}}
-{{/if}}
+{{#hasFeature 'mysql' ~}}
+# MySQL Client for drush commands
+RUN apt-get update -y && apt-get install -y mysql-client && rm -rf /var/lib/apt/lists/*
+{{/hasFeature}}
 
 # wkhtmltopdf
 RUN curl -LO https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.4/wkhtmltox-0.12.4_linux-generic-amd64.tar.xz
@@ -113,13 +109,13 @@ RUN cp wkhtmltox/bin/* /usr/bin/
 RUN rm -Rf wkhtmltox
 RUN apt-get update -y && apt-get install -y libxrender1 libfontconfig1 && rm -rf /var/lib/apt/lists/*
 
-{{#if mailcatcherContainer ~}}
-  # Configure PHP mail with mailcatcher
-  RUN apt-get update -y && apt-get install -y ssmtp && rm -rf /var/lib/apt/lists/*
-  RUN echo "FromLineOverride=YES" >> /etc/ssmtp/ssmtp.conf && \
-  echo "mailhub=mailcatcher" >> /etc/ssmtp/ssmtp.conf && \
-  echo 'sendmail_path = "/usr/sbin/ssmtp -t"' > /usr/local/etc/php/conf.d/mail.ini
-{{/if}}
+{{#hasFeature 'mailcatcher' ~}}
+# Configure PHP mail with mailcatcher
+RUN apt-get update -y && apt-get install -y ssmtp && rm -rf /var/lib/apt/lists/*
+RUN echo "FromLineOverride=YES" >> /etc/ssmtp/ssmtp.conf && \
+echo "mailhub=mailcatcher" >> /etc/ssmtp/ssmtp.conf && \
+echo 'sendmail_path = "/usr/sbin/ssmtp -t"' > /usr/local/etc/php/conf.d/mail.ini
+{{/hasFeature}}
 
 RUN echo "memory_limit = -1" > /usr/local/etc/php/conf.d/memory.ini
 

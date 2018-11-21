@@ -1,18 +1,15 @@
 import { ChoiceType } from 'inquirer'
 import * as Generator from 'yeoman-generator'
-import { AnswersMain } from '..'
+import { FeatureContext } from '..'
 import * as path from 'path'
 import { Templating } from '../templating'
 import { ConfigBuilder } from '@gfi-centre-ouest/docker-compose-builder'
+import { Helpers } from '../helpers'
 
 export interface Service<F extends Feature> {
   name: string
   filepathDestinationTransformer?: (filepath: string) => string
   feature: F
-}
-
-export interface FeatureContext<F extends Feature> extends AnswersMain, Generator.Answers {
-  service: Service<F>
 }
 
 export interface DockerComposeFeature<F extends Feature> {
@@ -53,9 +50,10 @@ export interface Feature {
    * Write files related to this feature.
    *
    * @param templating
+   * @param helpers
    * @param context
    */
-  write (templating: Templating, context: FeatureContext<this>): void
+  write (templating: Templating, helpers: Helpers, context: FeatureContext<this>): void
 }
 
 export abstract class DefaultFeature implements Feature {
@@ -126,7 +124,7 @@ export abstract class DefaultFeature implements Feature {
     return ['**']
   }
 
-  write (templating: Templating, context: FeatureContext<this>) {
+  write (templating: Templating, helpers: Helpers, context: FeatureContext<this>) {
     templating.bulk(this.files(context), context, {
       excludeFiles: this.excludeFiles,
       appendFiles: this.appendFiles,

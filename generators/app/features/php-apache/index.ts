@@ -1,8 +1,12 @@
 import * as Generator from 'yeoman-generator'
-import { DefaultFeature, DockerComposeFeature, FeatureAsyncInit, FeatureContext } from '../feature'
+import { DefaultFeature, DockerComposeFeature, FeatureAsyncInit } from '../feature'
 import { ConfigBuilder } from '@gfi-centre-ouest/docker-compose-builder'
 import { DockerDevboxExt } from '../../docker'
 import { RegistryClient } from '../../docker/registry'
+import { Templating } from '../../templating'
+import * as path from 'path'
+import { Helpers } from '../../helpers'
+import { FeatureContext } from '../../index'
 
 export class PhpApache extends DefaultFeature implements DockerComposeFeature<PhpApache>, FeatureAsyncInit {
   name: string = 'php-apache'
@@ -50,6 +54,18 @@ export class PhpApache extends DefaultFeature implements DockerComposeFeature<Ph
     } else {
       builder.service(context.service.name)
         .ext(DockerDevboxExt).nginxProxy().xdebug()
+    }
+  }
+
+  write (templating: Templating, helpers: Helpers, context: FeatureContext<this>) {
+    super.write(templating, helpers, context)
+
+    if (helpers.hasFeature('postgresql', context)) {
+      templating.copySingle(
+        path.join(this.directory, '..', 'postgresql/templates/.docker/[service.name]/.pgpass.hbs'),
+        path.join(templating.destinationRoot, '.docker', context.service.name, '.pgpass.hbs'),
+        context
+      )
     }
   }
 }

@@ -5,9 +5,8 @@ import AppGenerator from '../generators/app'
 const path = require('path')
 
 describe('generator-docker-devbox:app', () => {
-
   describe('Default answers', () => {
-    beforeAll(() => {
+    beforeAll(async () => {
       return helpers.run(AppGenerator, {
         resolved: require.resolve(path.join(__dirname, '../generators/app')),
         namespace: 'generator-docker-devbox:app'
@@ -49,6 +48,42 @@ describe('generator-docker-devbox:app', () => {
         '.bash_leave.d/90-cleanup-path',
         '.bash_leave.d/95-cleanup-variables'
       ])
+    })
+  })
+
+  describe('single group, apache-php', () => {
+    beforeAll(async () => {
+      return helpers.run(AppGenerator, {
+        resolved: require.resolve(path.join(__dirname, '../generators/app')),
+        namespace: 'generator-docker-devbox:app'
+      }).withPrompts({
+        'features~0': [
+          'php-apache'
+        ]
+      }).toPromise()
+    })
+
+    it('should not have .pgpass file in web service', () => {
+      assert.noFile('.docker/web/.pgpass')
+    })
+  })
+
+  describe('single group, apache-php + postgres', () => {
+    beforeAll(async () => {
+      return helpers.run(AppGenerator, {
+        resolved: require.resolve(path.join(__dirname, '../generators/app')),
+        namespace: 'generator-docker-devbox:app'
+      }).withPrompts({
+        'features~0': [
+          'php-apache',
+          'postgresql'
+        ]
+      }).toPromise()
+    })
+
+    it('should have .pgpass file in db and web services', () => {
+      assert.file('.docker/db/.pgpass')
+      assert.file('.docker/web/.pgpass')
     })
   })
 })
