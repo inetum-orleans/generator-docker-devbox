@@ -49,10 +49,12 @@ export class Phing extends DefaultFeature implements Feature, DockerComposeFeatu
       // TODO: DOCKER_COMPOSE_VERSION: ${DOCKER_COMPOSE_VERSION}
         .env('COMPOSE_PROJECT_DIR', '${COMPOSE_PROJECT_DIR}')
         .env('BUILD_WORKING_DIR', '/app')
+        .arg('DOCKER_VERSION', '${DOCKER_VERSION}')
+        .arg('DOCKER_COMPOSE_VERSION', '${DOCKER_COMPOSE_VERSION}')
         .assign({ privileged: true, working_dir: '/app', entrypoint: '/bin/true' })
         .volume.project('/app')
         .volume.project(`${context.service.name}-cache`, '/home/node/.cache')
-        .volume.named('/var/run/docker.sock', '/var/run/docker.sock')
+        .volume.add('/var/run/docker.sock', '/var/run/docker.sock')
     }
   }
 }
