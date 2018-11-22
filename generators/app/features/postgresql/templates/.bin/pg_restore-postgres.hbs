@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-run --user postgres --workdir="$(_docker_devbox_map_workdir "/workdir")" db pg_restore -h {{service.name}} -U postgres -d {{projectName}} "$@"
+run --user postgres --workdir="$(_docker_devbox_map_workdir "/workdir")" db pg_restore --dbname=postgres://{{projectName}}:{{projectName}}@{{service.name}}/{{projectName}} "$@"

@@ -56,16 +56,4 @@ export class PhpApache extends DefaultFeature implements DockerComposeFeature<Ph
         .ext(DockerDevboxExt).nginxProxy().xdebug()
     }
   }
-
-  write (templating: Templating, helpers: Helpers, context: FeatureContext<this>) {
-    super.write(templating, helpers, context)
-
-    if (helpers.hasFeature('postgresql', context)) {
-      templating.copySingle(
-        path.join(this.directory, '..', 'postgresql/templates/.docker/[service.name]/.pgpass.hbs'),
-        path.join(templating.destinationRoot, '.docker', context.service.name, '.pgpass.hbs'),
-        context
-      )
-    }
-  }
 }

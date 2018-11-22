@@ -63,8 +63,9 @@ describe('generator-docker-devbox:app', () => {
       }).toPromise()
     })
 
-    it('should not have .pgpass file in web service', () => {
-      assert.noFile('.docker/web/.pgpass')
+    it('should have Dockerfile.mo in web service', () => {
+      assert.file('.docker/web/Dockerfile.mo')
+      assert.noFile('.docker/db/Dockerfile.mo')
     })
   })
 
@@ -81,9 +82,9 @@ describe('generator-docker-devbox:app', () => {
       }).toPromise()
     })
 
-    it('should have .pgpass file in db and web services', () => {
-      assert.file('.docker/db/.pgpass')
-      assert.file('.docker/web/.pgpass')
+    it('should have Dockerfile.mo in db and web services', () => {
+      assert.file('.docker/db/Dockerfile.mo')
+      assert.file('.docker/web/Dockerfile.mo')
     })
   })
 })

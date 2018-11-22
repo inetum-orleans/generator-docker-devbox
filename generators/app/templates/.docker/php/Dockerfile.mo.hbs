@@ -94,10 +94,6 @@ RUN composer global require hirak/prestissimo
     RUN curl https://www.postgresql.org/media/keys/ACCC4CF8.asc -L | apt-key add -
     RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ stretch-pgdg main" >> /etc/apt/sources.list.d/postgresql.list
     RUN apt-get update -y && apt-get install -y postgresql-client-9.6 && rm -rf /var/lib/apt/lists/*
-
-    ENV PGPASSFILE=/.pgpass
-    COPY php/.pgpass /.pgpass
-    RUN chmod 600 /.pgpass
   {{/eq ~}}
 
   {{#eq dbImage 'mysql' ~}}

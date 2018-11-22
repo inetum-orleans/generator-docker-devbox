@@ -10,10 +10,5 @@ postgresql \
 RUN mkdir /workdir
 VOLUME /workdir
 
-ENV PGPASSFILE=/.pgpass
-COPY {{service.name}}/.pgpass /.pgpass
-RUN chmod 600 /.pgpass
-
 # Fix permissions to match host user
 RUN usermod -u ${HOST_UID:-1000} postgres && groupmod -g ${HOST_GID:-1000} postgres
-RUN chown postgres /.pgpass

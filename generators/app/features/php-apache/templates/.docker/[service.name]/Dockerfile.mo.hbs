@@ -91,10 +91,6 @@ RUN apt-get update -y && apt-get install -y gnupg && rm -rf /var/lib/apt/lists/*
 RUN curl https://www.postgresql.org/media/keys/ACCC4CF8.asc -L | apt-key add -
 RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ stretch-pgdg main" >> /etc/apt/sources.list.d/postgresql.list
 RUN apt-get update -y && apt-get install -y postgresql-client-9.6 && rm -rf /var/lib/apt/lists/*
-
-ENV PGPASSFILE=/.pgpass
-COPY {{service.name}}/.pgpass /.pgpass
-RUN chmod 600 /.pgpass
 {{/hasFeature}}
 
 {{#hasFeature 'mysql' ~}}
@@ -117,15 +113,7 @@ echo "mailhub=mailcatcher" >> /etc/ssmtp/ssmtp.conf && \
 echo 'sendmail_path = "/usr/sbin/ssmtp -t"' > /usr/local/etc/php/conf.d/mail.ini
 {{/hasFeature}}
 
-RUN echo "memory_limit = -1" > /usr/local/etc/php/conf.d/memory.ini
-
-RUN echo "upload_max_filesize = 10M" > /usr/local/etc/php/conf.d/upload.ini
-RUN echo "post_max_size = 10M" >> /usr/local/etc/php/conf.d/upload.ini
-
-RUN echo "error_log = /dev/stderr" > /usr/local/etc/php/conf.d/logs.ini
-RUN echo "log_errors = On" >> /usr/local/etc/php/conf.d/logs.ini
-
-RUN echo "error_reporting = E_ALL" >> /usr/local/etc/php/conf.d/logs.ini
+COPY {{service.name}}/conf.d/* /usr/local/etc/php/conf.d/
 
 # Fix write permissions on Linux/Mac
 RUN usermod -u ${HOST_UID:-1000} www-data
