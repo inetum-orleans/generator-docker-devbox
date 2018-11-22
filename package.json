@@ -13,7 +13,7 @@
   ],
   "main": "generators/index.js",
   "scripts": {
-    "lint": "tslint --project tsconfig.json -t codeFrame 'generators/**/*.ts' '__tests__/**/*.ts'",
+    "lint": "tslint --project tsconfig.json -t codeFrame 'generators/**/*.ts' '__tests__/**/*.ts' '__tests__/**/*.ts'",
     "clean": "del-cli 'generators/**/*.js' 'generators/**/*.js.map' '!generators/**/templates/**/*'",
     "prebuild": "npm run clean",
     "build": "tsc",
@@ -21,7 +21,8 @@
     "start": "tsc -w",
     "test": "npm run build && jest --coverage --verbose --detectOpenHandles --forceExit",
     "test:watch": "jest --coverage --watch",
-    "test:prod": "npm run lint && npm run build && npm run test -- --no-cache",
+    "test:prod": "jest --coverage --verbose --forceExit --no-cache",
+    "test:docker": "jest --config jest.docker.config.js --runInBand --verbose --forceExit --no-cache",
     "release": "npm run lint && npm run build && npm run test && np"
   },
   "keywords": [

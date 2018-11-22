@@ -67,6 +67,11 @@ describe('generator-docker-devbox:app', () => {
       assert.file('.docker/web/Dockerfile.mo')
       assert.noFile('.docker/db/Dockerfile.mo')
     })
+
+    it('should have php and composer in .bin', () => {
+      assert.file('.bin/php')
+      assert.file('.bin/composer')
+    })
   })
 
   describe('single group, apache-php + postgres', () => {

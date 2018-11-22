@@ -39,6 +39,15 @@ Then you need run the project in watch mod for TypeScript sources to be compiled
 npm run start
 ```
 
+## Continuous integration on TravisCI
+
+Unit tests are executed after each push on [TravisCI](https://travis-ci.org/gfi-centre-ouest/generator-docker-devbox). 
+It runs for each supported Node version.
+
+Integration tests are runned after each push on a single node version. They checks that generated docker-compose 
+configuration are valids and docker images can build properly using latest versions of Docker and docker-compose.
+
+
 ## License
 
 MIT © [GFI Informatique](https://www.gfi.world/)
