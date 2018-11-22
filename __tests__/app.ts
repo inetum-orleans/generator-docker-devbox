@@ -7,7 +7,7 @@ const path = require('path')
 describe('generator-docker-devbox:app', () => {
   describe('Default answers', () => {
     beforeAll(async () => {
-      return helpers.run(AppGenerator, {
+      await helpers.run(AppGenerator, {
         resolved: require.resolve(path.join(__dirname, '../generators/app')),
         namespace: 'generator-docker-devbox:app'
       }).toPromise()
@@ -53,7 +53,7 @@ describe('generator-docker-devbox:app', () => {
 
   describe('single group, apache-php', () => {
     beforeAll(async () => {
-      return helpers.run(AppGenerator, {
+      await helpers.run(AppGenerator, {
         resolved: require.resolve(path.join(__dirname, '../generators/app')),
         namespace: 'generator-docker-devbox:app'
       }).withPrompts({
@@ -71,7 +71,7 @@ describe('generator-docker-devbox:app', () => {
 
   describe('single group, apache-php + postgres', () => {
     beforeAll(async () => {
-      return helpers.run(AppGenerator, {
+      await helpers.run(AppGenerator, {
         resolved: require.resolve(path.join(__dirname, '../generators/app')),
         namespace: 'generator-docker-devbox:app'
       }).withPrompts({

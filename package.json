@@ -19,7 +19,7 @@
     "build": "tsc",
     "prestart": "npm run clean",
     "start": "tsc -w",
-    "test": "npm run build && jest --coverage --verbose",
+    "test": "npm run build && jest --coverage --verbose --detectOpenHandles --forceExit",
     "test:watch": "jest --coverage --watch",
     "test:prod": "npm run lint && npm run build && npm run test -- --no-cache",
     "release": "npm run lint && npm run build && npm run test && np"
