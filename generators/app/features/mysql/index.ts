@@ -11,7 +11,7 @@ export class MySQL extends DefaultFeature implements Feature, DockerComposeFeatu
   directory: string = __dirname
   duplicateAllowed: boolean = true
 
-  asyncQuestions!: Generator.Questions
+  asyncQuestions!: Generator.Question[]
 
   async initAsync () {
     const registry = new RegistryClient()

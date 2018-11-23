@@ -3,9 +3,6 @@ import { DefaultFeature, DockerComposeFeature, FeatureAsyncInit } from '../featu
 import { ConfigBuilder } from '@gfi-centre-ouest/docker-compose-builder'
 import { DockerDevboxExt } from '../../docker'
 import { RegistryClient } from '../../docker/registry'
-import { Templating } from '../../templating'
-import * as path from 'path'
-import { Helpers } from '../../helpers'
 import { FeatureContext } from '../../index'
 
 export class PhpApache extends DefaultFeature implements DockerComposeFeature<PhpApache>, FeatureAsyncInit {
@@ -15,7 +12,7 @@ export class PhpApache extends DefaultFeature implements DockerComposeFeature<Ph
   directory: string = __dirname
   duplicateAllowed: boolean = true
 
-  asyncQuestions!: Generator.Questions
+  asyncQuestions!: Generator.Question[]
 
   async initAsync () {
     const registry = new RegistryClient()
@@ -41,7 +38,32 @@ export class PhpApache extends DefaultFeature implements DockerComposeFeature<Ph
   }
 
   questions (): Generator.Questions {
-    return this.asyncQuestions
+    return [...this.asyncQuestions,
+      {
+        type: 'checkbox',
+        name: 'phpExtensions',
+        message: 'PHP Extensions',
+        choices: ['xdebug', 'gd', 'opcache', 'ldap', 'zip'],
+        default: ['xdebug'],
+        store: true
+      },
+      {
+        type: 'checkbox',
+        name: 'phpTools',
+        message: 'PHP Tools',
+        choices: ['composer', 'wkhtmltopdf'],
+        default: ['composer'],
+        store: true
+      },
+      {
+        type: 'checkbox',
+        name: 'apacheExtensions',
+        message: 'Apache Extensions',
+        choices: ['rewrite', 'proxy-http'],
+        default: ['rewrite'],
+        store: true
+      }
+    ]
   }
 
   dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<PhpApache>, dev?: boolean): void {

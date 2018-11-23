@@ -3,7 +3,6 @@ import * as Handlebars from 'handlebars'
 import * as handlebarsHelpers from 'handlebars-helpers'
 import * as Generator from 'yeoman-generator'
 import * as Mustache from 'mustache'
-import * as assert from 'assert'
 import * as glob from 'glob'
 
 const path = require('path')
@@ -57,9 +56,8 @@ export class Templating {
   }
 
   renderHandlebars (input: string, context: any, handlebarsOptions?: CompileOptions | RuntimeOptions): string {
-    const precompiledTemplate = (this.handlebars.parse as any)(input, handlebarsOptions)
-    const template = this.handlebars.compile(precompiledTemplate, handlebarsOptions)
-    return template(context)
+    const template = this.handlebars.compile(input, handlebarsOptions)
+    return template(context, handlebarsOptions)
   }
 
   renderMustache (input: string, context: any, tags?: string[]): string {

@@ -11,7 +11,7 @@ export class Phing extends DefaultFeature implements Feature, DockerComposeFeatu
   directory: string = __dirname
   duplicateAllowed: boolean = false
 
-  asyncQuestions!: Generator.Questions
+  asyncQuestions!: Generator.Question[]
 
   async initAsync () {
     const registry = new RegistryClient()
@@ -44,9 +44,6 @@ export class Phing extends DefaultFeature implements Feature, DockerComposeFeatu
     if (!dev) {
       builder.service(context.service.name)
         .with.default()
-      // TODO: build args:
-      // TODO: DOCKER_VERSION: ${DOCKER_VERSION}
-      // TODO: DOCKER_COMPOSE_VERSION: ${DOCKER_COMPOSE_VERSION}
         .env('COMPOSE_PROJECT_DIR', '${COMPOSE_PROJECT_DIR}')
         .env('BUILD_WORKING_DIR', '/app')
         .arg('DOCKER_VERSION', '${DOCKER_VERSION}')

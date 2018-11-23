@@ -10,7 +10,8 @@ describe('generator-docker-devbox:app', () => {
       await helpers.run(AppGenerator, {
         resolved: require.resolve(path.join(__dirname, '../generators/app')),
         namespace: 'generator-docker-devbox:app'
-      }).toPromise()
+      }).withArguments('bash-disabled')
+        .toPromise()
     })
 
     it('should have SmartCD entrypoint files', () => {
@@ -56,7 +57,8 @@ describe('generator-docker-devbox:app', () => {
       await helpers.run(AppGenerator, {
         resolved: require.resolve(path.join(__dirname, '../generators/app')),
         namespace: 'generator-docker-devbox:app'
-      }).withPrompts({
+      }).withArguments('bash-disabled')
+        .withPrompts({
         'features~0': [
           'php-apache'
         ]
@@ -79,7 +81,8 @@ describe('generator-docker-devbox:app', () => {
       await helpers.run(AppGenerator, {
         resolved: require.resolve(path.join(__dirname, '../generators/app')),
         namespace: 'generator-docker-devbox:app'
-      }).withPrompts({
+      }).withArguments('bash-disabled')
+        .withPrompts({
         'features~0': [
           'php-apache',
           'postgresql'

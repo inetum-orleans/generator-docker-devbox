@@ -3,16 +3,18 @@ import { Templating } from './templating'
 import { ChoiceType } from 'inquirer'
 import { features } from './features'
 import { DockerComposeFeature, Feature, FeatureAsyncInit, Service } from './features/feature'
-import { newBuilder, Version } from '@gfi-centre-ouest/docker-compose-builder'
-import { DockerDevboxConfigBuilderOptions } from './docker'
-import * as yaml from 'js-yaml'
 import { Helpers } from './helpers'
 
-require('source-map-support').install()
+import 'source-map-support/register'
+import { spawn } from 'child_process'
+import { DockerDevboxConfigBuilderOptions } from './docker'
+import { newBuilder, Version } from '@gfi-centre-ouest/docker-compose-builder'
+import * as yaml from 'js-yaml'
 
-const path = require('path')
+import * as path from 'path'
 
-const chalk = require('chalk')
+import chalk from 'chalk'
+
 const yosay = require('yosay')
 
 interface AnswersStart extends Generator.Answers {
@@ -35,6 +37,7 @@ export interface AnswersMain extends AnswersStart, AnswersEnd {
 
 export interface FeatureContext<F extends Feature> extends AnswersMain, Generator.Answers {
   group: AnswersFeatures
+  options: { [name: string]: any }
   service: Service<F>
 }
 
@@ -54,166 +57,36 @@ export default class AppGenerator extends Generator {
     super(args, options)
     this.templating = new Templating(this.fs, this.destinationRoot())
     this.helpers = new Helpers(this)
+
+    this.argument('bash-disabled', {
+      default: false,
+      description: 'Disable execution of bash scripts at the end of the generation to initialize environment.'
+    })
   }
 
-  paths () {
-    // It seems yeoman can't setup sourceRoot automatically, don't know why :(
-    this.sourceRoot(path.join(__dirname, 'templates'))
-  }
+  private async _bash (cmd: string) {
+    const process = spawn('bash', ['-c', cmd])
 
-  async prompting () {
-    // Have Yeoman greet the user.
-    this.log(
-      yosay('Welcome to the epic ' + chalk.red('@gfi-centre-ouest/docker-devbox') + ' generator!')
-    )
+    return new Promise((resolve, reject) => {
+      process.stdout.on('data', (data: any) => {
+        const line = chalk.gray(`${data}`.trimRight())
+        this.log(line)
+      })
 
-    const answersStart = await this._promptStart()
+      process.stderr.on('data', (data: any) => {
+        const line = chalk.red(`${data}`.trimRight())
+        this.log(line)
+      })
 
-    const rawAnswersFeatures: RawAnswersFeatures[] = []
-
-    const initializedFeatures: Feature[] = []
-
-    let featuresGroup = 0
-    while (true) {
-      let answersFeatures = await this._promptFeatures(featuresGroup, rawAnswersFeatures)
-
-      const initFeaturesPromises: Promise<void>[] = []
-
-      if (answersFeatures[`features~${featuresGroup}`]) {
-        for (const feature of features) {
-          const featureAsyncInit = (feature as unknown as FeatureAsyncInit)
-          if (featureAsyncInit.initAsync &&
-            answersFeatures[`features~${featuresGroup}`].indexOf(feature.name) > -1 &&
-            initializedFeatures.indexOf(feature) === -1) {
-            initFeaturesPromises.push(featureAsyncInit.initAsync())
-            initializedFeatures.push(feature)
-          }
+      process.on('close', (code: number) => {
+        process.kill()
+        if (code) {
+          console.error(`process exited with code ${code}`)
+          reject(code)
+        } else {
+          resolve(code)
         }
-
-        await Promise.all(initFeaturesPromises)
-
-        for (const feature of features) {
-          if (feature.questions && answersFeatures[`features~${featuresGroup}`].indexOf(feature.name) > -1) {
-            const featureQuestions = feature.questions()
-            if (featureQuestions) {
-              this._applyFeatureToQuestions(feature, featuresGroup, featureQuestions)
-              const featureAnswers = await this.prompt(featureQuestions)
-              Object.assign(answersFeatures, featureAnswers)
-            }
-          }
-        }
-
-        rawAnswersFeatures.push(answersFeatures)
-
-        const answersMore = await this.prompt({
-          type: 'confirm',
-          name: `features~${featuresGroup}~more`,
-          default: false,
-          message: 'Do you need to duplicate some features ?',
-          store: true
-        })
-
-        if (!answersMore[`features~${featuresGroup}~more`]) {
-          break
-        }
-
-        featuresGroup++
-      } else {
-        break
-      }
-    }
-
-    const answersEnd = await this._promptEnd()
-
-    featuresGroup = 0
-    const allAnswersFeatures: AnswersFeatures[] = []
-    for (const answersFeatures of rawAnswersFeatures) {
-      const groupAnswersFeature: AnswersFeatures = {}
-      for (const feature of features) {
-        if (answersFeatures[`features~${featuresGroup}`].indexOf(feature.name) > -1) {
-          const answersFeature: AnswersFeature = {}
-          for (const key of Object.keys(answersFeatures)) {
-            if (key.indexOf(`features~${featuresGroup}~${feature.name}~`) === 0) {
-              const properKey = key.substr(`features~${featuresGroup}~${feature.name}~`.length, key.length)
-              answersFeature[properKey] = answersFeatures[key]
-            }
-          }
-          groupAnswersFeature[feature.name] = answersFeature
-        }
-      }
-      allAnswersFeatures.push(groupAnswersFeature)
-      featuresGroup++
-    }
-
-    this.answersMain = { ...answersStart, ...answersEnd, features: allAnswersFeatures }
-  }
-
-  async write () {
-    const featureById: { [featureId: string]: Feature } = {}
-
-    for (const feature of features) {
-      featureById[feature.name] = feature
-    }
-
-    const envFiles: string[] = ['docker-compose.override.yml']
-    const moDirectories: string[] = ['$DOCKER_DEVBOX_DIR/.docker[*]']
-
-    const builderOptions = new DockerDevboxConfigBuilderOptions()
-
-    const composeBuilder = newBuilder({ version: Version.v22 }, builderOptions)
-    const composeDevBuilder = newBuilder({ version: Version.v22 }, builderOptions)
-
-    let servicesByName: { [name: string]: Service<any> } = {}
-    for (const answersFeatures of this.answersMain.features) {
-      for (const featureId of Object.keys(answersFeatures)) {
-        const feature = featureById[featureId]
-        const service = feature.service(servicesByName)
-        servicesByName[service.name] = service
-
-        const context: FeatureContext<typeof feature> = {
-          ...this.answersMain,
-          group: answersFeatures,
-          ...answersFeatures[featureId],
-          service
-        }
-
-        feature.write(this.templating, this.helpers, context)
-
-        if (feature.envFiles) {
-          envFiles.push(...feature.envFiles(context))
-        }
-        if (feature.moDirectories) {
-          moDirectories.push(...feature.moDirectories(context))
-        }
-
-        const dockerComposeFeature = feature as unknown as DockerComposeFeature<typeof feature>
-
-        if (dockerComposeFeature.dockerComposeConfiguration) {
-          dockerComposeFeature.dockerComposeConfiguration(composeBuilder, context)
-          dockerComposeFeature.dockerComposeConfiguration(composeDevBuilder, context, true)
-        }
-      }
-    }
-
-    const composeYaml = yaml.dump(composeBuilder.get(), { lineWidth: 9999 })
-    const composeDevYaml = yaml.dump(composeDevBuilder.get(), { lineWidth: 9999 })
-
-    const composeYamlRendered = this.templating.renderHandlebars(composeYaml, this.answersMain)
-    const composeDevYamlRendered = this.templating.renderHandlebars(composeDevYaml, this.answersMain)
-
-    this.fs.write('docker-compose.yml', composeYamlRendered)
-    this.fs.write('docker-compose.override.dev.yml', composeDevYamlRendered)
-
-    const defaultIncludes = [
-      '*',
-      '.bin/dc', '.bin/run', '.bin/system', '.bin/yo', '.bin/mo',
-      '**/*.d/*'
-    ]
-
-    this.templating.bulk(defaultIncludes, {
-      ...this.answersMain,
-      envFiles: envFiles.join(' '),
-      moDirectories: moDirectories.join(' ')
+      })
     })
   }
 
@@ -311,5 +184,203 @@ export default class AppGenerator extends Generator {
     } else if ((questions as Generator.Question).message) {
       this._applyFeatureToQuestion(feature, featuresGroup, questions as Generator.Question)
     }
+  }
+
+  paths () {
+    // It seems yeoman can't setup sourceRoot automatically, don't know why :(
+    this.sourceRoot(path.join(__dirname, 'templates'))
+  }
+
+  async prompting () {
+    this.log(
+      yosay('Welcome to the epic ' + chalk.red('@gfi-centre-ouest/docker-devbox') + ' generator!')
+    )
+
+    const answersStart = await this._promptStart()
+
+    const rawAnswersFeatures: RawAnswersFeatures[] = []
+
+    const initializedFeatures: Feature[] = []
+
+    let featuresGroup = 0
+    while (true) {
+      let answersFeatures = await this._promptFeatures(featuresGroup, rawAnswersFeatures)
+
+      const initFeaturesPromises: Promise<void>[] = []
+
+      if (answersFeatures[`features~${featuresGroup}`]) {
+        for (const feature of features) {
+          const featureAsyncInit = (feature as unknown as FeatureAsyncInit)
+          if (featureAsyncInit.initAsync &&
+            answersFeatures[`features~${featuresGroup}`].indexOf(feature.name) > -1 &&
+            initializedFeatures.indexOf(feature) === -1) {
+            initFeaturesPromises.push(featureAsyncInit.initAsync())
+            initializedFeatures.push(feature)
+          }
+        }
+
+        await Promise.all(initFeaturesPromises)
+
+        for (const feature of features) {
+          if (feature.questions && answersFeatures[`features~${featuresGroup}`].indexOf(feature.name) > -1) {
+            const featureQuestions = feature.questions()
+            if (featureQuestions) {
+              this._applyFeatureToQuestions(feature, featuresGroup, featureQuestions)
+              const featureAnswers = await this.prompt(featureQuestions)
+              Object.assign(answersFeatures, featureAnswers)
+            }
+          }
+        }
+
+        rawAnswersFeatures.push(answersFeatures)
+
+        const answersMore = await this.prompt({
+          type: 'confirm',
+          name: `features~${featuresGroup}~more`,
+          default: false,
+          message: 'Do you need to duplicate some features ?',
+          store: true
+        })
+
+        if (!answersMore[`features~${featuresGroup}~more`]) {
+          break
+        }
+
+        featuresGroup++
+      } else {
+        break
+      }
+    }
+
+    const answersEnd = await this._promptEnd()
+
+    featuresGroup = 0
+    const allAnswersFeatures: AnswersFeatures[] = []
+    for (const answersFeatures of rawAnswersFeatures) {
+      const groupAnswersFeature: AnswersFeatures = {}
+      for (const feature of features) {
+        if (answersFeatures[`features~${featuresGroup}`].indexOf(feature.name) > -1) {
+          const answersFeature: AnswersFeature = {}
+          for (const key of Object.keys(answersFeatures)) {
+            if (key.indexOf(`features~${featuresGroup}~${feature.name}~`) === 0) {
+              const properKey = key.substr(`features~${featuresGroup}~${feature.name}~`.length, key.length)
+              answersFeature[properKey] = answersFeatures[key]
+            }
+          }
+          groupAnswersFeature[feature.name] = answersFeature
+        }
+      }
+      allAnswersFeatures.push(groupAnswersFeature)
+      featuresGroup++
+    }
+
+    this.answersMain = { ...answersStart, ...answersEnd, features: allAnswersFeatures }
+  }
+
+  writeAll () {
+    const featureById: { [featureId: string]: Feature } = {}
+
+    for (const feature of features) {
+      featureById[feature.name] = feature
+    }
+
+    const envFiles: string[] = ['docker-compose.override.yml']
+    const moDirectories: string[] = ['$DOCKER_DEVBOX_DIR/.docker[*]']
+
+    const builderOptions = new DockerDevboxConfigBuilderOptions()
+
+    const composeBuilder = newBuilder({ version: Version.v22 }, builderOptions)
+    const composeDevBuilder = newBuilder({ version: Version.v22 }, builderOptions)
+
+    let servicesByName: { [name: string]: Service<any> } = {}
+    for (const answersFeatures of this.answersMain.features) {
+      for (const featureId of Object.keys(answersFeatures)) {
+        const feature = featureById[featureId]
+        const service = feature.service(servicesByName)
+        servicesByName[service.name] = service
+
+        const context: FeatureContext<typeof feature> = {
+          ...this.answersMain,
+          options: this.options,
+          group: answersFeatures,
+          ...answersFeatures[featureId],
+          service
+        }
+
+        feature.write(this.templating, this.helpers, context)
+
+        if (feature.envFiles) {
+          envFiles.push(...feature.envFiles(context))
+        }
+        if (feature.moDirectories) {
+          moDirectories.push(...feature.moDirectories(context))
+        }
+
+        const dockerComposeFeature = feature as unknown as DockerComposeFeature<typeof feature>
+
+        if (dockerComposeFeature.dockerComposeConfiguration) {
+          dockerComposeFeature.dockerComposeConfiguration(composeBuilder, context)
+          dockerComposeFeature.dockerComposeConfiguration(composeDevBuilder, context, true)
+        }
+      }
+    }
+
+    const composeYaml = yaml.dump(composeBuilder.get(), { lineWidth: 9999 })
+    const composeDevYaml = yaml.dump(composeDevBuilder.get(), { lineWidth: 9999 })
+
+    const composeYamlRendered = this.templating.renderHandlebars(composeYaml, this.answersMain)
+    const composeDevYamlRendered = this.templating.renderHandlebars(composeDevYaml, this.answersMain)
+
+    this.fs.write('docker-compose.yml', composeYamlRendered)
+    this.fs.write('docker-compose.override.dev.yml', composeDevYamlRendered)
+
+    const defaultIncludes = [
+      '*',
+      '.bin/dc', '.bin/run', '.bin/system', '.bin/yo', '.bin/mo',
+      '**/*.d/*'
+    ]
+
+    this.templating.bulk(defaultIncludes, {
+      ...this.answersMain,
+      envFiles: envFiles.join(' '),
+      moDirectories: moDirectories.join(' ')
+    })
+  }
+
+  async end () {
+    this.log('')
+    this.log(chalk.blue.bold('Initializing environment ...'))
+    this.log('')
+
+    this.log(chalk.cyan.bold('$ source .bash_leave'))
+    this.log('')
+
+    if (this.options['bash-disabled']) {
+      this.log(chalk.red('bash execution is disabled (bash-disabled argument). You should run the command manually'))
+    } else {
+      await this._bash('source .bash_leave')
+    }
+    this.log('')
+
+    this.log(chalk.cyan.bold('$ source .bash_enter'))
+    this.log('')
+
+    if (this.options['bash-disabled']) {
+      this.log(chalk.red('bash execution is disabled (bash-disabled argument). You should run the command manually.'))
+    } else {
+      await this._bash('source .bash_enter')
+    }
+
+    this.log('')
+
+    this.log(chalk.green.bold('🎉 Everything has been generated properly ! 🎉'))
+    this.log('')
+
+    this.log(
+      chalk.green.bold('You should now run ') +
+      chalk.cyan.bold('dc build') +
+      chalk.green.bold(' to build images and ') +
+      chalk.cyan.bold('dc up -d') +
+      chalk.green.bold(' to start containers.'))
   }
 }

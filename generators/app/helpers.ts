@@ -1,4 +1,5 @@
 import AppGenerator, { FeatureContext } from './index'
+import * as semver from 'semver'
 import HelperOptions = Handlebars.HelperOptions
 
 /**
@@ -16,6 +17,9 @@ export class Helpers {
     generator.templating.handlebars.registerHelper('hasFeatureInGroup', function (this: any, featureId: string, options: HelperOptions) {
       return self.hasFeatureInGroup(featureId, options.data.root) ? options.fn(this) : options.inverse(this)
     })
+    generator.templating.handlebars.registerHelper('semver', function (this: any, version: string, semverConstraint: string, options: HelperOptions) {
+      return self.semver(version, semverConstraint) ? options.fn(this) : options.inverse(this)
+    })
   }
 
   /**
@@ -24,7 +28,7 @@ export class Helpers {
    * @param featureId
    * @param context
    */
-  hasFeature (featureId: string, context: FeatureContext<any>) {
+  hasFeature (featureId: string, context: FeatureContext<any>): boolean {
     for (const answersFeature of context.features) {
       if (answersFeature[featureId]) {
         return true
@@ -39,7 +43,18 @@ export class Helpers {
    * @param featureId
    * @param context
    */
-  hasFeatureInGroup (featureId: string, context: FeatureContext<any>) {
-    return context.group[featureId]
+  hasFeatureInGroup (featureId: string, context: FeatureContext<any>): boolean {
+    return !!context.group[featureId]
+  }
+
+  /**
+   * Check if a semver constraint is satisfied by the given version.
+   *
+   * @param version
+   * @param semverConstraint
+   */
+  semver (version: string, semverConstraint: string): boolean {
+    const coercedVersion = semver.coerce(version)
+    return semver.satisfies(coercedVersion ? coercedVersion : version, semverConstraint, true)
   }
 }
