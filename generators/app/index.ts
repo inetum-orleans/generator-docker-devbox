@@ -360,10 +360,8 @@ export default class AppGenerator extends Generator {
     } else {
       await this._bash('source .bash_leave')
     }
-    this.log('')
 
     this.log(chalk.cyan.bold('$ source .bash_enter'))
-    this.log('')
 
     if (this.options['bash-disabled']) {
       this.log(chalk.red('bash execution is disabled (bash-disabled argument). You should run the command manually.'))
@@ -376,11 +374,29 @@ export default class AppGenerator extends Generator {
     this.log(chalk.green.bold('🎉 Everything has been generated properly ! 🎉'))
     this.log('')
 
-    this.log(
-      chalk.green.bold('You should now run ') +
+    this.log(chalk.green.bold('You should now run ') +
+      chalk.cyan.bold('source .bash_enter') +
+      chalk.green.bold(' to initialize the environment.')
+    )
+
+    this.log(chalk.cyan.bold('dc') +
+      chalk.green.bold(' is available as an alias for ') +
+      chalk.cyan.bold('docker-compose') +
+      chalk.green.bold('.')
+    )
+
+    this.log(chalk.cyan.bold('.bin') +
+      chalk.green.bold(' directory is registered in PATH to bring commands from docker containers right in your bash environment.')
+    )
+
+    this.log(chalk.green.bold('Run ') +
       chalk.cyan.bold('dc build') +
-      chalk.green.bold(' to build images and ') +
+      chalk.green.bold(' to build images, ') +
       chalk.cyan.bold('dc up -d') +
-      chalk.green.bold(' to start containers.'))
+      chalk.green.bold(' to start containers, ') +
+      chalk.cyan.bold('dc logs -f') +
+      chalk.green.bold(' to follow the container logs.'
+      )
+    )
   }
 }
