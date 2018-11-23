@@ -70,12 +70,12 @@ export default class AppGenerator extends Generator {
     return new Promise((resolve, reject) => {
       process.stdout.on('data', (data: any) => {
         const line = chalk.gray(`${data}`.trimRight())
-        this.log(line)
+        console.log(line)
       })
 
       process.stderr.on('data', (data: any) => {
         const line = chalk.red(`${data}`.trimRight())
-        this.log(line)
+        console.log(line)
       })
 
       process.on('close', (code: number) => {
@@ -349,53 +349,53 @@ export default class AppGenerator extends Generator {
 
   async end () {
     this.log('')
-    this.log(chalk.blue.bold('Initializing environment ...'))
+    this.log(chalk.bold.blue('Initializing environment ...'))
     this.log('')
 
-    this.log(chalk.cyan.bold('$ source .bash_leave'))
+    this.log(chalk.bold.cyan('$ . .bash_leave'))
     this.log('')
 
     if (this.options['bash-disabled']) {
       this.log(chalk.red('bash execution is disabled (bash-disabled argument). You should run the command manually'))
     } else {
-      await this._bash('source .bash_leave')
+      await this._bash('. .bash_leave')
     }
 
-    this.log(chalk.cyan.bold('$ source .bash_enter'))
+    this.log(chalk.bold.cyan('$ . .bash_enter'))
 
     if (this.options['bash-disabled']) {
       this.log(chalk.red('bash execution is disabled (bash-disabled argument). You should run the command manually.'))
     } else {
-      await this._bash('source .bash_enter')
+      await this._bash('. .bash_enter')
     }
 
     this.log('')
 
-    this.log(chalk.green.bold('🎉 Everything has been generated properly ! 🎉'))
+    this.log(chalk.bold.green('🎉 Everything has been generated properly ! 🎉'))
     this.log('')
 
-    this.log(chalk.green.bold('You should now run ') +
-      chalk.cyan.bold('source .bash_enter') +
-      chalk.green.bold(' to initialize the environment.')
+    this.log(chalk.green('You should now run ') +
+      chalk.bold.cyan('. .bash_enter') +
+      chalk.green(' to initialize the environment.')
     )
 
-    this.log(chalk.cyan.bold('dc') +
-      chalk.green.bold(' is available as an alias for ') +
-      chalk.cyan.bold('docker-compose') +
-      chalk.green.bold('.')
+    this.log(chalk.bold.cyan('dc') +
+      chalk.green(' is available as an alias for ') +
+      chalk.bold.cyan('docker-compose') +
+      chalk.green('.')
     )
 
-    this.log(chalk.cyan.bold('.bin') +
-      chalk.green.bold(' directory is registered in PATH to bring commands from docker containers right in your bash environment.')
+    this.log(chalk.bold.cyan('.bin') +
+      chalk.green(' directory is registered in PATH to bring commands from docker containers right in your bash environment.')
     )
 
-    this.log(chalk.green.bold('Run ') +
-      chalk.cyan.bold('dc build') +
-      chalk.green.bold(' to build images, ') +
-      chalk.cyan.bold('dc up -d') +
-      chalk.green.bold(' to start containers, ') +
-      chalk.cyan.bold('dc logs -f') +
-      chalk.green.bold(' to follow the container logs.'
+    this.log(chalk.green('Run ') +
+      chalk.bold.cyan('dc build') +
+      chalk.green(' to build images, ') +
+      chalk.bold.cyan('dc up -d') +
+      chalk.green(' to start containers, ') +
+      chalk.bold.cyan('dc logs -f') +
+      chalk.green(' to follow the container logs.'
       )
     )
   }

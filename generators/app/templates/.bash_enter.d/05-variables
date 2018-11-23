@@ -1,27 +1,39 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
-export USER_ID=$(id -u)
-export GROUP_ID=$(id -g)
-export USER_NAME=$(id -un)
-export GROUP_NAME=$(id -gn)
-export DOCKER_DEVBOX_IP=$(ip addr show dev docker0 | grep -o "inet [0-9]*\.[0-9]*\.[0-9]*\.[0-9]*" | grep -o "[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*")
-export HOST_IP=${HOST_IP-${DOCKER_DEVBOX_IP}}
+USER_ID=$(id -u)
+GROUP_ID=$(id -g)
+USER_NAME=$(id -un)
+GROUP_NAME=$(id -gn)
+DOCKER_DEVBOX_IP=$(ip addr show dev docker0 | grep -o "inet [0-9]*\.[0-9]*\.[0-9]*\.[0-9]*" | grep -o "[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*")
+HOST_IP=${HOST_IP-${DOCKER_DEVBOX_IP}}
 
+export USER_ID
+export GROUP_ID
+export USER_NAME
+export GROUP_NAME
+
+# shellcheck disable=SC2153
 export COMPOSE_PROJECT_DIR="$DOCKER_DEVBOX_DIR"
 
 if [ -z ${COMPOSE_PROJECT_NAME+x} ]; then
     # If COMPOSE_PROJECT_NAME is not defined, build it from directory name.
-    name=$(basename "${COMPOSE_PROJECT_DIR,,}")
-    export COMPOSE_PROJECT_NAME="${name//[ _.-]/}"
+    name=$(basename "${COMPOSE_PROJECT_DIR}")
+    COMPOSE_PROJECT_NAME=$(echo "$name" | sed -r "s/[ _.-]//g" | sed -r "s/.*/\L\0/g")
 fi
 
 if [ -z ${COMPOSE_NETWORK_NAME+x} ]; then
     # If COMPOSE_NETWORK_NAME is not defined, build it from project name.
-    export COMPOSE_NETWORK_NAME="$COMPOSE_PROJECT_NAME""_default"
+    COMPOSE_NETWORK_NAME="$COMPOSE_PROJECT_NAME""_default"
 fi
 
-export DOCKER_VERSION=$(docker --version | sed -rn "s/Docker version (.*?), build .*/\1/p")
-export DOCKER_COMPOSE_VERSION=$(docker-compose --version | sed -rn "s/docker-compose version (.*?), build .*/\1/p")
+export COMPOSE_PROJECT_NAME
+export COMPOSE_NETWORK_NAME
+
+DOCKER_VERSION=$(docker --version | sed -rn "s/Docker version (.*?), build .*/\1/p")
+DOCKER_COMPOSE_VERSION=$(docker-compose --version | sed -rn "s/docker-compose version (.*?), build .*/\1/p")
+
+export DOCKER_VERSION
+export DOCKER_COMPOSE_VERSION
 
 # Define DOCKER_DEVBOX_ENV to customize environment configuration files
 export DOCKER_DEVBOX_ENV="${DOCKER_DEVBOX_ENV:-dev}"

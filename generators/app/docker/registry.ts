@@ -56,7 +56,12 @@ export class RegistryClient {
       namespace = 'library'
     }
 
-    const response = await this.axios.get(`${namespace}/${image}/tags/list`)
-    return response.data.tags
+    try {
+      const response = await this.axios.get(`${namespace}/${image}/tags/list`)
+      return response.data.tags
+    } catch (e) {
+      throw new Error('Can\'t get tags list from docker registry: ' + e)
+    }
+
   }
 }

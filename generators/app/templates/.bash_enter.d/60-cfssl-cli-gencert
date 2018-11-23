@@ -1,14 +1,14 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
-CFSSL_CLI_EXE=$(which cfssl-cli)
+CFSSL_CLI_EXE=$(command -v cfssl-cli)
 CONFIG="$DOCKER_DEVBOX_DIR/.cfssl-cli/config.yml"
 DESTINATION="$DOCKER_DEVBOX_DIR/.nginx-proxy/certs"
 DESTINATION_CRT="$DESTINATION/${DOCKER_DEVBOX_DOMAIN_PREFIX}.${DOCKER_DEVBOX_DOMAIN}.crt"
 DESTINATION_KEY="$DESTINATION/${DOCKER_DEVBOX_DOMAIN_PREFIX}.${DOCKER_DEVBOX_DOMAIN}.key"
 
-if [ -f "$CFSSL_CLI_EXE" ] && ([ ! -f "$DESTINATION_CRT" ] || [ ! -f "$DESTINATION_KEY" ]); then
+if [ -f "$CFSSL_CLI_EXE" ] && { [ ! -f "$DESTINATION_CRT" ] || [ ! -f "$DESTINATION_KEY" ]; }; then
    mkdir -p "$DESTINATION"
 
-   echo "[60-cfssl-cli-gencert] Generating ssl certificates for ${DOCKER_DEVBOX_DOMAIN_PREFIX}.${DOCKER_DEVBOX_DOMAIN} domain with cfssl-cli"
-   cfssl-cli gencert --config "$CONFIG" --destination "$DESTINATION" ${DOCKER_DEVBOX_DOMAIN_PREFIX}.${DOCKER_DEVBOX_DOMAIN}
+   echo "Generating ssl certificates for ${DOCKER_DEVBOX_DOMAIN_PREFIX}.${DOCKER_DEVBOX_DOMAIN} domain with cfssl-cli"
+   cfssl-cli gencert --config "$CONFIG" --destination "$DESTINATION" "${DOCKER_DEVBOX_DOMAIN_PREFIX}.${DOCKER_DEVBOX_DOMAIN}"
 fi

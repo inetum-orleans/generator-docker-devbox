@@ -1,3 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
+. "$DOCKER_DEVBOX_DIR/.bash_enter.d/03-functions"
 
 run --user postgres --workdir="$(_docker_devbox_map_workdir "/workdir")" db pg_dump --dbname=postgres://{{projectName}}:{{projectName}}@{{service.name}}/{{projectName}} "$@"

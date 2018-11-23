@@ -1,12 +1,5 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
-remove_from_path() {
-   local p d
-   p=":$1:"
-   d=":$PATH:"
-   d=${d//$p/:}
-   d=${d/#:/}
-   PATH=${d/%:/}
-}
-remove_from_path "$DOCKER_DEVBOX_DIR/.bin"
-export PATH=$PATH
+PATH_ITEM="$DOCKER_DEVBOX_DIR/.bin"
+PATH=$(echo "$PATH" | sed -e "s;:\?$PATH_ITEM;;" -e "s;$PATH_ITEM:\?;;" | sed -e "s;:$;;" | sed -e "s;^:;;")
+export PATH

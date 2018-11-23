@@ -1,11 +1,11 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
 CA_CERTIFICATES_DIR="$DOCKER_DEVBOX_DIR/.docker/.ca-certificates"
 FILE_COUNT=0
 
-if [ ! -z "$DOCKER_DEVBOX_CA_CERTIFICATES" ]; then
-  rm -Rf "/$CA_CERTIFICATES_DIR"
-  mkdir -p "$CA_CERTIFICATES_DIR"
+if [ -n "$DOCKER_DEVBOX_CA_CERTIFICATES" ]; then
+  rm -Rf "/${CA_CERTIFICATES_DIR:?}"
+  mkdir -p "/${CA_CERTIFICATES_DIR:?}"
 
   rm -f "$CA_CERTIFICATES_DIR/.empty"
 
@@ -17,16 +17,16 @@ if [ ! -z "$DOCKER_DEVBOX_CA_CERTIFICATES" ]; then
     mv "$pem" "$CA_CERTIFICATES_DIR/$(basename "$pem" .pem).crt"
   done
 
-  if [ ! -z "$(ls -A "$CA_CERTIFICATES_DIR")" ]; then
+  if [ -n "$(ls -A "$CA_CERTIFICATES_DIR")" ]; then
     for cert in "$CA_CERTIFICATES_DIR"/*; do
-      echo "[50-ca-certificates] $(basename "$cert")"
+      basename "$cert"
       FILE_COUNT=$((FILE_COUNT+1))
     done
   fi
 
-  if [ "$FILE_COUNT" == "0" ]; then
-    echo "[50-ca-certificates] No certificates found at $DOCKER_DEVBOX_CA_CERTIFICATES"
-    echo "[50-ca-certificates] Creating .empty file"
+  if [ "$FILE_COUNT" -eq "0" ]; then
+    echo "No certificates found at $DOCKER_DEVBOX_CA_CERTIFICATES"
+    echo "Creating .empty file"
     touch "$CA_CERTIFICATES_DIR/.empty"
   fi
 fi

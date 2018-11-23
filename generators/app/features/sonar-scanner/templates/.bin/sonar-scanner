@@ -1,3 +1,6 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
+source "$DOCKER_DEVBOX_DIR/.bash_enter.d/03-functions"
+
+
 
 run --default-entrypoint {{service.name}} $@

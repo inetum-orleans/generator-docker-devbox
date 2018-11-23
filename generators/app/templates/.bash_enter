@@ -1,14 +1,17 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
-if [[ $(basename "$BASH_SOURCE") = .bash_enter ]]; then
-  DOCKER_DEVBOX_DIR=$(dirname "$BASH_SOURCE")
+if [ "$(basename "$0")" = .bash_enter ]; then
+  DOCKER_DEVBOX_DIR=$(dirname "$0")
 else
   DOCKER_DEVBOX_DIR=$PWD
 fi
-export DOCKER_DEVBOX_DIR=$DOCKER_DEVBOX_DIR
+export DOCKER_DEVBOX_DIR
 
 if [ -d "$DOCKER_DEVBOX_DIR"/.bash_enter.d ]; then
   for enter_script in "$DOCKER_DEVBOX_DIR"/.bash_enter.d/*; do
-    . $enter_script
+    echo "$(tput bold)$(tput setaf 6)[.bash_enter.d/$(basename "$enter_script")]$(tput sgr0)$(tput setaf 7)"
+    # shellcheck source=/dev/null
+    . "$enter_script"
+    tput sgr0
   done
 fi

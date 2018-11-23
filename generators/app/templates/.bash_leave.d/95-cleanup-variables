@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
 # Cleanup .bash_enter.d/05-variables
 unset USER_ID

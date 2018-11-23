@@ -1,3 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
+. "$DOCKER_DEVBOX_DIR/.bash_enter.d/03-functions"
 
 run --workdir="$(_docker_devbox_map_workdir "/app")" {{service.name}} node "$@"

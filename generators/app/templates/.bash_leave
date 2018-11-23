@@ -1,14 +1,17 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
-if [[ $(basename "$BASH_SOURCE") = .bash_leave ]]; then
-  DOCKER_DEVBOX_DIR=$(dirname "$BASH_SOURCE")
+if [ "$(basename "$0")" = .bash_leave ]; then
+  DOCKER_DEVBOX_DIR=$(dirname "$0")
 else
   DOCKER_DEVBOX_DIR=$PWD
 fi
-export DOCKER_DEVBOX_DIR=$DOCKER_DEVBOX_DIR
+export DOCKER_DEVBOX_DIR
 
 if [ -d "$DOCKER_DEVBOX_DIR"/.bash_leave.d ]; then
   for leave_script in "$DOCKER_DEVBOX_DIR"/.bash_leave.d/*; do
-    source $leave_script
+    echo "$(tput bold)$(tput setaf 6)[.bash_leave.d/$(basename "$leave_script")]$(tput sgr0)$(tput setaf 7)"
+    # shellcheck source=/dev/null
+    . "$leave_script"
+    tput sgr0
   done
 fi

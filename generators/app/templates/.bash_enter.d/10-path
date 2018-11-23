@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
 if [ -d "$DOCKER_DEVBOX_DIR/.bin" ] ; then
   chmod +x "$DOCKER_DEVBOX_DIR/.bin"/*

@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
 _docker_devbox_env_symlink() {
 FILEPATH="$1"
@@ -9,16 +9,16 @@ EXTENSION="${FILENAME##*.}"
 FILENAME="${FILENAME%.*}"
 
 ACTIVE_ENV=0
-MESSAGE="[30-env-symlinks] $DIRNAME/$FILENAME.$DOCKER_DEVBOX_ENV.$EXTENSION -> $DIRNAME/$FILENAME.$EXTENSION. (Symlink has not been created)"
+MESSAGE="$(_relative_path "$DIRNAME/$FILENAME.$DOCKER_DEVBOX_ENV.$EXTENSION") -> $FILENAME.$EXTENSION. (Symlink has not been created)"
 
 for ENV in $DOCKER_DEVBOX_ENV_LIST; do
   if [ "$ENV" = "$DOCKER_DEVBOX_ENV" ]; then
     ACTIVE_ENV=1;
   fi
   if [ $ACTIVE_ENV = 1 ]; then
-    if [ -f "$DIRNAME/$FILENAME.$ENV.$EXTENSION" ] && ([ ! -f "$DIRNAME/$FILENAME.$EXTENSION" ] || [ -h "$DIRNAME/$FILENAME.$EXTENSION" ]); then
+    if [ -f "$DIRNAME/$FILENAME.$ENV.$EXTENSION" ] && { [ ! -f "$DIRNAME/$FILENAME.$EXTENSION" ] || [ -h "$DIRNAME/$FILENAME.$EXTENSION" ]; }; then
       ln -rfs "$DIRNAME/$FILENAME.$ENV.$EXTENSION" "$DIRNAME/$FILENAME.$EXTENSION"
-      MESSAGE="[30-env-symlinks] $DIRNAME/$FILENAME.$ENV.$EXTENSION -> $DIRNAME/$FILENAME.$EXTENSION"
+      MESSAGE="$(_relative_path "$DIRNAME/$FILENAME.$ENV.$EXTENSION") -> $FILENAME.$EXTENSION"
       break
     fi
   fi

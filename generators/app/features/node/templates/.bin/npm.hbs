@@ -1,6 +1,7 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
+. "$DOCKER_DEVBOX_DIR/.bash_enter.d/03-functions"
 
-if [ "$1" == "run" ] && [ "$2" == "serve" ]; then
+if [ "$1" -eq "run" ] && [ "$2" -eq "serve" ]; then
   PORTS=" -p ${DOCKER_DEVBOX_PORT_PREFIX}88:80"
   echo "Port mapping:$PORTS"
 else

@@ -13,7 +13,9 @@
   ],
   "main": "generators/index.js",
   "scripts": {
-    "lint": "tslint --project tsconfig.json -t codeFrame 'generators/**/*.ts' '__tests__/**/*.ts' '__tests__/**/*.ts'",
+    "lint": "npm run tslint && npm run shlint",
+    "shlint": "shellcheck ./generators/app/templates/.bash_enter ./generators/app/templates/.bash_leave ./generators/app/templates/.bash_enter.d/* ./generators/app/templates/.bash_leave.d/*",
+    "tslint": "tslint --project tsconfig.json -t codeFrame 'generators/**/*.ts' '__tests__/**/*.ts' '__tests__/**/*.ts'",
     "clean": "del-cli 'generators/**/*.js' 'generators/**/*.js.map' '!generators/**/templates/**/*'",
     "prebuild": "npm run clean",
     "build": "tsc",
@@ -58,6 +60,7 @@
     "lodash": "^4.17.11",
     "np": "*",
     "rimraf": "^2.6.2",
+    "shellcheck": "^0.1.0",
     "ts-jest": "^23.10.4",
     "tslint": "^5.11.0",
     "tslint-config-prettier": "^1.15.0",
