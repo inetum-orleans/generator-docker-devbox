@@ -12,8 +12,10 @@ import { newBuilder, Version } from '@gfi-centre-ouest/docker-compose-builder'
 import * as yaml from 'js-yaml'
 
 import * as path from 'path'
+import * as process from 'process'
 
 import chalk from 'chalk'
+import { bash } from './system'
 
 const yosay = require('yosay')
 
@@ -61,32 +63,6 @@ export default class AppGenerator extends Generator {
     this.argument('bash-disabled', {
       default: false,
       description: 'Disable execution of bash scripts at the end of the generation to initialize environment.'
-    })
-  }
-
-  private async _bash (cmd: string) {
-    const process = spawn('bash', ['-c', cmd])
-
-    return new Promise((resolve, reject) => {
-      process.stdout.on('data', (data: any) => {
-        const line = chalk.gray(`${data}`.trimRight())
-        console.log(line)
-      })
-
-      process.stderr.on('data', (data: any) => {
-        const line = chalk.red(`${data}`.trimRight())
-        console.log(line)
-      })
-
-      process.on('close', (code: number) => {
-        process.kill()
-        if (code) {
-          console.error(`process exited with code ${code}`)
-          reject(code)
-        } else {
-          resolve(code)
-        }
-      })
     })
   }
 
@@ -186,7 +162,14 @@ export default class AppGenerator extends Generator {
     }
   }
 
-  paths () {
+  initializing () {
+    const exitListeners = process.listeners('exit')
+    for (const exitListener of exitListeners) {
+      if (exitListener.name === 'bound navigate') {
+        process.removeListener('exit', exitListener)
+      }
+    }
+
     // It seems yeoman can't setup sourceRoot automatically, don't know why :(
     this.sourceRoot(path.join(__dirname, 'templates'))
   }
@@ -277,7 +260,7 @@ export default class AppGenerator extends Generator {
     this.answersMain = { ...answersStart, ...answersEnd, features: allAnswersFeatures }
   }
 
-  writeAll () {
+  writing () {
     const featureById: { [featureId: string]: Feature } = {}
 
     for (const feature of features) {
@@ -347,7 +330,7 @@ export default class AppGenerator extends Generator {
     })
   }
 
-  async end () {
+  async install () {
     this.log('')
     this.log(chalk.bold.blue('Initializing environment ...'))
     this.log('')
@@ -358,15 +341,17 @@ export default class AppGenerator extends Generator {
     if (this.options['bash-disabled']) {
       this.log(chalk.red('bash execution is disabled (bash-disabled argument). You should run the command manually'))
     } else {
-      await this._bash('. .bash_leave')
+      await bash('. .bash_leave')
     }
+    this.log('')
 
     this.log(chalk.bold.cyan('$ . .bash_enter'))
+    this.log('')
 
     if (this.options['bash-disabled']) {
       this.log(chalk.red('bash execution is disabled (bash-disabled argument). You should run the command manually.'))
     } else {
-      await this._bash('. .bash_enter')
+      await bash('. .bash_enter')
     }
 
     this.log('')
@@ -374,10 +359,11 @@ export default class AppGenerator extends Generator {
     this.log(chalk.bold.green('🎉 Everything has been generated properly ! 🎉'))
     this.log('')
 
-    this.log(chalk.green('You should now run ') +
+    this.log(chalk.green('run ') +
       chalk.bold.cyan('. .bash_enter') +
       chalk.green(' to initialize the environment.')
     )
+    this.log('')
 
     this.log(chalk.bold.cyan('dc') +
       chalk.green(' is available as an alias for ') +
@@ -398,5 +384,6 @@ export default class AppGenerator extends Generator {
       chalk.green(' to follow the container logs.'
       )
     )
+    this.log('')
   }
 }
