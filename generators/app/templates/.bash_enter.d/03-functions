@@ -1,16 +1,8 @@
 #!/usr/bin/env sh
 
-_relative_path() {
-  ABSOLUTE_PATH="$1"
-
-  RELATIVE_PATH=$(echo "$ABSOLUTE_PATH" | sed "s;$DOCKER_DEVBOX_DIR/;;g")
-  echo "$RELATIVE_PATH"
-}
-
 _docker_devbox_map_workdir() {
   CONTAINER_PROJECT_DIR="$1"
-
-  RELATIVE_PATH=$(echo "$PWD" | sed "s;$DOCKER_DEVBOX_DIR/;;g")
+  RELATIVE_PATH=$(echo "$PWD" | sed "s;$DOCKER_DEVBOX_DIR;;g")
   CONTAINER_PWD="$CONTAINER_PROJECT_DIR$RELATIVE_PATH"
   echo "$CONTAINER_PWD"
 }
