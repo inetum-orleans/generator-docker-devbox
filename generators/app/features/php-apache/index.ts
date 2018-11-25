@@ -4,6 +4,8 @@ import { ConfigBuilder } from '@gfi-centre-ouest/docker-compose-builder'
 import { DockerDevboxExt } from '../../docker'
 import { RegistryClient } from '../../docker/registry'
 import { FeatureContext } from '../../index'
+import { Templating } from '../../templating'
+import { Helpers } from '../../helpers'
 
 export class PhpApache extends DefaultFeature implements DockerComposeFeature<PhpApache>, FeatureAsyncInit {
   name: string = 'php-apache'
@@ -51,7 +53,11 @@ export class PhpApache extends DefaultFeature implements DockerComposeFeature<Ph
         type: 'checkbox',
         name: 'phpTools',
         message: 'PHP Tools',
-        choices: ['composer', 'wkhtmltopdf'],
+        choices: [
+          { value: 'composer', name: 'Composer' },
+          'wkhtmltopdf',
+          { value: 'drupal-console', name: 'Drupal Console' },
+          { value: 'drush-launcher', name: 'Drush Launcher' }],
         default: ['composer'],
         store: true
       },
@@ -76,6 +82,18 @@ export class PhpApache extends DefaultFeature implements DockerComposeFeature<Ph
     } else {
       builder.service(context.service.name)
         .ext(DockerDevboxExt).nginxProxy().xdebug()
+    }
+  }
+
+  beforeWrite (templating: Templating, helpers: Helpers, context: FeatureContext<this>) {
+    if (context.phpTools.indexOf('composer') === -1) {
+      this.excludeFiles.push('.bin/composer.hbs')
+    }
+    if (context.phpTools.indexOf('drupal-console') === -1) {
+      this.excludeFiles.push('.bin/drupal.hbs')
+    }
+    if (context.phpTools.indexOf('drush-launcher') === -1) {
+      this.excludeFiles.push('.bin/drush.hbs')
     }
   }
 }

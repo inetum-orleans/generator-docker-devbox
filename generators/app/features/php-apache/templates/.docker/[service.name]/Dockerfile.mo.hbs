@@ -65,11 +65,18 @@ RUN echo "date.timezone=${PHP_TIMEZONE:-UTC}" > $PHP_INI_DIR/conf.d/composer.ini
 && echo "always_populate_raw_post_data=-1" > $PHP_INI_DIR/conf.d/composer.ini
 {{/semver}}
 {{/inArray}}
-{{#hasFeature drupalInit}}
+{{#inArray phpTools "drupal-console"}}
 
 RUN curl -sL -o drupal.phar https://drupalconsole.com/installer \
-&& mv drupal.phar /usr/local/bin/drupal && chmod +x /usr/local/bin/drupal \
-{{/hasFeature}}
+&& mv drupal.phar /usr/local/bin/drupal && chmod +x /usr/local/bin/drupal
+
+{{/inArray}}
+{{#inArray phpTools "drush-launcher"}}
+
+RUN curl -sL -o drush.phar https://github.com/drush-ops/drush-launcher/releases/download/0.6.0/drush.phar \
+&& mv drush.phar /usr/local/bin/drush && chmod +x /usr/local/bin/drush
+{{/inArray}}
+
 {{#hasFeature 'postgresql'}}
 
 RUN apt-get update -y && apt-get install -y gnupg && rm -rf /var/lib/apt/lists/* \

@@ -62,8 +62,8 @@ export abstract class DefaultFeature implements Feature {
   abstract serviceName?: string
   abstract directory: string
 
-  excludeFiles?: (string | RegExp)[] = []
-  appendFiles?: (string | RegExp)[] = ['.gitignore.hbs']
+  excludeFiles: (string | RegExp)[] = []
+  appendFiles: (string | RegExp)[] = ['.gitignore.hbs']
 
   private uniqueName (name: string, count: number) {
     return `${name}${count}`
@@ -125,11 +125,16 @@ export abstract class DefaultFeature implements Feature {
   }
 
   write (templating: Templating, helpers: Helpers, context: FeatureContext<this>) {
+    this.beforeWrite(templating, helpers, context)
     templating.bulk(this.files(context), context, {
       excludeFiles: this.excludeFiles,
       appendFiles: this.appendFiles,
       filepathDestinationTransformer: context.service.filepathDestinationTransformer,
       cwd: path.join(this.directory, 'templates')
     })
+  }
+
+  beforeWrite (templating: Templating, helpers: Helpers, context: FeatureContext<this>) {
+    // Do nothing
   }
 }
