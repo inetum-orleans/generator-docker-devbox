@@ -3,6 +3,7 @@ import * as helpers from 'yeoman-test'
 import AppGenerator from '../generators/app'
 
 const path = require('path')
+jest.setTimeout(1000 * 60 * 2)
 
 describe('generator-docker-devbox:app', () => {
   describe('Default answers', () => {
@@ -59,10 +60,10 @@ describe('generator-docker-devbox:app', () => {
         namespace: 'generator-docker-devbox:app'
       }).withArguments('bash-disabled')
         .withPrompts({
-        'features~0': [
-          'php-apache'
-        ]
-      }).toPromise()
+          'features~0': [
+            'php-apache'
+          ]
+        }).toPromise()
     })
 
     it('should have Dockerfile.mo in web service', () => {
@@ -83,11 +84,11 @@ describe('generator-docker-devbox:app', () => {
         namespace: 'generator-docker-devbox:app'
       }).withArguments('bash-disabled')
         .withPrompts({
-        'features~0': [
-          'php-apache',
-          'postgresql'
-        ]
-      }).toPromise()
+          'features~0': [
+            'php-apache',
+            'postgresql'
+          ]
+        }).toPromise()
     })
 
     it('should have Dockerfile.mo in db and web services', () => {

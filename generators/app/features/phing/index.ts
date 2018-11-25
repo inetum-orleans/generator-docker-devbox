@@ -11,7 +11,7 @@ export class Phing extends DefaultFeature implements Feature, DockerComposeFeatu
   directory: string = __dirname
   duplicateAllowed: boolean = false
 
-  asyncQuestions!: Generator.Question[]
+  asyncQuestions: Generator.Question[] = []
 
   async initAsync () {
     const registry = new RegistryClient()
@@ -36,7 +36,7 @@ export class Phing extends DefaultFeature implements Feature, DockerComposeFeatu
     ]
   }
 
-  questions (): Generator.Questions {
+  questions (): Generator.Question[] {
     return this.asyncQuestions
   }
 

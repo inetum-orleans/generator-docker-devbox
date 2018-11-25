@@ -12,7 +12,7 @@ export class PhpApache extends DefaultFeature implements DockerComposeFeature<Ph
   directory: string = __dirname
   duplicateAllowed: boolean = true
 
-  asyncQuestions!: Generator.Question[]
+  asyncQuestions: Generator.Question[] = []
 
   async initAsync () {
     const registry = new RegistryClient()
@@ -37,7 +37,7 @@ export class PhpApache extends DefaultFeature implements DockerComposeFeature<Ph
     ]
   }
 
-  questions (): Generator.Questions {
+  questions (): Generator.Question[] {
     return [...this.asyncQuestions,
       {
         type: 'checkbox',

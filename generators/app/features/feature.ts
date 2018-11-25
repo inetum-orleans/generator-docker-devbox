@@ -44,7 +44,7 @@ export interface Feature {
   /**
    * Additional questions to ask when this feature is selected.
    */
-  questions? (): Generator.Questions
+  questions? (): Generator.Question[]
 
   /**
    * Write files related to this feature.

@@ -1,4 +1,14 @@
 #!/usr/bin/env bash
+
+sudo mkdir -p /etc/systemd/system/docker.service.d/
+sudo mkdir -p /home/travis/.docker-data
+cat << EOF > override.conf
+[Service]
+ExecStart=
+ExecStart=/usr/bin/dockerd -H unix:// --data-root /home/travis/.docker-data
+EOF
+sudo mv -f override.conf /etc/systemd/system/docker.service.d/
+
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 sudo add-apt-repository \
    "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
@@ -12,5 +22,8 @@ sudo curl -sL -o ./docker-compose https://github.com/docker/compose/releases/dow
 sudo mv -f ./docker-compose /usr/local/bin/docker-compose
 sudo chmod +x /usr/local/bin/docker-compose
 
+cat /usr/systemd/system/docker.service
+
 docker --version
 docker-compose --version
+docker info

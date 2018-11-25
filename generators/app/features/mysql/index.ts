@@ -11,7 +11,7 @@ export class MySQL extends DefaultFeature implements Feature, DockerComposeFeatu
   directory: string = __dirname
   duplicateAllowed: boolean = true
 
-  asyncQuestions!: Generator.Question[]
+  asyncQuestions: Generator.Question[] = []
 
   async initAsync () {
     const registry = new RegistryClient()
@@ -33,7 +33,7 @@ export class MySQL extends DefaultFeature implements Feature, DockerComposeFeatu
     ]
   }
 
-  questions (): Generator.Questions {
+  questions (): Generator.Question[] {
     return this.asyncQuestions
   }
 

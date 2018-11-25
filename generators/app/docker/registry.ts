@@ -1,4 +1,7 @@
 import axios, { AxiosError, AxiosInstance } from 'axios'
+import { RaxConfig } from 'retry-axios'
+
+const rax = require('retry-axios')
 
 export function setAuthenticationInterceptor (axios: AxiosInstance) {
   axios.interceptors.response.use((response) => response, async (error: AxiosError) => {
@@ -41,8 +44,22 @@ export class RegistryClient {
   private axios: AxiosInstance
 
   constructor (baseURL: string = 'https://registry.hub.docker.com/v2') {
-    this.axios = axios.create({ baseURL })
+    this.axios = axios.create({
+      baseURL
+    } as RaxConfig);
+    (this.axios.defaults as RaxConfig).raxConfig = {
+      retry: 8,
+      noResponseRetries: 8,
+      instance: this.axios,
+      onRetryAttempt (err) {
+        console.log(`${err.config.url} registry request has failed. Retry #${(err.config as RaxConfig).raxConfig.currentRetryAttempt} ...`)
+      },
+      shouldRetry () {
+        return true
+      }
+    }
     setAuthenticationInterceptor(this.axios)
+    rax.attach(this.axios)
   }
 
   async tagsList (image: string, namespace?: string): Promise<string[]> {

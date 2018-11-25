@@ -14,12 +14,10 @@ RUN npm i --global npm
 # Allow nodeJS to run server on port < 1024
 RUN setcap 'cap_net_bind_service=+ep' $(which node)
 
-# Fix permissions to match host user
-RUN usermod -u ${HOST_UID:-1000} node && groupmod -g ${HOST_GID:-1000} node
-
-RUN mkdir /home/node/.npm-packages && chown -R ${HOST_UID:-1000}:${HOST_GID:-1000} /home/node/.npm-packages
-RUN mkdir -p /home/node/.cache/yarn && chown -R ${HOST_UID:-1000}:${HOST_GID:-1000} /home/node/.cache
-RUN mkdir /app && chown -R ${HOST_UID:-1000}:${HOST_GID:-1000} /app
+RUN usermod -u ${HOST_UID:-1000} node && groupmod -g ${HOST_GID:-1000} node \
+&& mkdir /home/node/.npm-packages && chown -R ${HOST_UID:-1000}:${HOST_GID:-1000} /home/node/.npm-packages \
+&& mkdir -p /home/node/.cache/yarn && chown -R ${HOST_UID:-1000}:${HOST_GID:-1000} /home/node/.cache \
+&& mkdir /app && chown -R ${HOST_UID:-1000}:${HOST_GID:-1000} /app
 
 WORKDIR /app
 

@@ -12,7 +12,7 @@ export class Mapserver extends DefaultFeature implements DockerComposeFeature<Ma
   directory: string = __dirname
   duplicateAllowed: boolean = true
 
-  asyncQuestions!: Generator.Question[]
+  asyncQuestions: Generator.Question[] = []
 
   async initAsync () {
     const registry = new RegistryClient()
@@ -34,7 +34,7 @@ export class Mapserver extends DefaultFeature implements DockerComposeFeature<Ma
     ]
   }
 
-  questions (): Generator.Questions {
+  questions (): Generator.Question[] {
     return this.asyncQuestions
   }
 

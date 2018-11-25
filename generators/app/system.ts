@@ -1,35 +1,46 @@
 import * as process from 'process'
 import { spawn } from 'child_process'
 
-export async function bash (cmd: string, stdout = process.stdout, stderr = process.stderr): Promise<{ code: number, output: any[], stdout: any[], stderr: any[] }> {
-  const bash = spawn('bash', ['-c', cmd])
+export interface ProcessOutput {
+  code: number,
+  output: any[],
+  stdout: any[],
+  stderr: any[]
+}
 
+export async function bash (cmd: string,
+                            stdout: NodeJS.WriteStream | null = process.stdout,
+                            stderr: NodeJS.WriteStream | null = process.stderr): Promise<ProcessOutput> {
+
+  const bash = spawn('bash', ['-c', cmd])
   const output: any[] = []
   const outputStderr: any[] = []
   const outputStdout: any[] = []
 
-  const code = await new Promise<number>((resolve, reject) => {
+  return new Promise<ProcessOutput>((resolve, reject) => {
     bash.stdout.on('data', (data: any) => {
       output.push(data)
-      stdout.write(data)
+      if (stdout) {
+        stdout.write(data)
+      }
       outputStdout.push(data)
     })
 
     bash.stderr.on('data', (data: any) => {
       output.push(data)
-      stderr.write(data)
+      if (stderr) {
+        stderr.write(data)
+      }
       outputStderr.push(data)
     })
 
     bash.on('close', (code: number) => {
       if (code) {
-        console.error(`process exited with code ${code}`)
-        reject(code)
+        reject({ code, output, stdout: outputStdout, stderr: outputStderr })
       } else {
-        resolve(code)
+        resolve({ code, output, stdout: outputStdout, stderr: outputStderr })
       }
       bash.kill()
     })
   })
-  return { code, output, stdout: outputStdout, stderr: outputStderr }
 }
