@@ -5,7 +5,7 @@ import { features } from '../generators/app/features'
 import { bash, buildOptions, BuildOptionsChoiceType } from './utils'
 
 // Because docker sometimes fails to pull images, or hits authentication failures ...
-(jest as any).retryTimes(3)
+(jest as any).retryTimes(5)
 
 jest.setTimeout(1000 * 60 * 15)
 
