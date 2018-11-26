@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+. "$DOCKER_DEVBOX_DIR/.bash.lib.d/20-utils"
 
 _docker_workdir() {
   CONTAINER_PROJECT_DIR="$1"

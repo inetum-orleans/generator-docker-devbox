@@ -5,12 +5,18 @@ if [ "$SOURCE" = "-bash" ]; then
   SOURCE="${BASH_SOURCE[0]}"
 fi
 
+if [ -n "${DOCKER_DEVBOX_DIR}" ]; then
+  # shellcheck source=/dev/null
+  . "$DOCKER_DEVBOX_DIR"/.bash_leave
+fi
+
 if [ "$(basename "$SOURCE")" = .bash_enter ]; then
   DOCKER_DEVBOX_DIR="$(dirname "$SOURCE")"
 else
   DOCKER_DEVBOX_DIR="$PWD"
 fi
 
+echo "$(tput setaf 3)Loading environment $(tput sgr0)"
 if [ -d "$DOCKER_DEVBOX_DIR"/.bash.lib.d ]; then
   for lib_script in "$DOCKER_DEVBOX_DIR"/.bash.lib.d/*; do
     # shellcheck source=/dev/null
@@ -18,7 +24,7 @@ if [ -d "$DOCKER_DEVBOX_DIR"/.bash.lib.d ]; then
   done
 fi
 
-autostash DOCKER_DEVBOX_DIR
+export DOCKER_DEVBOX_DIR
 
 if [ -d "$DOCKER_DEVBOX_DIR"/.bash_enter.d ]; then
   for enter_script in "$DOCKER_DEVBOX_DIR"/.bash_enter.d/*; do

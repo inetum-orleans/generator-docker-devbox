@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-. "$DOCKER_DEVBOX_DIR/.bash.lib.d/docker"
+. "$DOCKER_DEVBOX_DIR/.bash.lib.d/50-docker"
 
 #TODO: This won't work ... Check postgreSQL script for example
 dc exec --user root {{service.name}} mysql -u{{projectName}} -p "$@"

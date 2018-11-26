@@ -1,5 +1,0 @@
-#!/usr/bin/env sh
-
-PATH_ITEM="$DOCKER_DEVBOX_DIR/.bin"
-PATH=$(echo "$PATH" | sed -e "s;:\?$PATH_ITEM;;" -e "s;$PATH_ITEM:\?;;" | sed -e "s;:$;;" | sed -e "s;^:;;")
-export PATH

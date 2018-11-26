@@ -46,7 +46,6 @@ describe('generator-docker-devbox:app', () => {
     it('should have default .bash_leave.d scripts', () => {
       assert.file([
         '.bash_leave.d/01-env',
-        '.bash_leave.d/90-cleanup-path',
         '.bash_leave.d/95-cleanup-variables'
       ])
     })

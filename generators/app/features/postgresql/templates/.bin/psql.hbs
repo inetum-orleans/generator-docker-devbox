@@ -1,4 +1,4 @@
 #!/usr/bin/env sh
-. "$DOCKER_DEVBOX_DIR/.bash.lib.d/docker"
+. "$DOCKER_DEVBOX_DIR/.bash.lib.d/50-docker"
 
-run --user postgres --workdir="$(_docker_workdir "/workdir")" db psql --dbname=postgres://{{projectName}}:{{projectName}}@{{service.name}}/{{projectName}} "$@"
+run --user postgres --workdir="$(_docker_workdir "/workdir")" {{service.name}} psql --dbname=postgres://{{projectName}}:{{projectName}}@{{service.name}}/{{projectName}} "$@"

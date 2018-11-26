@@ -1,4 +1,4 @@
 #!/usr/bin/env sh
-. "$DOCKER_DEVBOX_DIR/.bash.lib.d/docker"
+. "$DOCKER_DEVBOX_DIR/.bash.lib.d/50-docker"
 
 run --default-entrypoint {{service.name}} $@

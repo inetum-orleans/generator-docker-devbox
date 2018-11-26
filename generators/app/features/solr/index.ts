@@ -45,8 +45,8 @@ export class Solr extends DefaultFeature implements Feature, DockerComposeFeatur
         .volume.named(`${context.service.name}-data`, '/opt/solr/server/solr/gfi_sandbox')
         .entrypoint(['docker-entrypoint.sh', 'solr-precreate', context.projectName, '/solr-conf'])
     } else {
-      //builder.service(context.service.name)
-      //.port('8983')
+      // builder.service(context.service.name)
+      // .port('8983')
     }
   }
 }
