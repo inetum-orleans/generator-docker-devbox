@@ -5,22 +5,22 @@ if [ "$SOURCE" = "-bash" ]; then
   SOURCE="${BASH_SOURCE[0]}"
 fi
 
-if [ "$(basename "$SOURCE")" = .bash_enter ]; then
-  PROJECT_DIR="$(dirname "$SOURCE")"
+if [ "$(basename "$SOURCE")" = .bash_leave ]; then
+  DOCKER_DEVBOX_DIR="$(readlink -f "$SOURCE" | xargs dirname)"
 else
-  PROJECT_DIR="$PWD"
+  DOCKER_DEVBOX_DIR="$PWD"
 fi
 
-echo "$(tput setaf 3)Unloading current environment $(tput sgr0)"
-if [ -d "$PROJECT_DIR"/.bash.lib.d ]; then
-  for lib_script in "$PROJECT_DIR"/.bash.lib.d/*; do
+echo "$(tput setaf 3)Unloading environment $(tput sgr0)"
+if [ -d "$DOCKER_DEVBOX_DIR"/.bash.lib.d ]; then
+  for lib_script in "$DOCKER_DEVBOX_DIR"/.bash.lib.d/*; do
     # shellcheck source=/dev/null
     . "$lib_script"
   done
 fi
 
-if [ -d "$PROJECT_DIR"/.bash_leave.d ]; then
-  for leave_script in "$PROJECT_DIR"/.bash_leave.d/*; do
+if [ -d "$DOCKER_DEVBOX_DIR"/.bash_leave.d ]; then
+  for leave_script in "$DOCKER_DEVBOX_DIR"/.bash_leave.d/*; do
     echo "$(tput bold)$(tput setaf 6)[.bash_leave.d/$(basename "$leave_script")]$(tput sgr0)$(tput setaf 7)"
     # shellcheck source=/dev/null
     . "$leave_script"

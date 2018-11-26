@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 # shellcheck disable=SC2034
 
 autostash USER_ID="$(id -u)"

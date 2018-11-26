@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 . "$DOCKER_DEVBOX_DIR/.bash.lib.d/50-docker"
 
 run --user www-data --entrypoint php --workdir="$(_docker_workdir "/var/www/html")" {{instance.name}} "$@"

@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 _utils_relative_path() {
   ABSOLUTE_PATH="$1"

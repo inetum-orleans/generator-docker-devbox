@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 CFSSL_CLI_EXE=$(command -v cfssl-cli)
 CONFIG="$DOCKER_DEVBOX_DIR/.cfssl-cli/config.yml"

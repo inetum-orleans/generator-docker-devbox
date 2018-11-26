@@ -1,4 +1,5 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
+set -e
 
 if [ -d "$DOCKER_DEVBOX_DIR"/.bash.lib.d ]; then
   for lib_script in "$DOCKER_DEVBOX_DIR"/.bash.lib.d/*; do
@@ -7,9 +8,7 @@ if [ -d "$DOCKER_DEVBOX_DIR"/.bash.lib.d ]; then
   done
 fi
 
-OLD_PATH=PATH
-unstash PATH
+PATH_ITEM="$DOCKER_DEVBOX_DIR/.bin"
+PATH=$(echo "$PATH" | sed -e "s;:\?$PATH_ITEM;;" -e "s;$PATH_ITEM:\?;;" | sed -e "s;:$;;" | sed -e "s;^:;;")
 
-$@
-
-stash PATH="$OLD_PATH"
+"$@"

@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 . "$DOCKER_DEVBOX_DIR/.bash.lib.d/20-utils"
 
 _docker_workdir() {

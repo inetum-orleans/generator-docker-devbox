@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 CA_CERTIFICATES_DIR="$DOCKER_DEVBOX_DIR/.docker/.ca-certificates"
 FILE_COUNT=0

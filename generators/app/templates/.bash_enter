@@ -11,7 +11,7 @@ if [ -n "${DOCKER_DEVBOX_DIR}" ]; then
 fi
 
 if [ "$(basename "$SOURCE")" = .bash_enter ]; then
-  DOCKER_DEVBOX_DIR="$(dirname "$SOURCE")"
+  DOCKER_DEVBOX_DIR="$(readlink -f "$SOURCE" | xargs dirname)"
 else
   DOCKER_DEVBOX_DIR="$PWD"
 fi

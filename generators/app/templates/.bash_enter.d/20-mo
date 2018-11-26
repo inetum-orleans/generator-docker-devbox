@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 RECURSIVE_MARKER="\[\*\]"
 
@@ -8,6 +8,7 @@ if [ -n "${DOCKER_DEVBOX_MO_DIRS}" ]; then
 
     HAS_RECURSIVE_MARKER=$(echo "$TEMPLATE_DIR" | sed -n "/$RECURSIVE_MARKER$/ p")
     if [ -n "$HAS_RECURSIVE_MARKER" ]; then
+      # shellcheck disable=SC2001
       TEMPLATE_DIR=$(echo "$TEMPLATE_DIR" | sed "s/$RECURSIVE_MARKER$//g")
       maxdepth=""
     fi

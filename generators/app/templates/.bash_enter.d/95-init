@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 if [ -f "./.init/init.sh" ] && [ -f ./.init/.should-initialize ]; then
   echo "Running initialization script: ./.init/init.sh"
