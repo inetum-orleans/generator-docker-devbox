@@ -6,11 +6,12 @@ import { RegistryClient } from '../../docker/registry'
 import { FeatureContext } from '../../index'
 import { Templating } from '../../templating'
 import { Helpers } from '../../helpers'
+import { PortsManager } from '../../managers'
 
 export class PhpApache extends DefaultFeature implements DockerComposeFeature<PhpApache>, FeatureAsyncInit {
   name: string = 'php-apache'
   label: string = 'Apache with PHP'
-  serviceName: string = 'web'
+  instanceName: string = 'web'
   directory: string = __dirname
   duplicateAllowed: boolean = true
 
@@ -72,15 +73,15 @@ export class PhpApache extends DefaultFeature implements DockerComposeFeature<Ph
     ]
   }
 
-  dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<PhpApache>, dev?: boolean): void {
+  dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<PhpApache>, portsManager: PortsManager, dev?: boolean): void {
     if (!dev) {
-      builder.service(context.service.name)
+      builder.service(context.instance.name)
         .with.default()
         .volume.project('/var/www/html')
         .volume.relative('apache.conf', '/etc/apache2/sites-enabled/000-default.conf')
-        .volume.named(`${context.service.name}-composer-cache`, '/composer/cache')
+        .volume.named(`${context.instance.name}-composer-cache`, '/composer/cache')
     } else {
-      builder.service(context.service.name)
+      builder.service(context.instance.name)
         .ext(DockerDevboxExt).nginxProxy().xdebug()
     }
   }

@@ -2,11 +2,10 @@ import * as Generator from 'yeoman-generator'
 import { Templating } from './templating'
 import { ChoiceType } from 'inquirer'
 import { features } from './features'
-import { DockerComposeFeature, Feature, FeatureAsyncInit, Service } from './features/feature'
+import { DockerComposeFeature, Feature, FeatureAsyncInit, FeatureInstance } from './features/feature'
 import { Helpers } from './helpers'
 
 import 'source-map-support/register'
-import { spawn } from 'child_process'
 import { DockerDevboxConfigBuilderOptions } from './docker'
 import { newBuilder, Version } from '@gfi-centre-ouest/docker-compose-builder'
 import * as yaml from 'js-yaml'
@@ -16,6 +15,7 @@ import * as process from 'process'
 
 import chalk from 'chalk'
 import { bash } from './system'
+import { NameManager, PortsManager } from './managers'
 
 const yosay = require('yosay')
 
@@ -40,7 +40,7 @@ export interface AnswersMain extends AnswersStart, AnswersEnd {
 export interface FeatureContext<F extends Feature> extends AnswersMain, Generator.Answers {
   group: AnswersFeatures
   options: { [name: string]: any }
-  service: Service<F>
+  instance: FeatureInstance<F>
 }
 
 export type AnswersFeatures = { [featureId: string]: AnswersFeature }
@@ -275,19 +275,19 @@ export default class AppGenerator extends Generator {
     const composeBuilder = newBuilder({ version: Version.v22 }, builderOptions)
     const composeDevBuilder = newBuilder({ version: Version.v22 }, builderOptions)
 
-    let servicesByName: { [name: string]: Service<any> } = {}
+    let instanceNameManager = new NameManager()
+    let portsManager = new PortsManager()
     for (const answersFeatures of this.answersMain.features) {
       for (const featureId of Object.keys(answersFeatures)) {
         const feature = featureById[featureId]
-        const service = feature.service(servicesByName)
-        servicesByName[service.name] = service
+        const instance = feature.instance(instanceNameManager)
 
         const context: FeatureContext<typeof feature> = {
           ...this.answersMain,
           options: this.options,
           group: answersFeatures,
           ...answersFeatures[featureId],
-          service
+          instance
         }
 
         feature.write(this.templating, this.helpers, context)
@@ -302,8 +302,8 @@ export default class AppGenerator extends Generator {
         const dockerComposeFeature = feature as unknown as DockerComposeFeature<typeof feature>
 
         if (dockerComposeFeature.dockerComposeConfiguration) {
-          dockerComposeFeature.dockerComposeConfiguration(composeBuilder, context)
-          dockerComposeFeature.dockerComposeConfiguration(composeDevBuilder, context, true)
+          dockerComposeFeature.dockerComposeConfiguration(composeBuilder, context, portsManager)
+          dockerComposeFeature.dockerComposeConfiguration(composeDevBuilder, context, portsManager, true)
         }
       }
     }

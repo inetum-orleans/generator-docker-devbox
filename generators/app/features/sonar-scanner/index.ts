@@ -1,17 +1,18 @@
 import { DefaultFeature, DockerComposeFeature, Feature } from '../feature'
 import { ConfigBuilder } from '@gfi-centre-ouest/docker-compose-builder'
 import { FeatureContext } from '../../index'
+import { PortsManager } from '../../managers'
 
 export class SonarScanner extends DefaultFeature implements Feature, DockerComposeFeature<SonarScanner> {
   name: string = 'sonar-scanner'
   label: string = 'Sonar Scanner'
-  serviceName: string = 'sonar-scanner'
+  instanceName: string = this.name
   directory: string = __dirname
   duplicateAllowed: boolean = true
 
-  dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<SonarScanner>, dev?: boolean): void {
+  dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<SonarScanner>, portsManager: PortsManager, dev?: boolean): void {
     if (!dev) {
-      builder.service(context.service.name)
+      builder.service(context.instance.name)
         .with.default()
         .assign({ command: '/bin/true' })
         .volume.project('/root/src')

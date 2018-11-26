@@ -1,4 +1,4 @@
 #!/usr/bin/env sh
 . "$DOCKER_DEVBOX_DIR/.bash.lib.d/50-docker"
 
-run --user www-data --entrypoint php --workdir="$(_docker_workdir "/app")" {{service.name}} /composer/vendor/phing/phing/bin/phing "$@"
+run --user www-data --entrypoint php --workdir="$(_docker_workdir "/app")" {{instance.name}} /composer/vendor/phing/phing/bin/phing "$@"

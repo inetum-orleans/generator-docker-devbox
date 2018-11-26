@@ -1,4 +1,4 @@
 #!/usr/bin/env sh
 . "$DOCKER_DEVBOX_DIR/.bash.lib.d/50-docker"
 
-run --user postgres --workdir="$(_docker_workdir "/workdir")" {{service.name}} pg_restore --dbname=postgres://{{projectName}}:{{projectName}}@{{service.name}}/{{projectName}} "$@"
+run --user postgres --workdir="$(_docker_workdir "/workdir")" {{instance.name}} pg_restore --dbname=postgres://{{projectName}}:{{projectName}}@{{instance.name}}/{{projectName}} "$@"

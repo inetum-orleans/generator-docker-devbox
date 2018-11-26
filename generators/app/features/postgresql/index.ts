@@ -3,11 +3,12 @@ import { ConfigBuilder } from '@gfi-centre-ouest/docker-compose-builder'
 import * as Generator from 'yeoman-generator'
 import { RegistryClient } from '../../docker/registry'
 import { FeatureContext } from '../../index'
+import { PortsManager } from '../../managers'
 
 export class Postgres extends DefaultFeature implements Feature, DockerComposeFeature<Postgres>, FeatureAsyncInit {
   name: string = 'postgresql'
   label: string = 'PostgreSQL'
-  serviceName: string = 'db'
+  instanceName: string = 'db'
   directory: string = __dirname
   duplicateAllowed: boolean = true
 
@@ -37,14 +38,17 @@ export class Postgres extends DefaultFeature implements Feature, DockerComposeFe
     return this.asyncQuestions
   }
 
-  dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<Postgres>, dev?: boolean): void {
+  dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<Postgres>, portsManager: PortsManager, dev?: boolean): void {
     if (!dev) {
-      builder.service(context.service.name)
+      builder.service(context.instance.name)
         .with.default()
         .env('POSTGRES_USER', context.projectName)
         .env('POSTGRES_PASSWORD', context.projectName)
         .volume.project('/workdir')
-        .volume.named(`${context.service.name}-data`, '/var/lib/postgresql/data')
+        .volume.named(`${context.instance.name}-data`, '/var/lib/postgresql/data')
+    } else {
+      builder.service(context.instance.name)
+        .port(`${portsManager.uniquePort(32)}:5432`)
     }
   }
 }

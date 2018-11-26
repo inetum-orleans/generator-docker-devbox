@@ -1,4 +1,4 @@
 #!/usr/bin/env sh
 . "$DOCKER_DEVBOX_DIR/.bash.lib.d/50-docker"
 
-run --user www-data --entrypoint drupal --workdir="$(_docker_workdir "/var/www/html")" {{service.name}} "$@"
+run --user www-data --entrypoint drupal --workdir="$(_docker_workdir "/var/www/html")" {{instance.name}} "$@"

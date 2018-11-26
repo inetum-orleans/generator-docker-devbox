@@ -3,11 +3,12 @@ import { ConfigBuilder } from '@gfi-centre-ouest/docker-compose-builder'
 import * as Generator from 'yeoman-generator'
 import { RegistryClient } from '../../docker/registry'
 import { FeatureContext } from '../../index'
+import { PortsManager } from '../../managers'
 
 export class Solr extends DefaultFeature implements Feature, DockerComposeFeature<Solr>, FeatureAsyncInit {
   name: string = 'solr'
   label: string = 'Solr'
-  serviceName: string = 'solr'
+  instanceName: string = this.name
   directory: string = __dirname
   duplicateAllowed: boolean = true
 
@@ -37,16 +38,16 @@ export class Solr extends DefaultFeature implements Feature, DockerComposeFeatur
     return this.asyncQuestions
   }
 
-  dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<Solr>, dev?: boolean): void {
+  dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<Solr>, portsManager: PortsManager, dev?: boolean): void {
     if (!dev) {
-      builder.service(context.service.name)
+      builder.service(context.instance.name)
         .with.default()
         .volume.relative('conf', '/solr-conf/conf')
-        .volume.named(`${context.service.name}-data`, '/opt/solr/server/solr/gfi_sandbox')
+        .volume.named(`${context.instance.name}-data`, '/opt/solr/server/solr/gfi_sandbox')
         .entrypoint(['docker-entrypoint.sh', 'solr-precreate', context.projectName, '/solr-conf'])
     } else {
-      // builder.service(context.service.name)
-      // .port('8983')
+      builder.service(context.instance.name)
+      .port(`${portsManager.uniquePort(83)}:8983`)
     }
   }
 }

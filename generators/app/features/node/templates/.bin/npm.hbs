@@ -8,4 +8,4 @@ else
   PORTS=""
 fi
 
-run$PORTS --workdir="$(_docker_workdir "/app")" {{service.name}} npm "$@"
+run$PORTS --workdir="$(_docker_workdir "/app")" {{instance.name}} npm "$@"

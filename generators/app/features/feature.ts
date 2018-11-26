@@ -5,15 +5,16 @@ import * as path from 'path'
 import { Templating } from '../templating'
 import { ConfigBuilder } from '@gfi-centre-ouest/docker-compose-builder'
 import { Helpers } from '../helpers'
+import { NameManager, PortsManager } from '../managers'
 
-export interface Service<F extends Feature> {
+export interface FeatureInstance<F extends Feature> {
   name: string
   filepathDestinationTransformer?: (filepath: string) => string
   feature: F
 }
 
 export interface DockerComposeFeature<F extends Feature> {
-  dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<F>, dev?: boolean): void
+  dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<F>, portsManager: PortsManager, dev?: boolean): void
 }
 
 export interface FeatureAsyncInit {
@@ -35,11 +36,11 @@ export interface Feature {
   envFiles? (context: FeatureContext<this>): string[]
 
   /**
-   * Creates a service with unique name, avoiding collision with already created services.
+   * Creates an instance with unique name, avoiding collision with already created features.
    *
-   * @param serviceNames service names already registered
+   * @param manager instance names already registered
    */
-  service (serviceNames: { [name: string]: Service<any> }): Service<this>
+  instance (manager: NameManager): FeatureInstance<this>
 
   /**
    * Additional questions to ask when this feature is selected.
@@ -59,7 +60,7 @@ export interface Feature {
 export abstract class DefaultFeature implements Feature {
   abstract name: string
   abstract label: string
-  abstract serviceName?: string
+  abstract instanceName: string
   abstract directory: string
 
   excludeFiles: (string | RegExp)[] = []
@@ -69,28 +70,23 @@ export abstract class DefaultFeature implements Feature {
     return `${name}${count}`
   }
 
-  service (serviceNames: { [name: string]: Service<any> }): Service<this> {
-    let name = this.serviceName ? this.serviceName : this.name
+  instance (manager: NameManager): FeatureInstance<this> {
+    const registered = manager.uniqueName(this.instanceName)
+
     let filepathDestinationTransformer: ((filepath: string) => string) | undefined = undefined
-    let count = 1
 
-    while (name in serviceNames) {
-      count++
-      name = this.uniqueName(name, count)
-    }
-
-    if (count > 1) {
+    if (registered.name !== this.instanceName) {
       filepathDestinationTransformer = (filepath) => {
         if (filepath.startsWith('.bin/')) {
           const ext = path.extname(filepath)
-          return this.uniqueName(filepath.substr(0, filepath.length - ext.length), count) + ext
+          return filepath.substr(0, filepath.length - ext.length) + '-' + registered.name + ext
         }
         return filepath
       }
     }
 
     return {
-      name: name,
+      name: registered.name,
       filepathDestinationTransformer,
       feature: this
     }
@@ -129,7 +125,7 @@ export abstract class DefaultFeature implements Feature {
     templating.bulk(this.files(context), context, {
       excludeFiles: this.excludeFiles,
       appendFiles: this.appendFiles,
-      filepathDestinationTransformer: context.service.filepathDestinationTransformer,
+      filepathDestinationTransformer: context.instance.filepathDestinationTransformer,
       cwd: path.join(this.directory, 'templates')
     })
   }

@@ -3,11 +3,12 @@ import { ConfigBuilder } from '@gfi-centre-ouest/docker-compose-builder'
 import * as Generator from 'yeoman-generator'
 import { RegistryClient } from '../../docker/registry'
 import { FeatureContext } from '../../index'
+import { PortsManager } from '../../managers'
 
 export class Node extends DefaultFeature implements Feature, DockerComposeFeature<Node>, FeatureAsyncInit {
   name: string = 'node'
   label: string = 'Node'
-  serviceName: string = 'node'
+  instanceName: string = this.name
   directory: string = __dirname
   duplicateAllowed: boolean = true
 
@@ -38,13 +39,13 @@ export class Node extends DefaultFeature implements Feature, DockerComposeFeatur
     return this.asyncQuestions
   }
 
-  dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<Node>, dev?: boolean): void {
+  dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<Node>, portsManager: PortsManager, dev?: boolean): void {
     if (!dev) {
-      builder.service(context.service.name)
+      builder.service(context.instance.name)
         .with.default()
         .volume.project('/app')
-        .volume.named(`${context.service.name}-cache`, '/home/node/.cache')
-        .volume.named(`${context.service.name}-npm-packages`, '/home/node/.npm-packages')
+        .volume.named(`${context.instance.name}-cache`, '/home/node/.cache')
+        .volume.named(`${context.instance.name}-npm-packages`, '/home/node/.npm-packages')
     }
   }
 }

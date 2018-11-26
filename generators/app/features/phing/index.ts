@@ -3,11 +3,12 @@ import { ConfigBuilder } from '@gfi-centre-ouest/docker-compose-builder'
 import * as Generator from 'yeoman-generator'
 import { RegistryClient } from '../../docker/registry'
 import { FeatureContext } from '../../index'
+import { PortsManager } from '../../managers'
 
 export class Phing extends DefaultFeature implements Feature, DockerComposeFeature<Phing>, FeatureAsyncInit {
   name: string = 'phing'
   label: string = 'Phing'
-  serviceName: string = 'phing'
+  instanceName: string = this.name
   directory: string = __dirname
   duplicateAllowed: boolean = false
 
@@ -40,9 +41,9 @@ export class Phing extends DefaultFeature implements Feature, DockerComposeFeatu
     return this.asyncQuestions
   }
 
-  dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<Phing>, dev?: boolean): void {
+  dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<Phing>, portsManager: PortsManager, dev?: boolean): void {
     if (!dev) {
-      builder.service(context.service.name)
+      builder.service(context.instance.name)
         .with.default()
         .env('COMPOSE_PROJECT_DIR', '${COMPOSE_PROJECT_DIR}')
         .env('BUILD_WORKING_DIR', '/app')
@@ -50,7 +51,7 @@ export class Phing extends DefaultFeature implements Feature, DockerComposeFeatu
         .arg('DOCKER_COMPOSE_VERSION', '${DOCKER_COMPOSE_VERSION}')
         .assign({ privileged: true, working_dir: '/app', entrypoint: '/bin/true' })
         .volume.project('/app')
-        .volume.project(`${context.service.name}-cache`, '/home/node/.cache')
+        .volume.project(`${context.instance.name}-cache`, '/home/node/.cache')
         .volume.add('/var/run/docker.sock', '/var/run/docker.sock')
     }
   }

@@ -4,11 +4,12 @@ import { DockerDevboxExt } from '../../docker'
 import * as Generator from 'yeoman-generator'
 import { RegistryClient } from '../../docker/registry'
 import { FeatureContext } from '../../index'
+import { PortsManager } from '../../managers'
 
 export class Mapserver extends DefaultFeature implements DockerComposeFeature<Mapserver>, FeatureAsyncInit {
   name: string = 'mapserver'
   label: string = 'Mapserver'
-  serviceName: string = 'mapserver'
+  instanceName: string = this.name
   directory: string = __dirname
   duplicateAllowed: boolean = true
 
@@ -39,19 +40,19 @@ export class Mapserver extends DefaultFeature implements DockerComposeFeature<Ma
   }
 
   envFiles (context: FeatureContext<Mapserver>): string[] {
-    return [`.docker/${context.service.name}/mapserver.map`]
+    return [`.docker/${context.instance.name}/mapserver.map`]
   }
 
-  dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<Mapserver>, dev?: boolean): void {
+  dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<Mapserver>, portsManager: PortsManager, dev?: boolean): void {
     if (!dev) {
-      builder.service(context.service.name)
+      builder.service(context.instance.name)
         .with.default()
         .env('LISTEN_PORT_80', '1')
         .volume.relative('', '/etc/mapserver')
         .user('${USER_ID}')
     } else {
-      builder.service(context.service.name)
-        .ext(DockerDevboxExt).nginxProxy(context.service.name)
+      builder.service(context.instance.name)
+        .ext(DockerDevboxExt).nginxProxy(context.instance.name)
     }
   }
 }

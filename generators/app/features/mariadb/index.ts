@@ -3,11 +3,12 @@ import { ConfigBuilder } from '@gfi-centre-ouest/docker-compose-builder'
 import * as Generator from 'yeoman-generator'
 import { RegistryClient } from '../../docker/registry'
 import { FeatureContext } from '../../index'
+import { PortsManager } from '../../managers'
 
 export class MariaDB extends DefaultFeature implements Feature, DockerComposeFeature<MariaDB>, FeatureAsyncInit {
   name: string = 'mariadb'
   label: string = 'Mariadb'
-  serviceName: string = 'db'
+  instanceName: string = 'db'
   directory: string = __dirname
   duplicateAllowed: boolean = true
 
@@ -37,16 +38,19 @@ export class MariaDB extends DefaultFeature implements Feature, DockerComposeFea
     return this.asyncQuestions
   }
 
-  dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<MariaDB>, dev?: boolean): void {
+  dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<MariaDB>, portsManager: PortsManager, dev?: boolean): void {
     if (!dev) {
-      builder.service(context.service.name)
+      builder.service(context.instance.name)
         .with.default()
         .env('MYSQL_ROOT_PASSWORD', context.projectName)
         .env('MYSQL_DATABASE', context.projectName)
         .env('MYSQL_USER', context.projectName)
         .env('MYSQL_PASSWORD', context.projectName)
         .volume.project('/workdir')
-        .volume.named(`${context.service.name}-data`, '/var/lib/mysql')
+        .volume.named(`${context.instance.name}-data`, '/var/lib/mysql')
+    } else {
+      builder.service(context.instance.name)
+        .port(`${portsManager.uniquePort(6)}:3306`)
     }
   }
 }
