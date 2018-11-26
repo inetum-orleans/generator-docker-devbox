@@ -8,6 +8,7 @@ import { Mailcatcher } from './mailcatcher'
 import { SonarScanner } from './sonar-scanner'
 import { Phing } from './phing'
 import { MariaDB } from './mariadb'
+import { Solr } from './solr'
 
 export const features: Feature[] = [
   new PhpApache(),
@@ -18,5 +19,6 @@ export const features: Feature[] = [
   new Mapserver(),
   new Mailcatcher(),
   new SonarScanner(),
-  new Phing()
+  new Phing(),
+  new Solr()
 ]
