@@ -7,11 +7,13 @@ import { Mapserver } from './mapserver'
 import { Mailcatcher } from './mailcatcher'
 import { SonarScanner } from './sonar-scanner'
 import { Phing } from './phing'
+import { MariaDB } from './mariadb'
 
 export const features: Feature[] = [
   new PhpApache(),
   new Postgres(),
   new MySQL(),
+  new MariaDB(),
   new Node(),
   new Mapserver(),
   new Mailcatcher(),

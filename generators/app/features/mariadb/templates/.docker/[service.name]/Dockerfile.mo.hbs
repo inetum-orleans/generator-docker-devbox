@@ -1,0 +1,2 @@
+FROM mariadb:{{mariadbVersion}}
+{{#if authorName}}LABEL maintainer="{{authorName}}{{#if authorEmail}} <{{authorEmail}}>{{/if}}"{{/if}}
