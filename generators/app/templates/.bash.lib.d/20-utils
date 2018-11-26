@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+_utils_relative_path() {
+  ABSOLUTE_PATH="$1"
+  RELATIVE_PATH=$(echo "$ABSOLUTE_PATH" | sed "s;$DOCKER_DEVBOX_DIR;;g")
+  echo "$RELATIVE_PATH"
+}

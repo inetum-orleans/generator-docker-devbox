@@ -17,7 +17,7 @@ if [ -n "${DOCKER_DEVBOX_MO_DIRS}" ]; then
       for template in $TEMPLATES; do
         target=$(echo "$template" | sed -re 's/(.*).mo((.|$).*)/\1\2/g')
         mo <"$template"> "$target"
-        echo "$(_relative_path "$template") -> $(basename "$target")"
+        echo "$(tput setaf 2)$(_utils_relative_path "$template") -> $(basename "$target")$(tput sgr0)"
       done
     fi
   done

@@ -1,11 +1,24 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
-if [ "$(basename "$0")" = .bash_enter ]; then
-  DOCKER_DEVBOX_DIR=$(dirname "$0")
-else
-  DOCKER_DEVBOX_DIR=$PWD
+SOURCE="$0"
+if [ "$SOURCE" = "-bash" ]; then
+  SOURCE="${BASH_SOURCE[0]}"
 fi
-export DOCKER_DEVBOX_DIR
+
+if [ "$(basename "$SOURCE")" = .bash_enter ]; then
+  DOCKER_DEVBOX_DIR="$(dirname "$SOURCE")"
+else
+  DOCKER_DEVBOX_DIR="$PWD"
+fi
+
+if [ -d "$DOCKER_DEVBOX_DIR"/.bash.lib.d ]; then
+  for lib_script in "$DOCKER_DEVBOX_DIR"/.bash.lib.d/*; do
+    # shellcheck source=/dev/null
+    . "$lib_script"
+  done
+fi
+
+autostash DOCKER_DEVBOX_DIR
 
 if [ -d "$DOCKER_DEVBOX_DIR"/.bash_enter.d ]; then
   for enter_script in "$DOCKER_DEVBOX_DIR"/.bash_enter.d/*; do

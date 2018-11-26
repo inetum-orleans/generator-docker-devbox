@@ -1,3 +1,3 @@
 #!/usr/bin/env sh
 
-run --workdir="$(_docker_devbox_map_workdir "/usr/src/app")" maven mvn "$@"
+run --workdir="$(_docker_workdir "/usr/src/app")" maven mvn "$@"

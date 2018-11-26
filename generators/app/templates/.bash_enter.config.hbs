@@ -3,21 +3,23 @@
 #####################################################
 
 # List of supported environments
-export DOCKER_DEVBOX_ENV_LIST="prod stage dev"
+autostash DOCKER_DEVBOX_ENV_LIST="prod stage dev"
 
 # List of files to symlink based on environment
-export DOCKER_DEVBOX_ENV_SYMLINKS="{{envFiles}}"
+autostash DOCKER_DEVBOX_ENV_SYMLINKS="{{envFiles}}"
 
 # List of directories containing *.mo.* files to pass through mo templating.
 # Directories ending with "[*]" will be processed recursively.
-export DOCKER_DEVBOX_MO_DIRS="{{moDirectories}}"
+autostash DOCKER_DEVBOX_MO_DIRS="{{moDirectories}}"
 
 ###########################################
 # Global variables for .bash_enter script #
 ###########################################
 
-# CA Certificates to copy inside containers. Should be provided as global environment variable.
-# export DOCKER_DEVBOX_CA_CERTIFICATES="/etc/ssl/certs/GFI*.pem" "/etc/ssl/certs/*.local.pem"
+# Custom CA certificates to install inside containers.
+# autostash DOCKER_DEVBOX_CA_CERTIFICATES="/etc/ssl/certs/GFI*.pem" "/etc/ssl/certs/*.local.pem"
+autostash DOCKER_DEVBOX_CA_CERTIFICATES=${DOCKER_DEVBOX_CA_CERTIFICATES:-}
 
-# Docker registry to push images. Should be provided as global environment variable.
-# export DOCKER_DEVBOX_REGISTRY=docker-registry.etudes.local/
+# Docker registry to push images. Should ends with '/' if defined.
+# autostash DOCKER_DEVBOX_REGISTRY=docker-registry.etudes.local/
+autostash DOCKER_DEVBOX_REGISTRY=${DOCKER_DEVBOX_REGISTRY:-}

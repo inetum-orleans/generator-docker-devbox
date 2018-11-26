@@ -31,7 +31,6 @@ describe('generator-docker-devbox:app', () => {
     it('should have default .bash_enter.d scripts', () => {
       assert.file([
         '.bash_enter.d/01-env',
-        '.bash_enter.d/03-functions',
         '.bash_enter.d/05-variables',
         '.bash_enter.d/10-path',
         '.bash_enter.d/12-install-jq',

@@ -2,8 +2,8 @@
 
 if [ "$1" = "--default-entrypoint" ]; then
   shift
-  IMAGE=$(_docker_devbox_find_service_image "$1")
-  ENTRYPOINT=$(_docker_devbox_find_image_entrypoint "$IMAGE")
+  IMAGE=$(_docker_find_service_image "$1")
+  ENTRYPOINT=$(_docker_find_image_entrypoint "$IMAGE")
   dc run --rm --entrypoint "$ENTRYPOINT" "$@"
 else
   dc run --rm "$@"

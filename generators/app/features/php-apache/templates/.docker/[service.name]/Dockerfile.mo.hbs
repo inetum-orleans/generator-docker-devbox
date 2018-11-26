@@ -103,6 +103,7 @@ RUN apt-get update -y && apt-get install -y ssmtp && rm -rf /var/lib/apt/lists/*
 && echo 'sendmail_path = "/usr/sbin/ssmtp -t"' > /usr/local/etc/php/conf.d/mail.ini
 {{/hasFeature}}
 
+# TODO: Use volume
 COPY {{service.name}}/conf.d/* /usr/local/etc/php/conf.d/
 
 # Fix write permissions on Linux/Mac

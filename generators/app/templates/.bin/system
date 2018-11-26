@@ -1,7 +1,15 @@
 #!/usr/bin/env sh
 
-. "$DOCKER_DEVBOX_DIR/.bash_leave.d/90-cleanup-path"
+if [ -d "$DOCKER_DEVBOX_DIR"/.bash.lib.d ]; then
+  for lib_script in "$DOCKER_DEVBOX_DIR"/.bash.lib.d/*; do
+    # shellcheck source=/dev/null
+    . "$lib_script"
+  done
+fi
+
+OLD_PATH=PATH
+unstash PATH
 
 $@
 
-. "$DOCKER_DEVBOX_DIR/.bash_enter.d/10-path"
+stash PATH="$OLD_PATH"

@@ -17,23 +17,46 @@ VIRTUALHOST_DEST="${USER_NGINX_PROXY_PATH}/vhost.d/${DOCKER_DEVBOX_DOMAIN_PREFIX
 VIRTUALHOST_LOCATION="${PROJECT_NGINX_PROXY_PATH}/vhost.d/virtualhost_location"
 VIRTUALHOST_LOCATION_DEST="${USER_NGINX_PROXY_PATH}/vhost.d/${DOCKER_DEVBOX_DOMAIN_PREFIX}.${DOCKER_DEVBOX_DOMAIN}_location"
 
-if _docker_devbox_cp_file_if_different "$CERT_KEY" "$CERT_KEY_DEST"; then
+_cp_file_if_different() {
+SRC="$1"
+DEST="$2"
+
+if [ -f "$SRC" ] && [ ! -f "$DEST" ]; then
+  cp -f "$SRC" "$DEST"
+  return 0
+else
+  if [ ! -f "$SRC" ] && [ -f "$DEST" ]; then
+    rm "$DEST"
+    return 0
+  else
+    if [ -f "$SRC" ] && [ -f "$DEST" ] && ! cmp -s "$SRC" "$DEST"; then
+      cp -f "$SRC" "$DEST"
+      return 0
+    fi
+  fi
+fi
+
+return 1
+}
+
+if _cp_file_if_different "$CERT_KEY" "$CERT_KEY_DEST"; then
   SHOULD_RESTART_CONTAINER=1
 fi
 
-if _docker_devbox_cp_file_if_different "$CERT_CRT" "$CERT_CRT_DEST"; then
+if _cp_file_if_different "$CERT_CRT" "$CERT_CRT_DEST"; then
   SHOULD_RESTART_CONTAINER=1
 fi
 
-if _docker_devbox_cp_file_if_different "$VIRTUALHOST" "$VIRTUALHOST_DEST"; then
+if _cp_file_if_different "$VIRTUALHOST" "$VIRTUALHOST_DEST"; then
  SHOULD_RESTART_CONTAINER=1
 fi
 
-if _docker_devbox_cp_file_if_different "$VIRTUALHOST_LOCATION" "$VIRTUALHOST_LOCATION_DEST"; then
+if _cp_file_if_different "$VIRTUALHOST_LOCATION" "$VIRTUALHOST_LOCATION_DEST"; then
   SHOULD_RESTART_CONTAINER=1
 fi
 
 if [ "$SHOULD_RESTART_CONTAINER" -eq "1" ]; then
-  echo "nginx-proxy configuration has been applied. Restarting nginx-container ..."
+  echo "$(tput setaf 3)nginx-proxy configuration has been applied. Restarting nginx-proxy container ...$(tput sgr0)"
   docker restart nginx-proxy
+  echo "$(tput setaf 2)nginx-proxy container has been restarted."
 fi

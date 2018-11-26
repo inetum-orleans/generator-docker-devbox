@@ -1,6 +1,4 @@
 #!/usr/bin/env sh
-source "$DOCKER_DEVBOX_DIR/.bash_enter.d/03-functions"
-
-
+. "$DOCKER_DEVBOX_DIR/.bash.lib.d/docker"
 
 run --default-entrypoint {{service.name}} $@

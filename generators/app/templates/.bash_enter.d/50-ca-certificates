@@ -19,14 +19,14 @@ if [ -n "$DOCKER_DEVBOX_CA_CERTIFICATES" ]; then
 
   if [ -n "$(ls -A "$CA_CERTIFICATES_DIR")" ]; then
     for cert in "$CA_CERTIFICATES_DIR"/*; do
-      basename "$cert"
+      echo "$(tput setaf 2)$(basename "$cert")$(tput sgr0)"
       FILE_COUNT=$((FILE_COUNT+1))
     done
   fi
 
   if [ "$FILE_COUNT" -eq "0" ]; then
-    echo "No certificates found at $DOCKER_DEVBOX_CA_CERTIFICATES"
-    echo "Creating .empty file"
+    echo "$(tput setaf 3)No certificates found at ${DOCKER_DEVBOX_CA_CERTIFICATES}$(tput sgr0)"
+    echo "$(tput setaf 3)Creating .empty file$(tput sgr0)"
     touch "$CA_CERTIFICATES_DIR/.empty"
   fi
 fi

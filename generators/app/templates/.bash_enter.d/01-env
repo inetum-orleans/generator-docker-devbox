@@ -1,6 +1,5 @@
 #!/usr/bin/env sh
 
-
 BASH_ENTER_CONFIG_FILE="$DOCKER_DEVBOX_DIR/.bash_enter.config"
 # shellcheck source=/dev/null
 [ -f "$BASH_ENTER_CONFIG_FILE" ] && . "$BASH_ENTER_CONFIG_FILE"

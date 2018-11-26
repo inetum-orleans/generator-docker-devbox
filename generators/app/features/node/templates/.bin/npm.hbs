@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-. "$DOCKER_DEVBOX_DIR/.bash_enter.d/03-functions"
+. "$DOCKER_DEVBOX_DIR/.bash.lib.d/docker"
 
 if [ "$1" -eq "run" ] && [ "$2" -eq "serve" ]; then
   PORTS=" -p ${DOCKER_DEVBOX_PORT_PREFIX}88:80"
@@ -8,4 +8,4 @@ else
   PORTS=""
 fi
 
-run$PORTS --workdir="$(_docker_devbox_map_workdir "/app")" {{service.name}} npm "$@"
+run$PORTS --workdir="$(_docker_workdir "/app")" {{service.name}} npm "$@"
