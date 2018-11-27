@@ -1,2 +1,8 @@
 FROM mariadb:{{mariadbVersion}}
 {{#if authorName}}LABEL maintainer="{{authorName}}{{#if authorEmail}} <{{authorEmail}}>{{/if}}"{{/if}}
+
+# Mount this volume to help loading/exporting dumps
+RUN mkdir /workdir
+VOLUME /workdir
+
+RUN usermod -u ${HOST_UID:-1000} mysql && groupmod -g ${HOST_GID:-1000} mysql

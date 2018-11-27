@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
 . "$DOCKER_DEVBOX_DIR/.bash.lib.d/50-docker"
 
-#TODO: This won't work ... Check postgreSQL script for example
-dc exec --user root {{instance.name}} mysql -u{{projectName}} -p "$@"
+run --user root --workdir="$(_docker_workdir "/workdir")" {{instance.name}} mysql -h{{instance.name}} -u{{projectName}} -p{{projectName}} "$@"
