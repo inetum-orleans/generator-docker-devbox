@@ -4,12 +4,6 @@ BASH_ENTER_CONFIG_FILE="$DOCKER_DEVBOX_DIR/.bash_enter.config"
 # shellcheck source=/dev/null
 [ -f "$BASH_ENTER_CONFIG_FILE" ] && . "$BASH_ENTER_CONFIG_FILE"
 
-
-BASH_ENTER_ENV_USER_FILE="$HOME/.docker-devbox/.bash_enter.env"
-# shellcheck source=/dev/null
-[ -f "$BASH_ENTER_ENV_USER_FILE" ] && . "$BASH_ENTER_ENV_USER_FILE"
-
-
 BASH_ENTER_ENV_FILE="$DOCKER_DEVBOX_DIR/.bash_enter.env"
 cp -n "$BASH_ENTER_ENV_FILE.dist" "$BASH_ENTER_ENV_FILE"
 # shellcheck source=/dev/null
