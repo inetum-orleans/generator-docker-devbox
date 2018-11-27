@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-run --workdir="$(_docker_workdir "/usr/src/app")" maven mvn "$@"
