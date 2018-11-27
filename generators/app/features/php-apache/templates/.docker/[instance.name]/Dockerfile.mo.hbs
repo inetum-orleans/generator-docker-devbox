@@ -54,8 +54,8 @@ ENV COMPOSER_HOME /composer
 ENV PATH /composer/vendor/bin:$PATH
 ENV COMPOSER_ALLOW_SUPERUSER 1
 
-RUN curl -sL -o /tmp/composer-setup.php https://getcomposer.org/installer \
-&& curl -sL -o /tmp/composer-setup.sig https://composer.github.io/installer.sig \
+RUN curl -fsSL -o /tmp/composer-setup.php https://getcomposer.org/installer \
+&& curl -fsSL -o /tmp/composer-setup.sig https://composer.github.io/installer.sig \
 && php -r "if (hash('SHA384', file_get_contents('/tmp/composer-setup.php')) !== trim(file_get_contents('/tmp/composer-setup.sig'))) { unlink('/tmp/composer-setup.php'); echo 'Invalid installer' . PHP_EOL; exit(1); }" \
 && php /tmp/composer-setup.php --no-ansi --install-dir=/usr/local/bin --filename=composer --snapshot && rm -rf /tmp/composer-setup.php \
 && apt-get update -y && apt-get install -y git zip unzip && rm -rf /var/lib/apt/lists/* \
@@ -67,20 +67,20 @@ RUN echo "date.timezone=${PHP_TIMEZONE:-UTC}" > $PHP_INI_DIR/conf.d/composer.ini
 {{/inArray}}
 {{#inArray phpTools "drupal-console"}}
 
-RUN curl -sL -o drupal.phar https://drupalconsole.com/installer \
+RUN curl -fsSL -o drupal.phar https://drupalconsole.com/installer \
 && mv drupal.phar /usr/local/bin/drupal && chmod +x /usr/local/bin/drupal
 
 {{/inArray}}
 {{#inArray phpTools "drush-launcher"}}
 
-RUN curl -sL -o drush.phar https://github.com/drush-ops/drush-launcher/releases/download/0.6.0/drush.phar \
+RUN curl -fsSL -o drush.phar https://github.com/drush-ops/drush-launcher/releases/download/0.6.0/drush.phar \
 && mv drush.phar /usr/local/bin/drush && chmod +x /usr/local/bin/drush
 {{/inArray}}
 
 {{#hasFeature 'postgresql'}}
 
 RUN apt-get update -y && apt-get install -y gnupg && rm -rf /var/lib/apt/lists/* \
-&& curl -sL https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - \
+&& curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - \
 && echo "deb http://apt.postgresql.org/pub/repos/apt/ stretch-pgdg main" >> /etc/apt/sources.list.d/postgresql.list \
 && apt-get update -y && apt-get install -y postgresql-client-9.6 && rm -rf /var/lib/apt/lists/*
 {{/hasFeature}}
@@ -91,7 +91,7 @@ RUN apt-get update -y && apt-get install -y mysql-client && rm -rf /var/lib/apt/
 {{#inArray phpTools "wkhtmltopdf"}}
 
 RUN apt-get update -y && apt-get install -y lsb-release \
-&& curl -sL -o wkhtmltopdf.deb https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.$(lsb_release -cs)_amd64.deb \
+&& curl -fsSL -o wkhtmltopdf.deb https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.$(lsb_release -cs)_amd64.deb \
 && apt-get install -y ./wkhtmltopdf.deb && rm -rf /var/lib/apt/lists/* \
 && rm wkhtmltopdf.deb
 {{/inArray}}

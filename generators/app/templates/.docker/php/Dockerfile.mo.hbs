@@ -64,8 +64,8 @@ ENV PATH /composer/vendor/bin:$PATH
 ENV COMPOSER_ALLOW_SUPERUSER 1
 
 # Setup the Composer installer
-RUN curl -o /tmp/composer-setup.php https://getcomposer.org/installer \
-&& curl -o /tmp/composer-setup.sig https://composer.github.io/installer.sig \
+RUN curl -fsSL -o /tmp/composer-setup.php https://getcomposer.org/installer \
+&& curl -fsSL -o /tmp/composer-setup.sig https://composer.github.io/installer.sig \
 && php -r "if (hash('SHA384', file_get_contents('/tmp/composer-setup.php')) !== trim(file_get_contents('/tmp/composer-setup.sig'))) { unlink('/tmp/composer-setup.php'); echo 'Invalid installer' . PHP_EOL; exit(1); }"
 
 # Install Composer
@@ -80,7 +80,7 @@ RUN composer global require hirak/prestissimo
 
 {{#if drupalInit ~}}
   # Download drupalconsole
-  RUN curl https://drupalconsole.com/installer -L -o drupal.phar
+  RUN curl -fsSL -o drupal.phar https://drupalconsole.com/installer
 
   # Install drupalconsole
   RUN mv drupal.phar /usr/local/bin/drupal && \
@@ -91,7 +91,7 @@ RUN composer global require hirak/prestissimo
   {{#eq dbImage 'postgres' ~}}
     # PSQL Client for drush commands
     RUN apt-get update -y && apt-get install -y gnupg && rm -rf /var/lib/apt/lists/*
-    RUN curl https://www.postgresql.org/media/keys/ACCC4CF8.asc -L | apt-key add -
+    RUN curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
     RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ stretch-pgdg main" >> /etc/apt/sources.list.d/postgresql.list
     RUN apt-get update -y && apt-get install -y postgresql-client-9.6 && rm -rf /var/lib/apt/lists/*
   {{/eq ~}}
@@ -103,7 +103,7 @@ RUN composer global require hirak/prestissimo
 {{/if}}
 
 # wkhtmltopdf
-RUN curl -LO https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.4/wkhtmltox-0.12.4_linux-generic-amd64.tar.xz
+RUN curl -fsSL O https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.4/wkhtmltox-0.12.4_linux-generic-amd64.tar.xz
 RUN tar -xf wkhtmltox-0.12.4_linux-generic-amd64.tar.xz
 RUN cp wkhtmltox/bin/* /usr/bin/
 RUN rm -Rf wkhtmltox
