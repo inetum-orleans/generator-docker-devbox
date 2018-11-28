@@ -44,8 +44,8 @@ export class DockerDevboxExt implements Extension {
   }
 
   xdebug (): this {
-    this.builder.environment('XDEBUG_CONFIG', 'remote-debug remote_host=${HOST_IP}')
-    this.builder.environment('PHP_IDE_CONFIG', '${DOCKER_DEVBOX_DOMAIN_PREFIX}.${DOCKER_DEVBOX_DOMAIN}')
+    this.builder.environment('XDEBUG_CONFIG', 'idekey={{projectName}} remote_host=${HOST_IP}')
+    this.builder.environment('PHP_IDE_CONFIG', 'serverName={{projectName}}')
     return this
   }
 
