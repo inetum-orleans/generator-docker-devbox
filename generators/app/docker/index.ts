@@ -34,7 +34,7 @@ export class DockerDevboxExt implements Extension {
     return this
   }
 
-  virtualHost (subdomain?: string): this {
+  private virtualHost (subdomain?: string): this {
     let virtualHost = '${DOCKER_DEVBOX_DOMAIN_PREFIX}.${DOCKER_DEVBOX_DOMAIN}'
     if (subdomain) {
       virtualHost = subdomain + '.' + virtualHost

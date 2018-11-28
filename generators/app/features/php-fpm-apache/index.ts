@@ -62,7 +62,7 @@ export class PhpFpmApache extends Php implements DockerComposeFeature<PhpFpmApac
         .volume.relative('apache.conf', '/usr/local/apache2/conf/custom/apache.conf')
     } else {
       builder.service(context.instances.web.name)
-        .ext(DockerDevboxExt).nginxProxy()
+        .ext(DockerDevboxExt).nginxProxy(context.instances.web.name === this.otherInstanceNames[0] ? undefined : context.instances.web.name)
     }
   }
 }

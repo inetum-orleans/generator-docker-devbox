@@ -47,7 +47,7 @@ export class PhpFpmNginx extends Php implements DockerComposeFeature<PhpFpmNginx
         .volume.relative('nginx.conf', '/etc/nginx/conf.d/default.conf')
     } else {
       builder.service(context.instances.web.name)
-        .ext(DockerDevboxExt).nginxProxy()
+        .ext(DockerDevboxExt).nginxProxy(context.instances.web.name === this.otherInstanceNames[0] ? undefined : context.instances.web.name)
     }
   }
 }
