@@ -9,9 +9,11 @@ import { SonarScanner } from './sonar-scanner'
 import { Phing } from './phing'
 import { MariaDB } from './mariadb'
 import { Solr } from './solr'
+import { PhpFpmNginx } from './php-fpm-nginx'
 
 export const features: Feature[] = [
   new PhpApache(),
+  new PhpFpmNginx(),
   new Postgres(),
   new MySQL(),
   new MariaDB(),

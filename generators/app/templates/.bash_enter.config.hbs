@@ -17,9 +17,9 @@ autostash DOCKER_DEVBOX_MO_DIRS="{{moDirectories}}"
 ###########################################
 
 # Custom CA certificates to install inside containers.
-# autostash DOCKER_DEVBOX_CA_CERTIFICATES="/etc/ssl/certs/GFI*.pem" "/etc/ssl/certs/*.local.pem"
-autostash DOCKER_DEVBOX_CA_CERTIFICATES=${DOCKER_DEVBOX_CA_CERTIFICATES:-}
+# autostash DOCKER_DEVBOX_CA_CERTIFICATES="/etc/ssl/certs/GFI_Informatique*.pem" "/etc/ssl/certs/fwca.annuaire.groupe.local.pem"
+autostash DOCKER_DEVBOX_CA_CERTIFICATES="${DOCKER_DEVBOX_CA_CERTIFICATES:-}"
 
 # Docker registry to push images. Should ends with '/' if defined.
 # autostash DOCKER_DEVBOX_REGISTRY=docker-registry.etudes.local/
-autostash DOCKER_DEVBOX_REGISTRY=${DOCKER_DEVBOX_REGISTRY:-}
+autostash DOCKER_DEVBOX_REGISTRY="${DOCKER_DEVBOX_REGISTRY:-}"

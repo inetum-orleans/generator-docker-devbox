@@ -2,10 +2,13 @@ import { ChoiceType } from 'inquirer'
 import * as Generator from 'yeoman-generator'
 import { FeatureContext } from '..'
 import * as path from 'path'
-import { Templating } from '../templating'
+import { BulkOptions, Templating } from '../templating'
 import { ConfigBuilder } from '@gfi-centre-ouest/docker-compose-builder'
 import { Helpers } from '../helpers'
 import { NameManager, PortsManager } from '../managers'
+import * as glob from 'glob'
+
+const clone = require('lodash/clone')
 
 export interface FeatureInstance<F extends Feature> {
   name: string
@@ -24,8 +27,9 @@ export interface FeatureAsyncInit {
 export interface Feature {
   name: string
   label: string
-  directory: string
+  directory: string | string[]
   choice: ChoiceType
+  instanceName: string
 
   duplicateAllowed?: boolean
   excludeFiles?: (string | RegExp)[]
@@ -36,11 +40,11 @@ export interface Feature {
   envFiles? (context: FeatureContext<this>): string[]
 
   /**
-   * Creates an instance with unique name, avoiding collision with already created features.
+   * Creates instances with unique names, avoiding services collision with already created features.
    *
    * @param manager instance names already registered
    */
-  instance (manager: NameManager): FeatureInstance<this>
+  instances (manager: NameManager): { [name: string]: FeatureInstance<any> }
 
   /**
    * Additional questions to ask when this feature is selected.
@@ -57,25 +61,30 @@ export interface Feature {
   write (templating: Templating, helpers: Helpers, context: FeatureContext<this>): void
 }
 
+export function dirnameFrom (name: string, common: boolean = true) {
+  if (common) {
+    return path.join(__dirname, 'common', name)
+  }
+  return path.join(__dirname, name)
+}
+
 export abstract class DefaultFeature implements Feature {
   abstract name: string
   abstract label: string
   abstract instanceName: string
-  abstract directory: string
+  abstract directory: string | string[]
+
+  otherInstanceNames: string[] = []
 
   excludeFiles: (string | RegExp)[] = []
   appendFiles: (string | RegExp)[] = ['.gitignore.hbs']
 
-  private uniqueName (name: string, count: number) {
-    return `${name}${count}`
-  }
-
-  instance (manager: NameManager): FeatureInstance<this> {
-    const registered = manager.uniqueName(this.instanceName)
+  instance (manager: NameManager, instanceName = this.instanceName): FeatureInstance<this> {
+    const registered = manager.uniqueName(instanceName)
 
     let filepathDestinationTransformer: ((filepath: string) => string) | undefined = undefined
 
-    if (registered.name !== this.instanceName) {
+    if (registered.name !== instanceName) {
       filepathDestinationTransformer = (filepath) => {
         if (filepath.startsWith('.bin/')) {
           const ext = path.extname(filepath)
@@ -90,6 +99,18 @@ export abstract class DefaultFeature implements Feature {
       filepathDestinationTransformer,
       feature: this
     }
+  }
+
+  instances (manager: NameManager): { [name: string]: FeatureInstance<any> } {
+    const instances = {
+      [this.instanceName]: this.instance(manager)
+    }
+
+    for (const otherInstanceName of this.otherInstanceNames) {
+      instances[otherInstanceName] = this.instance(manager, otherInstanceName)
+    }
+
+    return instances
   }
 
   get choice (): ChoiceType {
@@ -120,17 +141,26 @@ export abstract class DefaultFeature implements Feature {
     return ['**']
   }
 
-  write (templating: Templating, helpers: Helpers, context: FeatureContext<this>) {
-    this.beforeWrite(templating, helpers, context)
-    templating.bulk(this.files(context), context, {
-      excludeFiles: this.excludeFiles,
-      appendFiles: this.appendFiles,
-      filepathDestinationTransformer: context.instance.filepathDestinationTransformer,
-      cwd: path.join(this.directory, 'templates')
-    })
+  writeOptions (options: glob.IOptions & BulkOptions, context: FeatureContext<this>, directory: string): glob.IOptions & BulkOptions {
+    return options
   }
 
-  beforeWrite (templating: Templating, helpers: Helpers, context: FeatureContext<this>) {
-    // Do nothing
+  write (templating: Templating, helpers: Helpers, context: FeatureContext<this>) {
+    let directories = this.directory
+
+    if (!Array.isArray(this.directory)) {
+      directories = [this.directory]
+    }
+
+    for (const directory of directories) {
+      let options: glob.IOptions & BulkOptions = {
+        excludeFiles: clone(this.excludeFiles),
+        appendFiles: clone(this.appendFiles),
+        filepathDestinationTransformer: context.instance.filepathDestinationTransformer,
+        cwd: path.join(directory, 'templates')
+      }
+      options = this.writeOptions(options, context, directory)
+      templating.bulk(this.files(context), context, options)
+    }
   }
 }

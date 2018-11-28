@@ -40,14 +40,8 @@ RUN apt-get update -y && apt-get install -y libpq-dev && rm -rf /var/lib/apt/lis
 
 RUN docker-php-ext-install pdo pdo_mysql
 {{/hasFeature}}
-{{#inArray apacheExtensions "rewrite"}}
+{{> @partial-block }}
 
-RUN a2enmod rewrite
-{{/inArray}}
-{{#inArray apacheExtensions "proxy-http"}}
-
-RUN a2enmod proxy && a2enmod proxy_http
-{{/inArray}}
 {{#inArray phpTools "composer"}}
 
 ENV COMPOSER_HOME /composer

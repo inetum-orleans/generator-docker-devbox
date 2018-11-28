@@ -1,1 +1,10 @@
-{{> php/Dockerfile phpMode='apache'}}
+{{#> php/Dockerfile phpMode='apache'}}
+{{#inArray apacheExtensions "rewrite"}}
+
+RUN a2enmod rewrite
+{{/inArray}}
+{{#inArray apacheExtensions "proxy-http"}}
+
+RUN a2enmod proxy && a2enmod proxy_http
+{{/inArray}}
+{{/php/Dockerfile}}

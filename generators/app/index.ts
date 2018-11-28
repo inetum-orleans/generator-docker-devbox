@@ -43,6 +43,7 @@ export interface FeatureContext<F extends Feature> extends AnswersMain, Generato
   group: AnswersFeatures
   options: { [name: string]: any }
   instance: FeatureInstance<F>
+  instances: { [name: string]: FeatureInstance<F> }
 }
 
 export type AnswersFeatures = { [featureId: string]: AnswersFeature }
@@ -282,14 +283,15 @@ export default class AppGenerator extends Generator {
     for (const answersFeatures of this.answersMain.features) {
       for (const featureId of Object.keys(answersFeatures)) {
         const feature = featureById[featureId]
-        const instance = feature.instance(instanceNameManager)
+        const instances = feature.instances(instanceNameManager)
 
         const context: FeatureContext<typeof feature> = {
           ...this.answersMain,
           options: this.options,
           group: answersFeatures,
           ...answersFeatures[featureId],
-          instance
+          instance: instances[feature.instanceName],
+          instances
         }
 
         feature.write(this.templating, this.helpers, context)
