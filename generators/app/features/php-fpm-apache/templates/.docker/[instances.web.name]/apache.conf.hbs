@@ -1,0 +1,20 @@
+<VirtualHost *:80>
+    ServerAdmin webmaster@localhost
+
+    <Directory />
+        AllowOverride none
+        Require all denied
+    </Directory>
+
+    DocumentRoot "/usr/local/apache2/htdocs/{{instances.web.name}}"
+    <Directory "/usr/local/apache2/htdocs/{{instances.web.name}}">
+        DirectoryIndex index.html index.php
+        Options Indexes FollowSymLinks
+        AllowOverride None
+        Require all granted
+    </Directory>
+
+    <FilesMatch \.php$>
+        SetHandler "proxy:fcgi://{{instance.name}}:9000"
+    </FilesMatch>
+</VirtualHost>

@@ -10,10 +10,12 @@ import { Phing } from './phing'
 import { MariaDB } from './mariadb'
 import { Solr } from './solr'
 import { PhpFpmNginx } from './php-fpm-nginx'
+import { PhpFpmApache } from './php-fpm-apache'
 
 export const features: Feature[] = [
-  new PhpApache(),
+  new PhpFpmApache(),
   new PhpFpmNginx(),
+  new PhpApache(),
   new Postgres(),
   new MySQL(),
   new MariaDB(),

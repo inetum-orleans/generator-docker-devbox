@@ -65,11 +65,15 @@ export abstract class Php extends DefaultFeature implements DockerComposeFeature
     ]
   }
 
+  get projectVolume () {
+    return '/var/www/html'
+  }
+
   dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<Php>, portsManager: PortsManager, dev?: boolean): void {
     if (!dev) {
       builder.service(context.instance.name)
         .with.default()
-        .volume.project('/var/www/html')
+        .volume.project(this.projectVolume)
 
       if (context.phpTools.indexOf('composer') === -1) {
         builder.service(context.instance.name)
