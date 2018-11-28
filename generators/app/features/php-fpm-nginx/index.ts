@@ -38,7 +38,7 @@ export class PhpFpmNginx extends Php implements DockerComposeFeature<PhpFpmNginx
   }
 
   dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<PhpFpmNginx>, portsManager: PortsManager, dev?: boolean): void {
-    super.dockerComposeConfiguration(builder, context, portsManager)
+    super.dockerComposeConfiguration(builder, context, portsManager, dev)
 
     if (!dev) {
       builder.service(context.instances.web.name)

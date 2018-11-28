@@ -52,13 +52,8 @@ export class PhpFpmApache extends Php implements DockerComposeFeature<PhpFpmApac
       }]
   }
 
-
-  get projectVolume () {
-    return '/usr/local/apache2/htdocs'
-  }
-
   dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<PhpFpmApache>, portsManager: PortsManager, dev?: boolean): void {
-    super.dockerComposeConfiguration(builder, context, portsManager)
+    super.dockerComposeConfiguration(builder, context, portsManager, dev)
 
     if (!dev) {
       builder.service(context.instances.web.name)

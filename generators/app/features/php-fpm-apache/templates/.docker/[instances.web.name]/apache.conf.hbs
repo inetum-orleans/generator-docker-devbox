@@ -6,8 +6,8 @@
         Require all denied
     </Directory>
 
-    DocumentRoot "/usr/local/apache2/htdocs/{{instances.web.name}}"
-    <Directory "/usr/local/apache2/htdocs/{{instances.web.name}}">
+    DocumentRoot "/var/www/html/{{instances.web.name}}"
+    <Directory "/var/www/html/{{instances.web.name}}">
         DirectoryIndex index.html index.php
         Options Indexes FollowSymLinks
         AllowOverride None
