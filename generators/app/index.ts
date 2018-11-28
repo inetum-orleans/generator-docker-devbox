@@ -17,6 +17,8 @@ import chalk from 'chalk'
 import { bash } from './system'
 import { NameManager, PortsManager } from './managers'
 
+const cloneDeep = require('lodash/cloneDeep')
+
 const yosay = require('yosay')
 
 interface AnswersStart extends Generator.Answers {
@@ -206,7 +208,7 @@ export default class AppGenerator extends Generator {
 
         for (const feature of features) {
           if (feature.questions && answersFeatures[`features~${featuresGroup}`].indexOf(feature.name) > -1) {
-            const featureQuestions = feature.questions()
+            const featureQuestions = cloneDeep(feature.questions())
             if (featureQuestions) {
               this._applyFeatureToQuestions(feature, featuresGroup, featureQuestions)
               const featureAnswers = await this.prompt(featureQuestions)
