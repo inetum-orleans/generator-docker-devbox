@@ -5,12 +5,27 @@ import * as Generator from 'yeoman-generator'
 import * as Mustache from 'mustache'
 import * as glob from 'glob'
 
-const path = require('path')
+import * as path from 'path'
+
+import * as realFs from 'fs'
 
 export interface BulkOptions {
   excludeFiles?: (string | RegExp)[]
   appendFiles?: (string | RegExp)[]
   filepathDestinationTransformer?: (filepath: string) => string
+}
+
+function walkSync (dir: string, filelist: string[] = []) {
+  const files = realFs.readdirSync(dir)
+  files.forEach(function (file) {
+    const fp = path.join(dir, file)
+    if (realFs.statSync(fp).isDirectory()) {
+      filelist = walkSync(fp, filelist)
+    } else {
+      filelist.push(fp)
+    }
+  })
+  return filelist
 }
 
 /**
@@ -24,6 +39,16 @@ export class Templating {
                public destinationRoot: string) {
     this.handlebars = Handlebars.create()
     this.handlebarsHelpers = handlebarsHelpers({ handlebars: this.handlebars })
+
+    const partialsDirectory = path.join(__dirname, 'partials')
+
+    const partials = walkSync(partialsDirectory).filter((f) => f.endsWith('.hbs'))
+    for (const partial of partials) {
+      const partialContent = realFs.readFileSync(partial).toString('utf-8')
+      const relative = path.relative(partialsDirectory, partial)
+      const key = relative.substr(0, relative.length - '.hbs'.length)
+      this.handlebars.registerPartial(key, partialContent)
+    }
   }
 
   processFactory (context: any, handlebarsOptions?: CompileOptions | RuntimeOptions) {
@@ -131,7 +156,7 @@ export class Templating {
 
         const append = options.appendFiles && this.match(filepath, options.appendFiles, options)
 
-        const absoluteFromFilepath = path.join(options.cwd, filepath)
+        const absoluteFromFilepath = path.join(options.cwd!, filepath)
 
         const toFilepath = options.filepathDestinationTransformer ?
           options.filepathDestinationTransformer(filepath) : filepath

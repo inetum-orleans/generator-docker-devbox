@@ -1,0 +1,117 @@
+FROM php:{{phpVersion}}-{{phpMode}}
+{{#if authorName}}LABEL maintainer="{{authorName}}{{#if authorEmail}} <{{authorEmail}}>{{/if}}"{{/if}}
+
+\{{#DOCKER_DEVBOX_CA_CERTIFICATES}}
+COPY .ca-certificates/* /usr/local/share/ca-certificates/
+RUN update-ca-certificates
+\{{/DOCKER_DEVBOX_CA_CERTIFICATES}}
+{{#inArray phpExtensions "gd"}}
+
+RUN apt-get update -y && apt-get install -y libpng-dev libfreetype6-dev libjpeg62-turbo-dev && rm -rf /var/lib/apt/lists/* \
+&& docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
+&& docker-php-ext-install gd
+{{/inArray}}
+{{#inArray phpExtensions "opcache"}}
+
+RUN docker-php-ext-install opcache
+{{/inArray}}
+{{#inArray phpExtensions "ldap"}}
+
+RUN apt-get update -y && apt-get install -y libldap2-dev && rm -rf /var/lib/apt/lists/* \
+&& docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu \
+&& docker-php-ext-install ldap
+{{/inArray}}
+{{#inArray phpExtensions "zip"}}
+
+RUN docker-php-ext-install zip
+{{/inArray}}
+{{#inArray phpExtensions "xdebug"}}
+
+RUN yes | pecl install xdebug{{#semver phpVersion '<7'}}-2.5.5{{/semver}} \
+&& echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" > /usr/local/etc/php/conf.d/xdebug.ini \
+&& echo "xdebug.remote_enable=on" >> /usr/local/etc/php/conf.d/xdebug.ini \
+&& echo "xdebug.remote_autostart=off" >> /usr/local/etc/php/conf.d/xdebug.ini
+{{/inArray}}
+{{#hasFeature 'postgresql'}}
+
+RUN apt-get update -y && apt-get install -y libpq-dev && rm -rf /var/lib/apt/lists/* && docker-php-ext-install pdo pdo_pgsql
+{{/hasFeature}}
+{{#hasFeature 'mysql'}}
+
+RUN docker-php-ext-install pdo pdo_mysql
+{{/hasFeature}}
+{{#inArray apacheExtensions "rewrite"}}
+
+RUN a2enmod rewrite
+{{/inArray}}
+{{#inArray apacheExtensions "proxy-http"}}
+
+RUN a2enmod proxy && a2enmod proxy_http
+{{/inArray}}
+{{#inArray phpTools "composer"}}
+
+ENV COMPOSER_HOME /composer
+ENV PATH /composer/vendor/bin:$PATH
+ENV COMPOSER_ALLOW_SUPERUSER 1
+
+RUN curl -fsSL -o /tmp/composer-setup.php https://getcomposer.org/installer \
+&& curl -fsSL -o /tmp/composer-setup.sig https://composer.github.io/installer.sig \
+&& php -r "if (hash('SHA384', file_get_contents('/tmp/composer-setup.php')) !== trim(file_get_contents('/tmp/composer-setup.sig'))) { unlink('/tmp/composer-setup.php'); echo 'Invalid installer' . PHP_EOL; exit(1); }" \
+&& php /tmp/composer-setup.php --no-ansi --install-dir=/usr/local/bin --filename=composer --snapshot && rm -rf /tmp/composer-setup.php \
+&& apt-get update -y && apt-get install -y git zip unzip && rm -rf /var/lib/apt/lists/* \
+&& composer global require hirak/prestissimo
+{{#semver phpVersion '<7'}}
+RUN echo "date.timezone=${PHP_TIMEZONE:-UTC}" > $PHP_INI_DIR/conf.d/composer.ini \
+&& echo "always_populate_raw_post_data=-1" > $PHP_INI_DIR/conf.d/composer.ini
+{{/semver}}
+{{/inArray}}
+{{#inArray phpTools "drupal-console"}}
+
+RUN curl -fsSL -o drupal.phar https://drupalconsole.com/installer \
+&& mv drupal.phar /usr/local/bin/drupal && chmod +x /usr/local/bin/drupal
+
+{{/inArray}}
+{{#inArray phpTools "drush-launcher"}}
+
+RUN curl -fsSL -o drush.phar https://github.com/drush-ops/drush-launcher/releases/download/0.6.0/drush.phar \
+&& mv drush.phar /usr/local/bin/drush && chmod +x /usr/local/bin/drush
+{{/inArray}}
+
+{{#hasFeature 'postgresql'}}
+
+RUN apt-get update -y && apt-get install -y gnupg && rm -rf /var/lib/apt/lists/* \
+&& curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - \
+&& echo "deb http://apt.postgresql.org/pub/repos/apt/ stretch-pgdg main" >> /etc/apt/sources.list.d/postgresql.list \
+&& apt-get update -y && apt-get install -y postgresql-client-9.6 && rm -rf /var/lib/apt/lists/*
+{{/hasFeature}}
+{{#hasFeature 'mysql'}}
+
+RUN apt-get update -y && apt-get install -y mysql-client && rm -rf /var/lib/apt/lists/*
+{{/hasFeature}}
+{{#inArray phpTools "wkhtmltopdf"}}
+
+RUN apt-get update -y && apt-get install -y lsb-release \
+&& curl -fsSL -o wkhtmltopdf.deb https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.$(lsb_release -cs)_amd64.deb \
+&& apt-get install -y ./wkhtmltopdf.deb && rm -rf /var/lib/apt/lists/* \
+&& rm wkhtmltopdf.deb
+{{/inArray}}
+{{#hasFeature 'mailcatcher'}}
+
+RUN apt-get update -y && apt-get install -y ssmtp && rm -rf /var/lib/apt/lists/* \
+&& echo "FromLineOverride=YES" >> /etc/ssmtp/ssmtp.conf \
+&& echo "mailhub=mailcatcher" >> /etc/ssmtp/ssmtp.conf \
+&& echo 'sendmail_path = "/usr/sbin/ssmtp -t"' > /usr/local/etc/php/conf.d/mail.ini
+{{/hasFeature}}
+
+# TODO: Use volume
+COPY {{instance.name}}/conf.d/* /usr/local/etc/php/conf.d/
+
+# Fix write permissions on Linux/Mac
+RUN usermod -u ${HOST_UID:-1000} www-data \
+&& groupmod -g ${HOST_GID:-1000} www-data
+{{#inArray phpTools "composer"}}
+
+RUN chown -R www-data:www-data $COMPOSER_HOME
+RUN mkdir -p "$COMPOSER_HOME/cache" && chown -R www-data:www-data "$COMPOSER_HOME/cache"
+VOLUME /composer/cache
+{{/inArray}}
