@@ -4,6 +4,8 @@ import * as Generator from 'yeoman-generator'
 import { RegistryClient } from '../../docker/registry'
 import { FeatureContext } from '../../index'
 import { PortsManager } from '../../managers'
+import * as glob from 'glob'
+import { BulkOptions } from '../../templating'
 
 export class Node extends DefaultFeature implements Feature, DockerComposeFeature<Node>, FeatureAsyncInit {
   name: string = 'node'
@@ -36,7 +38,29 @@ export class Node extends DefaultFeature implements Feature, DockerComposeFeatur
   }
 
   questions () {
-    return this.asyncQuestions
+    return [
+      ...this.asyncQuestions,
+      {
+        type: 'checkbox',
+        name: 'nodeTools',
+        message: 'Node Tools',
+        choices: ['node-sass'],
+        default: [],
+        store: true
+      }
+    ]
+  }
+
+  writeOptions<O extends glob.IOptions & BulkOptions> (options: O, context: FeatureContext<this>, directory: string): O {
+    if (!options.excludeFiles) {
+      options.excludeFiles = []
+    }
+
+    if (context.nodeTools.indexOf('node-sass') === -1) {
+      options.excludeFiles.push('.bin/node-sass.hbs')
+    }
+
+    return options
   }
 
   dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<Node>, portsManager: PortsManager, dev?: boolean): void {
