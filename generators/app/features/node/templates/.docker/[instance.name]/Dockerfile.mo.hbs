@@ -28,11 +28,22 @@ RUN yarn config set cafile ${NODE_EXTRA_CA_CERTS} --global
 RUN npm config set prefix /home/node/.npm-packages
 ENV PATH="${PATH}:/home/node/.npm-packages/bin"
 
+{{#inArray nodeTools "@vue/cli"}}
+
+RUN npm install -g @vue/cli
+{{/inArray}}
+{{#inArray nodeTools "@angular/cli"}}
+
+RUN npm install -g @angular/cli
+{{/inArray}}
+{{#inArray nodeTools "create-react-app"}}
+
+RUN npm install -g create-react-app
+{{/inArray}}
 {{#inArray nodeTools "node-sass"}}
 
 RUN npm install -g node-sass chokidar-cli compass-importer
 {{/inArray}}
 
 VOLUME /app
-VOLUME /home/node/.npm-packages
 VOLUME /home/node/.cache

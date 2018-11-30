@@ -8,4 +8,4 @@ else
   PORTS=""
 fi
 
-run$PORTS --workdir="$(_docker_workdir "/app")" --entrypoint npm {{instance.name}} "$@"
+run$PORTS --workdir="$(_docker_workdir "/app")" --entrypoint vue {{instance.name}} "$@"

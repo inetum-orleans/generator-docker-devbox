@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 . "$DOCKER_DEVBOX_DIR/.bash.lib.d/50-docker"
 
-if [ "$1" == "run" ] && [ "$2" == "serve" ]; then
+if [ "$1" == "serve" ] || [ "$1" == "s" ]; then
   PORTS=" -p ${DOCKER_DEVBOX_PORT_PREFIX}88:80"
   echo "Port mapping:$PORTS"
 else
   PORTS=""
 fi
 
-run$PORTS --workdir="$(_docker_workdir "/app")" --entrypoint npm {{instance.name}} "$@"
+run$PORTS --workdir="$(_docker_workdir "/app")" --entrypoint ng {{instance.name}} "$@"

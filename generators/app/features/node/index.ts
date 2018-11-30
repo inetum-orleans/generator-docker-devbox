@@ -44,7 +44,7 @@ export class Node extends DefaultFeature implements Feature, DockerComposeFeatur
         type: 'checkbox',
         name: 'nodeTools',
         message: 'Node Tools',
-        choices: ['node-sass'],
+        choices: ['@vue/cli', '@angular/cli', 'create-react-app', 'node-sass'],
         default: [],
         store: true
       }
@@ -54,6 +54,18 @@ export class Node extends DefaultFeature implements Feature, DockerComposeFeatur
   writeOptions<O extends glob.IOptions & BulkOptions> (options: O, context: FeatureContext<this>, directory: string): O {
     if (!options.excludeFiles) {
       options.excludeFiles = []
+    }
+
+    if (context.nodeTools.indexOf('@vue/cli') === -1) {
+      options.excludeFiles.push('.bin/vue.hbs')
+    }
+
+    if (context.nodeTools.indexOf('@angular/cli') === -1) {
+      options.excludeFiles.push('.bin/ng.hbs')
+    }
+
+    if (context.nodeTools.indexOf('create-react-app') === -1) {
+      options.excludeFiles.push('.bin/create-react-app.hbs')
     }
 
     if (context.nodeTools.indexOf('node-sass') === -1) {
