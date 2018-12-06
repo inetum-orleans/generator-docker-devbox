@@ -11,7 +11,7 @@ import { MariaDB } from './mariadb'
 import { Solr } from './solr'
 import { PhpFpmNginx } from './php-fpm-nginx'
 import { PhpFpmApache } from './php-fpm-apache'
-import {Redis} from "./redis";
+import { Redis } from './redis'
 
 export const features: Feature[] = [
   new PhpFpmApache(),
