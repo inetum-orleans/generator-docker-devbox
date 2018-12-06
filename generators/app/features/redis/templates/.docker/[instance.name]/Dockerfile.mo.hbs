@@ -1,0 +1,2 @@
+FROM redis:{{redisVersion}}
+{{#if authorName}}LABEL maintainer="{{authorName}}{{#if authorEmail}} <{{authorEmail}}>{{/if}}"{{/if}}

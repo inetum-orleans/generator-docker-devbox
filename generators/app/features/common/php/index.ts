@@ -46,7 +46,7 @@ export abstract class Php extends DefaultFeature implements DockerComposeFeature
         type: 'checkbox',
         name: 'phpExtensions',
         message: 'PHP Extensions',
-        choices: ['xdebug', 'gd', 'opcache', 'ldap', 'zip'],
+        choices: ['xdebug', 'gd', 'opcache', 'ldap', 'zip', 'redis'],
         default: ['xdebug'],
         store: true
       },
@@ -58,7 +58,8 @@ export abstract class Php extends DefaultFeature implements DockerComposeFeature
           { value: 'composer', name: 'Composer' },
           'wkhtmltopdf',
           { value: 'drupal-console', name: 'Drupal Console' },
-          { value: 'drush-launcher', name: 'Drush Launcher' }],
+          { value: 'drush-launcher', name: 'Drush Launcher' }
+        ],
         default: ['composer'],
         store: true
       }
