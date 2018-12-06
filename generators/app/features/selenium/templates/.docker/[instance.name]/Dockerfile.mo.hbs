@@ -1,0 +1,2 @@
+FROM selenium/standalone-chrome:{{seleniumVersion}}
+{{#if authorName}}LABEL maintainer="{{authorName}}{{#if authorEmail}} <{{authorEmail}}>{{/if}}"{{/if}}

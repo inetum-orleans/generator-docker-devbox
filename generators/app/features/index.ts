@@ -12,6 +12,7 @@ import { Solr } from './solr'
 import { PhpFpmNginx } from './php-fpm-nginx'
 import { PhpFpmApache } from './php-fpm-apache'
 import { Redis } from './redis'
+import { Selenium } from './selenium'
 
 export const features: Feature[] = [
   new PhpFpmApache(),
@@ -26,5 +27,6 @@ export const features: Feature[] = [
   new SonarScanner(),
   new Phing(),
   new Solr(),
-  new Redis()
+  new Redis(),
+  new Selenium()
 ]
