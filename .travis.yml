@@ -12,6 +12,8 @@ node_js:
   - 10
   - 8
   - 6
+env:
+  - DOCKER_DEVBOX_CA_CERTIFICATES="$TRAVIS_BUILD_DIR/.ca-certificates/GFI_Informatique*.pem"
 before_install:
   #- if [ "$TRAVIS_NODE_VERSION" = "11" ]; then .travis/docker-unarchive-cache.sh; fi
   - if [ "$TRAVIS_NODE_VERSION" = "11" ]; then .travis/docker-install.sh; fi
