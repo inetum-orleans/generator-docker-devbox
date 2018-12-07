@@ -3,3 +3,4 @@
 /generators/**/*.js
 /generators/**/*.js.map
 !/generators/**/templates/**
+.cfssl-cli/

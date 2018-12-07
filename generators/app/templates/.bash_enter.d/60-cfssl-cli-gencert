@@ -6,10 +6,15 @@ DESTINATION="$DOCKER_DEVBOX_DIR/.nginx-proxy/certs"
 DESTINATION_CRT="$DESTINATION/${DOCKER_DEVBOX_DOMAIN_PREFIX}.${DOCKER_DEVBOX_DOMAIN}.crt"
 DESTINATION_KEY="$DESTINATION/${DOCKER_DEVBOX_DOMAIN_PREFIX}.${DOCKER_DEVBOX_DOMAIN}.key"
 
+CONFIG_OPTION=""
+if [ -f "$CONFIG" ]; then
+  CONFIG_OPTION="--config $CONFIG "
+fi
+
 if [ -f "$CFSSL_CLI_EXE" ] && { [ ! -f "$DESTINATION_CRT" ] || [ ! -f "$DESTINATION_KEY" ]; }; then
    mkdir -p "$DESTINATION"
 
    echo "$(tput setaf 3)Generating SSL certificate for ${DOCKER_DEVBOX_DOMAIN_PREFIX}.${DOCKER_DEVBOX_DOMAIN} domain with cfssl-cli$(tput sgr0)"
-   cfssl-cli gencert --config "$CONFIG" --destination "$DESTINATION" "${DOCKER_DEVBOX_DOMAIN_PREFIX}.${DOCKER_DEVBOX_DOMAIN}"
+   cfssl-cli gencert "$CONFIG_OPTION"--destination "$DESTINATION" "${DOCKER_DEVBOX_DOMAIN_PREFIX}.${DOCKER_DEVBOX_DOMAIN}"
    echo "$(tput setaf 2)SSL certificate has been generated for ${DOCKER_DEVBOX_DOMAIN_PREFIX}.${DOCKER_DEVBOX_DOMAIN} domain$(tput sgr0)"
 fi
