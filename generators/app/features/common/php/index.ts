@@ -46,7 +46,7 @@ export abstract class Php extends DefaultFeature implements DockerComposeFeature
         type: 'checkbox',
         name: 'phpExtensions',
         message: 'PHP Extensions',
-        choices: ['xdebug', 'gd', 'opcache', 'ldap', 'zip', 'redis'],
+        choices: ['xdebug', 'gd', 'opcache', 'ldap', 'zip'],
         default: ['xdebug'],
         store: true
       },

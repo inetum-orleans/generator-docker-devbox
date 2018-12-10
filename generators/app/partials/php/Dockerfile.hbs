@@ -44,12 +44,8 @@ RUN yes | pecl install xdebug{{#semver phpVersion '<7'}}-2.5.5{{/semver}} \
 {{/inArray}}
 {{#hasFeature 'redis'}}
 
-RUN pecl install redis
+RUN pecl install redis && docker-php-ext-enable redis
 {{/hasFeature}}
-{{#inArray phpExtensions "redis"}}
-
-RUN docker-php-ext-enable redis
-{{/inArray}}
 {{#hasFeature 'postgresql'}}
 
 RUN apt-get update -y && apt-get install -y libpq-dev && rm -rf /var/lib/apt/lists/* && docker-php-ext-install pdo pdo_pgsql
