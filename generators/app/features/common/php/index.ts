@@ -25,6 +25,7 @@ export abstract class Php extends DefaultFeature implements DockerComposeFeature
       .filter(tag => new RegExp(`-${this.phpMode}$`).test(tag))
       .filter(tag => /^\d+\.\d+-/.test(tag))
       .filter(tag => !/-rc.*/.test(tag))
+      .filter(tag => !/^7.3.*/.test(tag)) // xdebug stable currently doesn't compile on PHP 7.3
       .map(tag => tag.substring(0, tag.length - `-${this.phpMode}`.length))
       .reverse()
 
