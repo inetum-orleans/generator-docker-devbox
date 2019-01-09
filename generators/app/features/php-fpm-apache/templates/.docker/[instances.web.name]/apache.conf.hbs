@@ -15,6 +15,6 @@
     </Directory>
 
     <FilesMatch \.php$>
-        SetHandler "proxy:fcgi://{{instance.name}}:9000"
+        SetHandler "proxy:fcgi://{{instance.name}}.\{{COMPOSE_NETWORK_NAME}}:9000"
     </FilesMatch>
 </VirtualHost>

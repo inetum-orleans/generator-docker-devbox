@@ -9,6 +9,6 @@ server {
         fastcgi_param PATH_INFO $fastcgi_path_info;
         fastcgi_param QUERY_STRING $query_string;
         fastcgi_intercept_errors on;
-        fastcgi_pass {{instance.name}}:9000;
+        fastcgi_pass {{instance.name}}.\{{COMPOSE_NETWORK_NAME}}:9000;
     }
 }
