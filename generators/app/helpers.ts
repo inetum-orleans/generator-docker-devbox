@@ -13,11 +13,11 @@ export class Helpers {
     const self = this
     generator.templating.handlebars.registerHelper('hasFeature', function (this: any) {
       const options: HelperOptions = arguments[arguments.length - 1]
-      return self.hasFeature.apply(self, Array.from(arguments)) ? options.fn(this) : options.inverse(this)
+      return self.hasFeature.apply(self, Array.from(arguments) as []) ? options.fn(this) : options.inverse(this)
     })
     generator.templating.handlebars.registerHelper('hasFeatureInGroup', function (this: any) {
       const options: HelperOptions = arguments[arguments.length - 1]
-      return self.hasFeatureInGroup.apply(self, Array.from(arguments)) ? options.fn(this) : options.inverse(this)
+      return self.hasFeatureInGroup.apply(self, Array.from(arguments) as []) ? options.fn(this) : options.inverse(this)
     })
     generator.templating.handlebars.registerHelper('semver', function (this: any, version: string, semverConstraint: string, options: HelperOptions) {
       return self.semver(version, semverConstraint) ? options.fn(this) : options.inverse(this)

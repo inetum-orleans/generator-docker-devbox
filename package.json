@@ -66,7 +66,7 @@
     "tslint": "^5.11.0",
     "tslint-config-prettier": "^1.15.0",
     "tslint-config-standard": "^8.0.1",
-    "typescript": "^3.1.6",
+    "typescript": "^3.2.2",
     "yeoman-assert": "^3.1.1",
     "yeoman-test": "^2.0.0",
     "yo": "^2.0.5"
