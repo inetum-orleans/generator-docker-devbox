@@ -11,11 +11,13 @@ export class Helpers {
   constructor (generator: AppGenerator) {
     this.generator = generator
     const self = this
-    generator.templating.handlebars.registerHelper('hasFeature', function (this: any, featureId: string, options: HelperOptions) {
-      return self.hasFeature(featureId, options.data.root) ? options.fn(this) : options.inverse(this)
+    generator.templating.handlebars.registerHelper('hasFeature', function (this: any) {
+      const options: HelperOptions = arguments[arguments.length - 1]
+      return self.hasFeature.apply(self, Array.from(arguments)) ? options.fn(this) : options.inverse(this)
     })
-    generator.templating.handlebars.registerHelper('hasFeatureInGroup', function (this: any, featureId: string, options: HelperOptions) {
-      return self.hasFeatureInGroup(featureId, options.data.root) ? options.fn(this) : options.inverse(this)
+    generator.templating.handlebars.registerHelper('hasFeatureInGroup', function (this: any) {
+      const options: HelperOptions = arguments[arguments.length - 1]
+      return self.hasFeatureInGroup.apply(self, Array.from(arguments)) ? options.fn(this) : options.inverse(this)
     })
     generator.templating.handlebars.registerHelper('semver', function (this: any, version: string, semverConstraint: string, options: HelperOptions) {
       return self.semver(version, semverConstraint) ? options.fn(this) : options.inverse(this)
@@ -24,27 +26,41 @@ export class Helpers {
 
   /**
    * Check a feature is available globally.
-   *
-   * @param featureId
-   * @param context
    */
-  hasFeature (featureId: string, context: FeatureContext<any>): boolean {
-    for (const answersFeature of context.features) {
-      if (answersFeature[featureId]) {
-        return true
+  hasFeature (): boolean {
+    const options: HelperOptions = arguments[arguments.length - 1]
+    const context: FeatureContext<any> = options.data.root
+
+    for (let i = 0; i < arguments.length - 1; i++) {
+      const featureId = arguments[i]
+
+      for (const answersFeature of context.features) {
+        {
+          if (answersFeature[featureId]) {
+            return true
+          }
+        }
       }
     }
     return false
   }
 
   /**
-   * Check a feature is available in the same context group.
-   *
-   * @param featureId
-   * @param context
+   * Check if a feature is available in the same context group.
    */
-  hasFeatureInGroup (featureId: string, context: FeatureContext<any>): boolean {
-    return !!context.group[featureId]
+  hasFeatureInGroup (): boolean {
+    const options: HelperOptions = arguments[arguments.length - 1]
+    const context: FeatureContext<any> = options.data.root
+
+    for (let i = 0; i < arguments.length - 1; i++) {
+      const featureId = arguments[i]
+
+      if (context.group[featureId]) {
+        return true
+      }
+    }
+
+    return false
   }
 
   /**
