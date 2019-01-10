@@ -12,6 +12,9 @@ autostash DOCKER_DEVBOX_ENV_SYMLINKS="{{envFiles}}"
 # Directories ending with "[*]" will be processed recursively.
 autostash DOCKER_DEVBOX_MO_DIRS="{{moDirectories}}"
 
+# Enable SSL Certificate generation with cfssl-cli
+autostash DOCKER_DEVBOX_CFSSL_ENABLED=false
+
 ###########################################
 # Global variables for .bash_enter script #
 ###########################################
