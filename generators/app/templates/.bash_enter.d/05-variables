@@ -14,7 +14,7 @@ autostash COMPOSE_PROJECT_DIR="$DOCKER_DEVBOX_DIR"
 if [ -z ${COMPOSE_PROJECT_NAME+x} ]; then
     # If COMPOSE_PROJECT_NAME is not defined, build it from directory name.
     name=$(basename "${COMPOSE_PROJECT_DIR}")
-    autostash COMPOSE_PROJECT_NAME="$(echo "$name" | sed -r "s/[ _.-]//g" | sed -r "s/.*/\L\0/g")"
+    autostash COMPOSE_PROJECT_NAME="$(echo "$name" | sed -r "s/[ .]//g" | sed -r "s/.*/\L\0/g")"
 fi
 
 if [ -z ${COMPOSE_NETWORK_NAME+x} ]; then
