@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+env | sort>"$DOCKER_DEVBOX_DIR/.env"
