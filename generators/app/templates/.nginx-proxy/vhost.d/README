@@ -1,0 +1,9 @@
+You should place your nginx-proxy configuration files here. 
+Use files literally named [domain] and [domain]_location.
+
+[domain] will be replaced internally by the effective configured 
+domain ({$DOCKER_DEVBOX_DOMAIN_PREFIX}.{$DOCKER_DEVBOX_DOMAIN}), and files 
+will be installed to the nginx-proxy container.
+
+@see https://github.com/jwilder/nginx-proxy#per-virtual_host
+@see https://github.com/jwilder/nginx-proxy#per-virtual_host-location-configuration

@@ -5,18 +5,6 @@ SHOULD_RESTART_CONTAINER=0
 PROJECT_NGINX_PROXY_PATH="$DOCKER_DEVBOX_DIR/.nginx-proxy"
 USER_NGINX_PROXY_PATH="$HOME/.nginx-proxy"
 
-CERT_KEY="${PROJECT_NGINX_PROXY_PATH}/certs/${DOCKER_DEVBOX_DOMAIN_PREFIX}.${DOCKER_DEVBOX_DOMAIN}.key"
-CERT_KEY_DEST="${USER_NGINX_PROXY_PATH}/certs/${DOCKER_DEVBOX_DOMAIN_PREFIX}.${DOCKER_DEVBOX_DOMAIN}.key"
-
-CERT_CRT="${PROJECT_NGINX_PROXY_PATH}/certs/${DOCKER_DEVBOX_DOMAIN_PREFIX}.${DOCKER_DEVBOX_DOMAIN}.crt"
-CERT_CRT_DEST="${USER_NGINX_PROXY_PATH}/certs/${DOCKER_DEVBOX_DOMAIN_PREFIX}.${DOCKER_DEVBOX_DOMAIN}.crt"
-
-VIRTUALHOST="${PROJECT_NGINX_PROXY_PATH}/vhost.d/virtualhost"
-VIRTUALHOST_DEST="${USER_NGINX_PROXY_PATH}/vhost.d/${DOCKER_DEVBOX_DOMAIN_PREFIX}.${DOCKER_DEVBOX_DOMAIN}"
-
-VIRTUALHOST_LOCATION="${PROJECT_NGINX_PROXY_PATH}/vhost.d/virtualhost_location"
-VIRTUALHOST_LOCATION_DEST="${USER_NGINX_PROXY_PATH}/vhost.d/${DOCKER_DEVBOX_DOMAIN_PREFIX}.${DOCKER_DEVBOX_DOMAIN}_location"
-
 _cp_file_if_different() {
 SRC="$1"
 DEST="$2"
@@ -39,21 +27,38 @@ fi
 return 1
 }
 
-if _cp_file_if_different "$CERT_KEY" "$CERT_KEY_DEST"; then
-  SHOULD_RESTART_CONTAINER=1
-fi
+for DOMAIN in $(dc config | sed -n -e 's/\s*VIRTUAL_HOST: //p'); do
+  CERT_KEY="${PROJECT_NGINX_PROXY_PATH}/certs/${DOMAIN}.key"
+  CERT_KEY_DEST="${USER_NGINX_PROXY_PATH}/certs/${DOMAIN}.key"
 
-if _cp_file_if_different "$CERT_CRT" "$CERT_CRT_DEST"; then
-  SHOULD_RESTART_CONTAINER=1
-fi
+  CERT_CRT="${PROJECT_NGINX_PROXY_PATH}/certs/${DOMAIN}.crt"
+  CERT_CRT_DEST="${USER_NGINX_PROXY_PATH}/certs/${DOMAIN}.crt"
 
-if _cp_file_if_different "$VIRTUALHOST" "$VIRTUALHOST_DEST"; then
- SHOULD_RESTART_CONTAINER=1
-fi
+  if _cp_file_if_different "$CERT_KEY" "$CERT_KEY_DEST"; then
+    SHOULD_RESTART_CONTAINER=1
+  fi
 
-if _cp_file_if_different "$VIRTUALHOST_LOCATION" "$VIRTUALHOST_LOCATION_DEST"; then
-  SHOULD_RESTART_CONTAINER=1
-fi
+  if _cp_file_if_different "$CERT_CRT" "$CERT_CRT_DEST"; then
+    SHOULD_RESTART_CONTAINER=1
+  fi
+
+  for VHOST_CONF in "$PROJECT_NGINX_PROXY_PATH"/vhost.d/*; do
+    # shellcheck disable=SC2001
+    VHOST_CONF_DEST_BASENAME=$(basename "$(echo "$VHOST_CONF" | sed -e 's/\[domain\]/'"${DOCKER_DEVBOX_DOMAIN_PREFIX}.${DOCKER_DEVBOX_DOMAIN}"'/g')")
+
+    if [[ "$DOMAIN" == "$VHOST_CONF_DEST_BASENAME" ]]; then
+      if _cp_file_if_different "$VHOST_CONF" "$USER_NGINX_PROXY_PATH/vhost.d/$VHOST_CONF_DEST_BASENAME"; then
+        SHOULD_RESTART_CONTAINER=1
+      fi
+    fi
+
+    if [[ "$DOMAIN""_location" == "$VHOST_CONF_DEST_BASENAME" ]]; then
+      if _cp_file_if_different "$VHOST_CONF" "$USER_NGINX_PROXY_PATH/vhost.d/$VHOST_CONF_DEST_BASENAME"; then
+        SHOULD_RESTART_CONTAINER=1
+      fi
+    fi
+  done
+done
 
 if [ "$SHOULD_RESTART_CONTAINER" -eq "1" ]; then
   echo "$(tput setaf 3)nginx-proxy configuration has been applied. Restarting nginx-proxy container ...$(tput sgr0)"
