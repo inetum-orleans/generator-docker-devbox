@@ -96,6 +96,13 @@ RUN apt-get update -y && apt-get install -y ssmtp && rm -rf /var/lib/apt/lists/*
 && echo "mailhub=mailcatcher" >> /etc/ssmtp/ssmtp.conf \
 && echo 'sendmail_path = "/usr/sbin/ssmtp -t"' > /usr/local/etc/php/conf.d/mail.ini
 {{/hasFeature}}
+{{#hasFeature 'maildev'}}
+
+    RUN apt-get update -y && apt-get install -y ssmtp && rm -rf /var/lib/apt/lists/* \
+    && echo "FromLineOverride=YES" >> /etc/ssmtp/ssmtp.conf \
+    && echo "mailhub=maildev" >> /etc/ssmtp/ssmtp.conf \
+    && echo 'sendmail_path = "/usr/sbin/ssmtp -t"' > /usr/local/etc/php/conf.d/mail.ini
+{{/hasFeature}}
 
 # TODO: Use volume
 COPY {{instance.name}}/conf.d/* /usr/local/etc/php/conf.d/
