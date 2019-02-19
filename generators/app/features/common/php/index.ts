@@ -76,7 +76,7 @@ export abstract class Php extends DefaultFeature implements DockerComposeFeature
         .with.default()
         .volume.project(this.projectVolume)
 
-      if (context.phpTools.indexOf('composer') === -1) {
+      if (context.phpTools.indexOf('composer') !== -1) {
         builder.service(context.instance.name)
           .volume.named(`${context.instance.name}-composer-cache`, '/composer/cache')
       }
