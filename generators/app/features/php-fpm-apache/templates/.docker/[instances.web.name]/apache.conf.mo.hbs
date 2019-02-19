@@ -2,7 +2,7 @@
     ServerAdmin webmaster@localhost
 
     <Directory />
-        AllowOverride none
+        AllowOverride None
         Require all denied
     </Directory>
 
@@ -10,7 +10,7 @@
     <Directory "/var/www/html/{{instances.web.name}}">
         DirectoryIndex index.html index.php
         Options Indexes FollowSymLinks
-        AllowOverride None
+        AllowOverride All
         Require all granted
     </Directory>
 
