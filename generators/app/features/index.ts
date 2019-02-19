@@ -5,6 +5,7 @@ import { MySQL } from './mysql'
 import { Node } from './node'
 import { Mapserver } from './mapserver'
 import { Mailcatcher } from './mailcatcher'
+import { Maildev } from './maildev'
 import { SonarScanner } from './sonar-scanner'
 import { Phing } from './phing'
 import { MariaDB } from './mariadb'
@@ -22,6 +23,7 @@ export const features: Feature[] = [
   new Node(),
   new Mapserver(),
   new Mailcatcher(),
+  new Maildev(),
   new SonarScanner(),
   new Phing(),
   new Solr()

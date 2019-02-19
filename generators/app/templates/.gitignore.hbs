@@ -1,6 +1,9 @@
 /docker-compose.override.yml
 {{#if mailcatcherContainer ~}}
-  /.docker/mailcatcher/ssmtp.conf
+    /.docker/mailcatcher/ssmtp.conf
+{{/if}}
+{{#if maildevContainer ~}}
+    /.docker/maildev/ssmtp.conf
 {{/if}}
 /.docker/.ca-certificates
 {{#if drupalInit ~}}
