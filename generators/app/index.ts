@@ -69,14 +69,18 @@ export default class AppGenerator extends Generator {
     })
   }
 
+  private sanitizeProjectName(input: string) {
+    return input.replace(/(?:(?![\.])[\s\W_])+/g, '-')
+  }
+
   private async _promptStart () {
     const prompts: Generator.Question[] = [
       {
         type: 'input',
         name: 'projectName',
         message: 'Technical project name',
-        default: this.appname,
-        validate: (v) => !!v,
+        default: this.sanitizeProjectName(this.appname),
+        validate: (v) => !!v && this.sanitizeProjectName(v) === v,
         store: true
       },
       {
@@ -84,6 +88,7 @@ export default class AppGenerator extends Generator {
         name: 'authorName',
         message: 'Author name',
         default: this.user.git.name(),
+        validate: (v) => !!v,
         store: true
       },
       {
@@ -91,6 +96,7 @@ export default class AppGenerator extends Generator {
         name: 'authorEmail',
         message: 'Author email',
         default: this.user.git.email(),
+        validate: (v) => !!v,
         store: true
       }
     ]
