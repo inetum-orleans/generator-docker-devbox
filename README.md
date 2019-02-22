@@ -30,6 +30,7 @@ Use [npm link](https://docs.npmjs.com/cli/link) to use local installation of gen
 ```bash
 git clone https://github.com/gfi-centre-ouest/generator-docker-devbox
 cd generator-docker-devbox
+npm install
 npm link
 ```
 
