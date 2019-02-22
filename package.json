@@ -1,6 +1,6 @@
 {
   "name": "@gfi-centre-ouest/generator-docker-devbox",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Yeoman Generator for dockerized development environment",
   "homepage": "https://github.com/gfi-centre-ouest/generator-docker-devbox",
   "author": {
