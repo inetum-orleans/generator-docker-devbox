@@ -69,7 +69,7 @@ export default class AppGenerator extends Generator {
     })
   }
 
-  private sanitizeProjectName(input: string) {
+  private sanitizeProjectName (input: string) {
     return input.replace(/(?:(?![\.])[\s\W_])+/g, '-')
   }
 
