@@ -69,7 +69,7 @@ export default class AppGenerator extends Generator {
     })
   }
 
-  private sanitizeProjectName (input: string) {
+  private _sanitizeProjectName (input: string) {
     return input.replace(/(?:(?![\.])[\s\W_])+/g, '-')
   }
 
@@ -79,8 +79,8 @@ export default class AppGenerator extends Generator {
         type: 'input',
         name: 'projectName',
         message: 'Technical project name',
-        default: this.sanitizeProjectName(this.appname),
-        validate: (v) => !!v && this.sanitizeProjectName(v) === v,
+        default: this._sanitizeProjectName(this.appname),
+        validate: (v) => !!v && this._sanitizeProjectName(v) === v,
         store: true
       },
       {
