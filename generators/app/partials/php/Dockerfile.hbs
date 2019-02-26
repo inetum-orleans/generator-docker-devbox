@@ -23,7 +23,7 @@ RUN apt-get update -y && apt-get install -y libldap2-dev && rm -rf /var/lib/apt/
 {{/inArray}}
 {{#inArray phpExtensions "zip"}}
 
-RUN docker-php-ext-install zip
+RUN apt-get update -y && apt-get install -y zlib1g-dev && rm -rf /var/lib/apt/lists/* && docker-php-ext-install zip
 {{/inArray}}
 {{#inArray phpExtensions "xdebug"}}
 
