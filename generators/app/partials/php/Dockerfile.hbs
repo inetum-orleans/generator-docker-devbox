@@ -61,14 +61,16 @@ RUN echo "date.timezone=${PHP_TIMEZONE:-UTC}" > $PHP_INI_DIR/conf.d/composer.ini
 {{/inArray}}
 {{#inArray phpTools "drupal-console"}}
 
-RUN curl -fsSL -o drupal.phar https://drupalconsole.com/installer \
-&& mv drupal.phar /usr/local/bin/drupal && chmod +x /usr/local/bin/drupal
+RUN curl -fsSL -o /usr/local/bin/drupal https://drupalconsole.com/installer && chmod +x /usr/local/bin/drupal
 
 {{/inArray}}
 {{#inArray phpTools "drush-launcher"}}
 
-RUN curl -fsSL -o drush.phar https://github.com/drush-ops/drush-launcher/releases/download/0.6.0/drush.phar \
-&& mv drush.phar /usr/local/bin/drush && chmod +x /usr/local/bin/drush
+RUN curl -fsSL -o /usr/local/bin/drush https://github.com/drush-ops/drush-launcher/releases/download/0.6.0/drush.phar && chmod +x /usr/local/bin/drush
+{{/inArray}}
+{{#inArray phpTools "phing"}}
+
+RUN curl -fsSL -o /usr/local/bin/phing https://www.phing.info/get/phing-latest.phar && chmod +x /usr/local/bin/phing
 {{/inArray}}
 
 {{#hasFeature 'postgresql'}}

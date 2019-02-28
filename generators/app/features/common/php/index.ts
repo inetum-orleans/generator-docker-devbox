@@ -58,6 +58,7 @@ export abstract class Php extends DefaultFeature implements DockerComposeFeature
         choices: [
           { value: 'composer', name: 'Composer' },
           'wkhtmltopdf',
+          { value: 'phing', name: 'Phing' },
           { value: 'drupal-console', name: 'Drupal Console' },
           { value: 'drush-launcher', name: 'Drush Launcher' }],
         default: ['composer'],
@@ -99,6 +100,9 @@ export abstract class Php extends DefaultFeature implements DockerComposeFeature
     }
     if (context.phpTools.indexOf('drush-launcher') === -1) {
       options.excludeFiles.push('.bin/drush.hbs')
+    }
+    if (context.phpTools.indexOf('phing') === -1) {
+      options.excludeFiles.push('.bin/phing.hbs')
     }
 
     return options
