@@ -80,6 +80,21 @@ export class Templating {
     return filepath
   }
 
+  /**
+   * @see https://github.com/npm/npm/issues/7252
+   * @param filepath
+   */
+  npmignoreWorkaround (filepath: string) {
+    const basename = path.basename(filepath)
+    if (basename === '.npmignore') {
+      return path.join(path.dirname(filepath), '.gitignore')
+    }
+    if (basename === 'npmignore') {
+      return path.join(path.dirname(filepath), '.npmignore')
+    }
+    return filepath
+  }
+
   renderHandlebars (input: string, context: any, handlebarsOptions?: CompileOptions | RuntimeOptions): string {
     const template = this.handlebars.compile(input, handlebarsOptions)
     return template(context, handlebarsOptions)
@@ -106,6 +121,7 @@ export class Templating {
 
   copy (from: string, to: string, context: any, handlebarsOptions?: CompileOptions | RuntimeOptions, copyOptions?: CopyOptions) {
     to = this.removeTemplateExtension(to)
+    to = this.npmignoreWorkaround(to)
 
     this.fs.copy(
       from,
@@ -116,6 +132,7 @@ export class Templating {
 
   copySingle (from: string, to: string, context: any, handlebarsOptions?: CompileOptions) {
     to = this.removeTemplateExtension(to)
+    to = this.npmignoreWorkaround(to)
 
     const fromContent = this.fs.read(from)
     const renderedContent = this.render(fromContent, context, from, handlebarsOptions)
@@ -125,6 +142,7 @@ export class Templating {
   append (from: string, to: string, context: any, handlebarsOptions?: CompileOptions) {
     if (this.fs.exists(to)) {
       to = this.removeTemplateExtension(to)
+      to = this.npmignoreWorkaround(to)
 
       const fromContent = this.fs.read(from)
       const renderedContent = this.render(fromContent, context, from, handlebarsOptions)
