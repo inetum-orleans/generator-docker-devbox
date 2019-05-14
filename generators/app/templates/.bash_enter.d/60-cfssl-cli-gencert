@@ -11,11 +11,12 @@ if [[ -n "${DOCKER_DEVBOX_CFSSL_ENABLED}" && "${DOCKER_DEVBOX_CFSSL_ENABLED}" !=
   fi
 
   if [ -f "$CFSSL_CLI_EXE" ]; then
-     for DOMAIN in $(dc config | sed -n -e 's/\s*VIRTUAL_HOST: //p'); do
-        DESTINATION_CRT="$DESTINATION/${DOMAIN}.crt"
-        DESTINATION_KEY="$DESTINATION/${DOMAIN}.key"
+     for RAWDOMAIN in $(dc config | sed -n -e 's/\s*VIRTUAL_HOST: //p'); do
+        echo "$RAWDOMAIN" | tr ',' '\n' | while read DOMAIN; do
+          DESTINATION_CRT="$DESTINATION/${DOMAIN}.crt"
+          DESTINATION_KEY="$DESTINATION/${DOMAIN}.key"
 
-        if [ ! -f "$DESTINATION_CRT" ] || [ ! -f "$DESTINATION_KEY" ]; then
+          if [ ! -f "$DESTINATION_CRT" ] || [ ! -f "$DESTINATION_KEY" ]; then
             mkdir -p "$DESTINATION"
 
             echo "$(tput setaf 3)Generating SSL certificate for ${DOMAIN} with cfssl-cli$(tput sgr0)"
@@ -25,7 +26,8 @@ if [[ -n "${DOCKER_DEVBOX_CFSSL_ENABLED}" && "${DOCKER_DEVBOX_CFSSL_ENABLED}" !=
             else
               echo "$(tput setaf 1)SSL certificate generation has failed for ${DOMAIN}$(tput sgr0)"
             fi
-        fi
+          fi
+        done
      done
   fi
 fi
