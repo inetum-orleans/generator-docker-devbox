@@ -15,7 +15,7 @@ export class Mailcatcher extends DefaultFeature implements DockerComposeFeature<
     if (dev) {
       builder.service(context.instance.name)
         .with.default()
-        .ext(DockerDevboxExt).nginxProxy(context.instance.name)
+        .ext(DockerDevboxExt).reverseProxy(context.instance.name)
     }
   }
 }

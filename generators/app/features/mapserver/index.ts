@@ -55,7 +55,7 @@ export class Mapserver extends DefaultFeature implements DockerComposeFeature<Ma
         .user('${USER_ID}')
     } else {
       builder.service(context.instance.name)
-        .ext(DockerDevboxExt).nginxProxy(context.instance.name)
+        .ext(DockerDevboxExt).reverseProxy(context.instance.name)
     }
   }
 }

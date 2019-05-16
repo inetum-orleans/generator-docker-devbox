@@ -15,7 +15,7 @@ export class Maildev extends DefaultFeature implements DockerComposeFeature<Mail
     if (dev) {
       builder.service(context.instance.name)
         .with.default()
-        .ext(DockerDevboxExt).nginxProxy(context.instance.name)
+        .ext(DockerDevboxExt).reverseProxy(context.instance.name)
     }
   }
 }

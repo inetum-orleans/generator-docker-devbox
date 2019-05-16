@@ -34,7 +34,7 @@ export class PhpApache extends Php implements DockerComposeFeature<PhpApache>, F
         .volume.relative('apache.conf', '/etc/apache2/sites-enabled/000-default.conf')
     } else {
       builder.service(context.instance.name)
-        .ext(DockerDevboxExt).nginxProxy(context.instance.name === this.instanceName ? undefined : context.instance.name)
+        .ext(DockerDevboxExt).reverseProxy(context.instance.name === this.instanceName ? undefined : context.instance.name)
     }
   }
 }
