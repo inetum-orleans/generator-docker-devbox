@@ -81,7 +81,7 @@ describe('All features', () => {
   }
 })
 
-describe('Each feature', () => {
+xdescribe('Each feature', () => {
   describe('Default options', () => {
     for (const feature of features) {
       describe(feature.label, () => {
