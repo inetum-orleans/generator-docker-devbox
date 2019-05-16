@@ -12,7 +12,7 @@ if [[ -n "${DOCKER_DEVBOX_CFSSL_ENABLED}" && "${DOCKER_DEVBOX_CFSSL_ENABLED}" !=
 
   if [ -f "$CFSSL_CLI_EXE" ]; then
      for RAWDOMAIN in $(dc config | sed -n -e 's/\s*VIRTUAL_HOST: //p'); do
-        echo "$RAWDOMAIN" | tr ',' '\n' | while read DOMAIN; do
+        echo "$RAWDOMAIN" | tr ',' '\n' | while read -r DOMAIN; do
           DESTINATION_CRT="$DESTINATION/${DOMAIN}.crt"
           DESTINATION_KEY="$DESTINATION/${DOMAIN}.key"
 
