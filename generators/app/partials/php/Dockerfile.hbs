@@ -59,6 +59,10 @@ RUN echo "date.timezone=${PHP_TIMEZONE:-UTC}" > $PHP_INI_DIR/conf.d/composer.ini
 && echo "always_populate_raw_post_data=-1" > $PHP_INI_DIR/conf.d/composer.ini
 {{/semver}}
 {{/inArray}}
+{{#inArray phpTools "symfony-client"}}
+
+RUN curl -fsSL https://get.symfony.com/cli/installer | bash && mv /root/.symfony/bin/symfony /usr/local/bin/symfony
+{{/inArray}}
 {{#inArray phpTools "drupal-console"}}
 
 RUN curl -fsSL -o /usr/local/bin/drupal https://drupalconsole.com/installer && chmod +x /usr/local/bin/drupal

@@ -56,10 +56,11 @@ export abstract class Php extends DefaultFeature implements DockerComposeFeature
         message: 'PHP Tools',
         choices: [
           { value: 'composer', name: 'Composer' },
-          'wkhtmltopdf',
+          { value: 'symfony-client', name: 'Symfony client' },
           { value: 'phing', name: 'Phing' },
           { value: 'drupal-console', name: 'Drupal Console' },
-          { value: 'drush-launcher', name: 'Drush Launcher' }],
+          { value: 'drush-launcher', name: 'Drush Launcher' },
+          'wkhtmltopdf'],
         default: ['composer'],
         store: true
       }
@@ -102,6 +103,9 @@ export abstract class Php extends DefaultFeature implements DockerComposeFeature
     }
     if (context.phpTools.indexOf('phing') === -1) {
       options.excludeFiles.push('.bin/phing.hbs')
+    }
+    if (context.phpTools.indexOf('symfony-client') === -1) {
+      options.excludeFiles.push('.bin/symfony.hbs')
     }
 
     return options
