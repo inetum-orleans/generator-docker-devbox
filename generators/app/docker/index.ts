@@ -29,7 +29,7 @@ export class DockerDevboxExt implements Extension {
   }
 
   nginxProxy (subdomain?: string): this {
-    this.builder.network('nginx-proxy', { external: true })
+    this.builder.network('nginx-proxy', { name: '${NGINX_PROXY_NETWORK}', external: true })
     this.virtualHost(subdomain)
     return this
   }
