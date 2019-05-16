@@ -1,14 +1,5 @@
 /docker-compose.override.yml
-{{#if mailcatcherContainer ~}}
-    /.docker/mailcatcher/ssmtp.conf
-{{/if}}
-{{#if maildevContainer ~}}
-    /.docker/maildev/ssmtp.conf
-{{/if}}
 /.docker/.ca-certificates
-{{#if drupalInit ~}}
-  web/sites/default/settings.php
-{{/if}}
 {{#if phingContainer ~}}
   /.phing/.environment
 {{/if}}
