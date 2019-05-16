@@ -4,6 +4,7 @@ import * as Generator from 'yeoman-generator'
 import { RegistryClient } from '../../docker/registry'
 import { FeatureContext } from '../../index'
 import { PortsManager } from '../../managers'
+import { rsort } from '../../semver-utils'
 
 export class Phing extends DefaultFeature implements Feature, DockerComposeFeature<Phing>, FeatureAsyncInit {
   name: string = 'phing'
@@ -18,12 +19,14 @@ export class Phing extends DefaultFeature implements Feature, DockerComposeFeatu
     const registry = new RegistryClient()
     const allTags = await registry.tagsList('php')
 
-    const tags = allTags
+    let tags = allTags
       .filter(tag => /-cli$/.test(tag))
       .filter(tag => /^\d+\.\d+-/.test(tag))
       .filter(tag => !/-rc.*/.test(tag))
       .map(tag => tag.substring(0, tag.length - '-cli'.length))
       .reverse()
+
+    tags = rsort(tags)
 
     this.asyncQuestions = [
       {

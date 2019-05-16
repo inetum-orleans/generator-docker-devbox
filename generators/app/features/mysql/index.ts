@@ -5,6 +5,7 @@ import { RegistryClient } from '../../docker/registry'
 import { AnswersFeature, FeatureContext } from '../../index'
 import { PortsManager } from '../../managers'
 import * as semver from 'semver'
+import { rsort } from '../../semver-utils'
 
 export class MySQL extends DefaultFeature implements Feature, DockerComposeFeature<MySQL>, FeatureAsyncInit {
   name: string = 'mysql'
@@ -19,9 +20,11 @@ export class MySQL extends DefaultFeature implements Feature, DockerComposeFeatu
     const registry = new RegistryClient()
     const allTags = await registry.tagsList('mysql')
 
-    const tags = allTags
+    let tags = allTags
       .filter(tag => /^\d+\.\d$/.test(tag))
       .reverse()
+
+    tags = rsort(tags)
 
     this.asyncQuestions = [
       {

@@ -5,6 +5,7 @@ import * as Generator from 'yeoman-generator'
 import { RegistryClient } from '../../docker/registry'
 import { FeatureContext } from '../../index'
 import { PortsManager } from '../../managers'
+import { rsort } from '../../semver-utils'
 
 export class Mapserver extends DefaultFeature implements DockerComposeFeature<Mapserver>, FeatureAsyncInit {
   name: string = 'mapserver'
@@ -19,9 +20,11 @@ export class Mapserver extends DefaultFeature implements DockerComposeFeature<Ma
     const registry = new RegistryClient()
     const allTags = await registry.tagsList('camptocamp/mapserver')
 
-    const tags = allTags
+    let tags = allTags
       .filter(tag => /^\d+\.\d$/.test(tag))
       .reverse()
+
+    tags = rsort(tags)
 
     this.asyncQuestions = [
       {

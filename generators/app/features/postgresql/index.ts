@@ -4,8 +4,8 @@ import * as Generator from 'yeoman-generator'
 import { RegistryClient } from '../../docker/registry'
 import { AnswersFeature, FeatureContext } from '../../index'
 import { PortsManager } from '../../managers'
-import * as inquirer from 'inquirer'
 import * as semver from 'semver'
+import { rsort } from '../../semver-utils'
 
 export class Postgres extends DefaultFeature implements Feature, DockerComposeFeature<Postgres>, FeatureAsyncInit {
   name: string = 'postgresql'
@@ -20,9 +20,11 @@ export class Postgres extends DefaultFeature implements Feature, DockerComposeFe
     const registry = new RegistryClient()
     const allTags = await registry.tagsList('postgres')
 
-    const tags = allTags
+    let tags = allTags
       .filter(tag => /^\d+\.\d+$/.test(tag))
       .reverse()
+
+    tags = rsort(tags)
 
     this.asyncQuestions = [
       {

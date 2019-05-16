@@ -5,6 +5,7 @@ import { PortsManager } from '../../managers'
 import { Php } from '../common/php'
 import { DockerDevboxExt } from '../../docker'
 import { RegistryClient } from '../../docker/registry'
+import { rsort } from '../../semver-utils'
 
 export class PhpFpmNginx extends Php implements DockerComposeFeature<PhpFpmNginx>, FeatureAsyncInit {
   name: string = 'php-fpm-nginx'
@@ -20,9 +21,11 @@ export class PhpFpmNginx extends Php implements DockerComposeFeature<PhpFpmNginx
     const registry = new RegistryClient()
     const nginxTax = await registry.tagsList('nginx')
 
-    const tags = nginxTax
+    let tags = nginxTax
       .filter(tag => /^\d+\.\d+(?:.\d+)?$/.test(tag) || tag === 'stable' || tag === 'mainline')
       .reverse()
+
+    tags = rsort(tags)
 
     this.asyncQuestions = [
       ...this.asyncQuestions,

@@ -6,6 +6,7 @@ import { FeatureContext } from '../../index'
 import { PortsManager } from '../../managers'
 import * as glob from 'glob'
 import { BulkOptions } from '../../templating'
+import { rsort } from '../../semver-utils'
 
 export class Node extends DefaultFeature implements Feature, DockerComposeFeature<Node>, FeatureAsyncInit {
   name: string = 'node'
@@ -20,10 +21,12 @@ export class Node extends DefaultFeature implements Feature, DockerComposeFeatur
     const registry = new RegistryClient()
     const allTags = await registry.tagsList('node')
 
-    const tags = allTags
+    let tags = allTags
       .filter(tag => /^\d+$/.test(tag) || ['dubnium', 'carbon', 'boron'].indexOf(tag) > -1)
       .filter(tag => !/^0$/.test(tag))
       .reverse()
+
+    tags = rsort(tags)
 
     this.asyncQuestions = [
       {

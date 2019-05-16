@@ -4,6 +4,7 @@ import * as Generator from 'yeoman-generator'
 import { RegistryClient } from '../../docker/registry'
 import { FeatureContext } from '../../index'
 import { PortsManager } from '../../managers'
+import { rsort } from '../../semver-utils'
 
 export class Solr extends DefaultFeature implements Feature, DockerComposeFeature<Solr>, FeatureAsyncInit {
   name: string = 'solr'
@@ -18,9 +19,11 @@ export class Solr extends DefaultFeature implements Feature, DockerComposeFeatur
     const registry = new RegistryClient()
     const allTags = await registry.tagsList('solr')
 
-    const tags = allTags
+    let tags = allTags
       .filter(tag => /^\d+\.\d$/.test(tag))
       .reverse()
+
+    tags = rsort(tags)
 
     this.asyncQuestions = [
       {

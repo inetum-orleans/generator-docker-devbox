@@ -5,6 +5,7 @@ import { RegistryClient } from '../../docker/registry'
 import { AnswersFeature, FeatureContext } from '../../index'
 import { PortsManager } from '../../managers'
 import * as semver from 'semver'
+import { rsort } from '../../semver-utils'
 
 export class MariaDB extends DefaultFeature implements Feature, DockerComposeFeature<MariaDB>, FeatureAsyncInit {
   name: string = 'mariadb'
@@ -19,9 +20,11 @@ export class MariaDB extends DefaultFeature implements Feature, DockerComposeFea
     const registry = new RegistryClient()
     const allTags = await registry.tagsList('mariadb')
 
-    const tags = allTags
+    let tags = allTags
       .filter(tag => /^\d+\.\d$/.test(tag))
       .reverse()
+
+    tags = rsort(tags)
 
     this.asyncQuestions = [
       {

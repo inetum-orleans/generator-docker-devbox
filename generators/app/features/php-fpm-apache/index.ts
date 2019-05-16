@@ -5,6 +5,7 @@ import { PortsManager } from '../../managers'
 import { Php } from '../common/php'
 import { DockerDevboxExt } from '../../docker'
 import { RegistryClient } from '../../docker/registry'
+import { rsort } from '../../semver-utils'
 
 export class PhpFpmApache extends Php implements DockerComposeFeature<PhpFpmApache>, FeatureAsyncInit {
   name: string = 'php-fpm-apache'
@@ -20,9 +21,11 @@ export class PhpFpmApache extends Php implements DockerComposeFeature<PhpFpmApac
     const registry = new RegistryClient()
     const apacheTags = await registry.tagsList('httpd')
 
-    const tags = apacheTags
+    let tags = apacheTags
       .filter(tag => /^\d+\.\d+(?:.\d+)?$/.test(tag))
       .reverse()
+
+    tags = rsort(tags)
 
     this.asyncQuestions = [
       ...this.asyncQuestions,
@@ -31,7 +34,7 @@ export class PhpFpmApache extends Php implements DockerComposeFeature<PhpFpmApac
         name: 'apacheVersion',
         message: 'Apache version',
         choices: tags,
-        default: '2.4',
+        default: tags[0],
         store: true
       }
     ]

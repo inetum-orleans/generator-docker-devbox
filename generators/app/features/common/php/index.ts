@@ -7,6 +7,7 @@ import { PortsManager } from '../../../managers'
 import { DockerDevboxExt } from '../../../docker'
 import { BulkOptions } from '../../../templating'
 import * as glob from 'glob'
+import { rsort } from '../../../semver-utils'
 
 export abstract class Php extends DefaultFeature implements DockerComposeFeature<Php>, FeatureAsyncInit {
   instanceName: string = 'web'
@@ -21,12 +22,14 @@ export abstract class Php extends DefaultFeature implements DockerComposeFeature
     const registry = new RegistryClient()
     const allTags = await registry.tagsList('php')
 
-    const tags = allTags
+    let tags = allTags
       .filter(tag => new RegExp(`-${this.phpMode}$`).test(tag))
       .filter(tag => /^\d+\.\d+-/.test(tag))
       .filter(tag => !/-rc.*/.test(tag))
       .map(tag => tag.substring(0, tag.length - `-${this.phpMode}`.length))
       .reverse()
+
+    tags = rsort(tags)
 
     this.asyncQuestions = [
       {
