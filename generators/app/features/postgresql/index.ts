@@ -2,8 +2,10 @@ import { DefaultFeature, DockerComposeFeature, Feature, FeatureAsyncInit } from 
 import { ConfigBuilder } from '@gfi-centre-ouest/docker-compose-builder'
 import * as Generator from 'yeoman-generator'
 import { RegistryClient } from '../../docker/registry'
-import { FeatureContext } from '../../index'
+import { AnswersFeature, FeatureContext } from '../../index'
 import { PortsManager } from '../../managers'
+import * as inquirer from 'inquirer'
+import * as semver from 'semver'
 
 export class Postgres extends DefaultFeature implements Feature, DockerComposeFeature<Postgres>, FeatureAsyncInit {
   name: string = 'postgresql'
@@ -36,6 +38,15 @@ export class Postgres extends DefaultFeature implements Feature, DockerComposeFe
 
   questions () {
     return this.asyncQuestions
+  }
+
+  postProcessAnswers (answers: AnswersFeature): AnswersFeature {
+    const postgresVersion = semver.coerce(answers['postgresVersion'])!
+    const major = semver.major(postgresVersion, true)
+    const minor = semver.minor(postgresVersion, true)
+
+    answers['postgresClientVersion'] = major >= 10 ? `${major}` : `${major}.${minor}`
+    return answers
   }
 
   dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<Postgres>, portsManager: PortsManager, dev?: boolean): void {

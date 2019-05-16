@@ -252,12 +252,15 @@ export default class AppGenerator extends Generator {
       const groupAnswersFeature: AnswersFeatures = {}
       for (const feature of features) {
         if (answersFeatures[`features~${featuresGroup}`].indexOf(feature.name) > -1) {
-          const answersFeature: AnswersFeature = {}
+          let answersFeature: AnswersFeature = {}
           for (const key of Object.keys(answersFeatures)) {
             if (key.indexOf(`features~${featuresGroup}~${feature.name}~`) === 0) {
               const properKey = key.substr(`features~${featuresGroup}~${feature.name}~`.length, key.length)
               answersFeature[properKey] = answersFeatures[key]
             }
+          }
+          if (feature.postProcessAnswers) {
+            answersFeature = feature.postProcessAnswers(answersFeature)
           }
           groupAnswersFeature[feature.name] = answersFeature
         }

@@ -2,8 +2,9 @@ import { DefaultFeature, DockerComposeFeature, Feature, FeatureAsyncInit } from 
 import { ConfigBuilder } from '@gfi-centre-ouest/docker-compose-builder'
 import * as Generator from 'yeoman-generator'
 import { RegistryClient } from '../../docker/registry'
-import { FeatureContext } from '../../index'
+import { AnswersFeature, FeatureContext } from '../../index'
 import { PortsManager } from '../../managers'
+import * as semver from 'semver'
 
 export class MySQL extends DefaultFeature implements Feature, DockerComposeFeature<MySQL>, FeatureAsyncInit {
   name: string = 'mysql'
@@ -36,6 +37,15 @@ export class MySQL extends DefaultFeature implements Feature, DockerComposeFeatu
 
   questions (): Generator.Question[] {
     return this.asyncQuestions
+  }
+
+  postProcessAnswers (answers: AnswersFeature): AnswersFeature {
+    const postgresVersion = semver.coerce(answers['mysqlVersion'])!
+    const major = semver.major(postgresVersion, true)
+    const minor = semver.minor(postgresVersion, true)
+
+    answers['mysqlClientVersion'] = `${major}.${minor}`
+    return answers
   }
 
   dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<MySQL>, portsManager: PortsManager, dev?: boolean): void {
