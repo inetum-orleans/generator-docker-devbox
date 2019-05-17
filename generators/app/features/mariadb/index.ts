@@ -42,13 +42,12 @@ export class MariaDB extends DefaultFeature implements Feature, DockerComposeFea
     return this.asyncQuestions
   }
 
-  postProcessAnswers (answers: AnswersFeature): AnswersFeature {
+  postProcessFeatureAnswers (answers: AnswersFeature): Generator.Questions | null | undefined | void {
     const postgresVersion = semver.coerce(answers['mariadbVersion'])!
     const major = semver.major(postgresVersion, true)
     const minor = semver.minor(postgresVersion, true)
 
     answers['mariadbClientVersion'] = `${major}.${minor}`
-    return answers
   }
 
   dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<MariaDB>, portsManager: PortsManager, dev?: boolean): void {

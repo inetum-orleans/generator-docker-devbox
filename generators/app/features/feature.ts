@@ -1,6 +1,6 @@
 import { ChoiceType } from 'inquirer'
 import * as Generator from 'yeoman-generator'
-import { AnswersFeature, FeatureContext } from '..'
+import { AnswersFeature, AnswersFeatures, FeatureContext } from '..'
 import * as path from 'path'
 import { BulkOptions, Templating } from '../templating'
 import { ConfigBuilder } from '@gfi-centre-ouest/docker-compose-builder'
@@ -52,11 +52,22 @@ export interface Feature {
   questions? (): Generator.Question[]
 
   /**
-   * Post process anwers
+   * Post process feature answers
    *
    * @param answers
+   * @param answersFeatures
+   * @param allAnswers
    */
-  postProcessAnswers? (answers: AnswersFeature): AnswersFeature
+  postProcessFeatureAnswers? (answers: AnswersFeature): Generator.Questions | null | undefined | void
+
+  /**
+   * Post process answers
+   *
+   * @param answers
+   * @param answersFeatures
+   * @param allAnswers
+   */
+  postProcessAnswers? (answers: AnswersFeature, answersFeatures: AnswersFeatures, allAnswers: AnswersFeatures[]): Generator.Questions | null | undefined | void
 
   /**
    * Write files related to this feature.

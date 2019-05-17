@@ -42,13 +42,12 @@ export class Postgres extends DefaultFeature implements Feature, DockerComposeFe
     return this.asyncQuestions
   }
 
-  postProcessAnswers (answers: AnswersFeature): AnswersFeature {
+  postProcessFeatureAnswers? (answers: AnswersFeature): Generator.Questions | null | undefined | void {
     const postgresVersion = semver.coerce(answers['postgresVersion'])!
     const major = semver.major(postgresVersion, true)
     const minor = semver.minor(postgresVersion, true)
 
     answers['postgresClientVersion'] = major >= 10 ? `${major}` : `${major}.${minor}`
-    return answers
   }
 
   dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<Postgres>, portsManager: PortsManager, dev?: boolean): void {

@@ -77,26 +77,26 @@ RUN curl -fsSL -o /usr/local/bin/drush https://github.com/drush-ops/drush-launch
 RUN curl -fsSL -o /usr/local/bin/phing https://www.phing.info/get/phing-latest.phar && chmod +x /usr/local/bin/phing
 {{/inArray}}
 
-{{#hasFeature 'postgresql'}}
+{{#inArray nativeClient "PostgreSQL"}}
 
 RUN apt-get update -y && apt-get install -y gnupg lsb-release && rm -rf /var/lib/apt/lists/* \
 && curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - \
 && echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" >> /etc/apt/sources.list.d/postgresql.list \
-&& apt-get update -y && apt-get install -y postgresql-client-{{getFeatureOption 'postgresql' 'postgresClientVersion'}} && rm -rf /var/lib/apt/lists/*
-{{/hasFeature}}
-{{#hasFeature 'mysql'}}
+&& apt-get update -y && apt-get install -y {{nativeClientPostgreSQLPackage}}-{{nativeClientPostgreSQLVersion}} && rm -rf /var/lib/apt/lists/*
+{{/inArray}}
+{{#inArray nativeClient "MySQL"}}
 
 RUN apt-get update -y && apt-get install -y debconf-utils lsb-release wget gnupg
-RUN echo 'mysql-apt-config mysql-apt-config/select-server select mysql-{{getFeatureOption 'mysql' 'mysqlClientVersion'}}' | debconf-set-selections \
+RUN echo 'mysql-apt-config mysql-apt-config/select-server select mysql-{{nativeClientMySQLVersion}}' | debconf-set-selections \
 && curl -fsSL -o mysql-apt-config.deb https://dev.mysql.com/get/mysql-apt-config_0.8.13-1_all.deb && dpkg -i mysql-apt-config.deb
-RUN apt-get update -y && apt-get install -y mysql-client && rm -rf /var/lib/apt/lists/*
-{{/hasFeature}}
-{{#hasFeature 'mariadb'}}
+RUN apt-get update -y && apt-get install -y {{nativeClientMySQLPackage}} && rm -rf /var/lib/apt/lists/*
+{{/inArray}}
+{{#inArray nativeClient 'MariaDB'}}
 
 RUN apt-get update -y && apt-get -y install software-properties-common gnupg && \
-curl -fsSL https://downloads.mariadb.com/MariaDB/mariadb_repo_setup | bash -s -- --mariadb-server-version="mariadb-{{getFeatureOption 'mariadb' 'mariadbClientVersion'}}" \
-&& apt-get update -y && apt-get install -y mariadb-client && rm -rf /var/lib/apt/lists/*
-{{/hasFeature}}
+curl -fsSL https://downloads.mariadb.com/MariaDB/mariadb_repo_setup | bash -s -- --mariadb-server-version="mariadb-{{nativeClientMariaDBVersion}}" \
+&& apt-get update -y && apt-get install -y {{nativeClientMariaDBPackage}} && rm -rf /var/lib/apt/lists/*
+{{/inArray}}
 {{#inArray phpTools "wkhtmltopdf"}}
 
 RUN apt-get update -y && apt-get install -y lsb-release \

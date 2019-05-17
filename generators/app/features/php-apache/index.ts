@@ -1,6 +1,6 @@
 import { dirnameFrom, DockerComposeFeature, FeatureAsyncInit } from '../feature'
 import { ConfigBuilder } from '@gfi-centre-ouest/docker-compose-builder'
-import { FeatureContext } from '../../index'
+import { AnswersFeature, AnswersFeatures, FeatureContext } from '../../index'
 import { PortsManager } from '../../managers'
 import { Php } from '../common/php'
 import { DockerDevboxExt } from '../../docker'

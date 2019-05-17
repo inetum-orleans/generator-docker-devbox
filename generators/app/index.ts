@@ -171,6 +171,30 @@ export default class AppGenerator extends Generator {
     }
   }
 
+  private _formatFeatureAnswers (feature: Feature, featuresGroup: number, answersFeatures: AnswersFeatures): AnswersFeature {
+    const formatted: AnswersFeature = {}
+
+    for (const key of Object.keys(answersFeatures)) {
+      if (key.indexOf(`features~${featuresGroup}~${feature.name}~`) === 0) {
+        const properKey = key.substr(`features~${featuresGroup}~${feature.name}~`.length, key.length)
+        formatted[properKey] = answersFeatures[key]
+      }
+    }
+
+    return formatted
+  }
+
+  private _rawFeatureAnswers (feature: Feature, featuresGroup: number, formattedAnswersFeatures: AnswersFeatures): AnswersFeature {
+    const raw: AnswersFeature = {}
+
+    for (const key of Object.keys(formattedAnswersFeatures)) {
+      const rawKey = `features~${featuresGroup}~${feature.name}~${key}`
+      raw[rawKey] = formattedAnswersFeatures[key]
+    }
+
+    return raw
+  }
+
   initializing () {
     const exitListeners = process.listeners('exit')
     for (const exitListener of exitListeners) {
@@ -218,7 +242,8 @@ export default class AppGenerator extends Generator {
             const featureQuestions = cloneDeep(feature.questions())
             if (featureQuestions) {
               this._applyFeatureToQuestions(feature, featuresGroup, featureQuestions)
-              const featureAnswers = await this.prompt(featureQuestions)
+              let featureAnswers = await this.prompt(featureQuestions)
+              featureAnswers = await this._postProcessFeatureAnswers(feature, featuresGroup, featureAnswers, true)
               Object.assign(answersFeatures, featureAnswers)
             }
           }
@@ -252,21 +277,27 @@ export default class AppGenerator extends Generator {
       const groupAnswersFeature: AnswersFeatures = {}
       for (const feature of features) {
         if (answersFeatures[`features~${featuresGroup}`].indexOf(feature.name) > -1) {
-          let answersFeature: AnswersFeature = {}
-          for (const key of Object.keys(answersFeatures)) {
-            if (key.indexOf(`features~${featuresGroup}~${feature.name}~`) === 0) {
-              const properKey = key.substr(`features~${featuresGroup}~${feature.name}~`.length, key.length)
-              answersFeature[properKey] = answersFeatures[key]
-            }
-          }
-          if (feature.postProcessAnswers) {
-            answersFeature = feature.postProcessAnswers(answersFeature)
-          }
-          groupAnswersFeature[feature.name] = answersFeature
+          groupAnswersFeature[feature.name] = this._formatFeatureAnswers(feature, featuresGroup, answersFeatures)
         }
       }
       allAnswersFeatures.push(groupAnswersFeature)
       featuresGroup++
+    }
+
+    for (const groupAnswersFeature of allAnswersFeatures) {
+      for (const feature of features) {
+        let answersFeature = groupAnswersFeature[feature.name]
+        if (answersFeature && feature.postProcessAnswers) {
+          const questions = feature.postProcessAnswers(answersFeature, groupAnswersFeature, allAnswersFeatures)
+          if (questions) {
+            this._applyFeatureToQuestions(feature, featuresGroup, questions)
+            const additionalAnswers = await this.prompt(questions)
+            answersFeature = { ...answersFeature, ...this._formatFeatureAnswers(feature, featuresGroup, additionalAnswers) }
+            answersFeature = await this._postProcessFeatureAnswers(feature, featuresGroup, answersFeature)
+          }
+          groupAnswersFeature[feature.name] = answersFeature
+        }
+      }
     }
 
     this.answersMain = { ...answersStart, ...answersEnd, features: allAnswersFeatures }
@@ -398,5 +429,19 @@ export default class AppGenerator extends Generator {
       )
     )
     this.log('')
+  }
+
+  private async _postProcessFeatureAnswers (feature: Feature, featuresGroup: number, featureAnswers: Generator.Answers, rawInput = false) {
+    if (feature.postProcessFeatureAnswers) {
+      const formattedFeatureAnswers = rawInput ? this._formatFeatureAnswers(feature, featuresGroup, featureAnswers) : featureAnswers
+      const questions = feature.postProcessFeatureAnswers(formattedFeatureAnswers)
+      featureAnswers = rawInput ? this._rawFeatureAnswers(feature, featuresGroup, formattedFeatureAnswers) : formattedFeatureAnswers
+      if (questions) {
+        this._applyFeatureToQuestions(feature, featuresGroup, questions)
+        const additionalAnswers = await this.prompt(questions)
+        featureAnswers = { ...featureAnswers, ...rawInput ? additionalAnswers : this._formatFeatureAnswers(feature, featuresGroup, additionalAnswers) }
+      }
+    }
+    return featureAnswers
   }
 }

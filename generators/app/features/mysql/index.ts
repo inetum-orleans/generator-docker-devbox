@@ -42,13 +42,12 @@ export class MySQL extends DefaultFeature implements Feature, DockerComposeFeatu
     return this.asyncQuestions
   }
 
-  postProcessAnswers (answers: AnswersFeature): AnswersFeature {
+  postProcessFeatureAnswers (answers: AnswersFeature): Generator.Questions | null | undefined | void {
     const postgresVersion = semver.coerce(answers['mysqlVersion'])!
     const major = semver.major(postgresVersion, true)
     const minor = semver.minor(postgresVersion, true)
 
     answers['mysqlClientVersion'] = `${major}.${minor}`
-    return answers
   }
 
   dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<MySQL>, portsManager: PortsManager, dev?: boolean): void {

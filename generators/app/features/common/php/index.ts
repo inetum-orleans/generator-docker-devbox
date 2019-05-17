@@ -2,12 +2,13 @@ import { DefaultFeature, DockerComposeFeature, FeatureAsyncInit } from '../../fe
 import * as Generator from 'yeoman-generator'
 import { RegistryClient } from '../../../docker/registry'
 import { ConfigBuilder } from '@gfi-centre-ouest/docker-compose-builder'
-import { FeatureContext } from '../../../index'
+import { AnswersFeature, AnswersFeatures, FeatureContext } from '../../../index'
 import { PortsManager } from '../../../managers'
 import { DockerDevboxExt } from '../../../docker'
 import { BulkOptions } from '../../../templating'
 import * as glob from 'glob'
 import { rsort } from '../../../semver-utils'
+import { ChoiceType } from 'inquirer'
 
 export abstract class Php extends DefaultFeature implements DockerComposeFeature<Php>, FeatureAsyncInit {
   instanceName: string = 'web'
@@ -72,6 +73,85 @@ export abstract class Php extends DefaultFeature implements DockerComposeFeature
 
   get projectVolume () {
     return '/var/www/html'
+  }
+
+  postProcessAnswers (answers: AnswersFeature, answersFeatures: AnswersFeatures, allAnswers: AnswersFeatures[]): Generator.Questions | null | undefined | void {
+    const databaseChoicesByType: { [type: string]: ChoiceType[] } = {}
+
+    function add (type: string, value: ChoiceType) {
+      if (!(type in databaseChoicesByType)) {
+        databaseChoicesByType[type] = []
+      }
+      databaseChoicesByType[type].push(value)
+    }
+
+    for (const answersFeaturesGroup of allAnswers) {
+      if (answersFeaturesGroup['postgresql']) {
+        add('PostgreSQL', {
+          value: {
+            client: 'PostgreSQL',
+            package: 'postgresql-client',
+            version: answersFeaturesGroup['postgresql']['postgresClientVersion']
+          },
+          name: `postgresql (Version ${answersFeaturesGroup['postgresql']['postgresClientVersion']})`
+        })
+      }
+      if (answersFeaturesGroup['mysql']) {
+        add('MySQL',
+          {
+            value: {
+              client: 'MySQL',
+              package: 'mysql-client',
+              version: answersFeaturesGroup['mysql']['mysqlClientVersion']
+            },
+            name: `mysql (Version ${answersFeaturesGroup['mysql']['mysqlClientVersion']})`
+          })
+      }
+      if (answersFeaturesGroup['mariadb']) {
+        add('MySQL', {
+          value: {
+            client: 'MariaDB',
+            package: 'mariadb-client',
+            version: answersFeaturesGroup['mariadb']['mariadbClientVersion']
+          },
+          name: `mariadb (Version ${answersFeaturesGroup['mariadb']['mariadbClientVersion']})`
+        })
+      }
+    }
+
+    if (!answers.nativeClient) {
+      answers.nativeClient = []
+    }
+
+    if (Object.keys(databaseChoicesByType).length > 0) {
+      const questions: Generator.Questions = []
+      for (const type in databaseChoicesByType) {
+        const databaseChoices = databaseChoicesByType[type]
+        const choices = [...databaseChoices, { value: null, name: 'Nothing' }]
+        questions.push({
+          type: 'list',
+          name: 'nativeClient' + type,
+          message: 'Native client for ' + type,
+          choices,
+          default: choices[0],
+          store: true
+        })
+      }
+
+      return questions
+    }
+  }
+
+  postProcessFeatureAnswers? (answers: AnswersFeature): Generator.Questions | null | undefined | void {
+    for (const key in answers) {
+      if (key.startsWith('nativeClient') && key !== 'nativeClient') {
+        if (answers[key]) {
+          answers.nativeClient.push(answers[key].client)
+          answers[`nativeClient${answers[key].client}Package`] = answers[key].package
+          answers[`nativeClient${answers[key].client}Version`] = answers[key].version
+        }
+      }
+    }
   }
 
   dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<Php>, portsManager: PortsManager, dev?: boolean): void {
