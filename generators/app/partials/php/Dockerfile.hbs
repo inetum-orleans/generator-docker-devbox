@@ -100,9 +100,9 @@ curl -fsSL https://downloads.mariadb.com/MariaDB/mariadb_repo_setup | bash -s --
 {{#inArray phpTools "wkhtmltopdf"}}
 
 RUN apt-get update -y && apt-get install -y lsb-release \
-&& curl -fsSL -o wkhtmltox.deb https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.$(lsb_release -cs)_amd64.deb \
+&& curl -fsSL -o ./wkhtmltopdf.deb https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.$(lsb_release -cs)_amd64.deb \
 && apt-get install -y ./wkhtmltopdf.deb && rm -rf /var/lib/apt/lists/* \
-&& rm wkhtmltox.deb
+&& rm wkhtmltopdf.deb
 {{/inArray}}
 {{#hasFeature 'mailcatcher'}}
 
