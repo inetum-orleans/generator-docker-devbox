@@ -88,32 +88,32 @@ export abstract class Php extends DefaultFeature implements DockerComposeFeature
     for (const answersFeaturesGroup of allAnswers) {
       if (answersFeaturesGroup['postgresql']) {
         add('PostgreSQL', {
-          value: {
+          value: JSON.stringify({
             client: 'PostgreSQL',
             package: 'postgresql-client',
             version: answersFeaturesGroup['postgresql']['postgresClientVersion']
-          },
+          }),
           name: `postgresql (Version ${answersFeaturesGroup['postgresql']['postgresClientVersion']})`
         })
       }
       if (answersFeaturesGroup['mysql']) {
         add('MySQL',
           {
-            value: {
+            value: JSON.stringify({
               client: 'MySQL',
               package: 'mysql-client',
               version: answersFeaturesGroup['mysql']['mysqlClientVersion']
-            },
+            }),
             name: `mysql (Version ${answersFeaturesGroup['mysql']['mysqlClientVersion']})`
           })
       }
       if (answersFeaturesGroup['mariadb']) {
         add('MySQL', {
-          value: {
+          value: JSON.stringify({
             client: 'MariaDB',
             package: 'mariadb-client',
             version: answersFeaturesGroup['mariadb']['mariadbClientVersion']
-          },
+          }),
           name: `mariadb (Version ${answersFeaturesGroup['mariadb']['mariadbClientVersion']})`
         })
       }
@@ -127,7 +127,7 @@ export abstract class Php extends DefaultFeature implements DockerComposeFeature
       const questions: Generator.Questions = []
       for (const type in databaseChoicesByType) {
         const databaseChoices = databaseChoicesByType[type]
-        const choices = [...databaseChoices, { value: null, name: 'Nothing' }]
+        const choices = [{ value: null, name: 'No native client' }, ...databaseChoices]
         questions.push({
           type: 'list',
           name: 'nativeClient' + type,
@@ -146,9 +146,10 @@ export abstract class Php extends DefaultFeature implements DockerComposeFeature
     for (const key in answers) {
       if (key.startsWith('nativeClient') && key !== 'nativeClient') {
         if (answers[key]) {
-          answers.nativeClient.push(answers[key].client)
-          answers[`nativeClient${answers[key].client}Package`] = answers[key].package
-          answers[`nativeClient${answers[key].client}Version`] = answers[key].version
+          const answer = JSON.parse(answers[key]) as { client: string, package: string, version: string }
+          answers.nativeClient.push(answer.client)
+          answers[`nativeClient${answer.client}Package`] = answer.package
+          answers[`nativeClient${answer.client}Version`] = answer.version
         }
       }
     }
