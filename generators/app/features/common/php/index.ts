@@ -146,7 +146,7 @@ export abstract class Php extends DefaultFeature implements DockerComposeFeature
     for (const key in answers) {
       if (key.startsWith('nativeClient') && key !== 'nativeClient') {
         if (answers[key]) {
-          const answer = JSON.parse(answers[key]) as { client: string, package: string, version: string }
+          let answer = typeof answers[key] === 'string' ? JSON.parse(answers[key]) as { client: string, package: string, version: string } : answers[key]
           answers.nativeClient.push(answer.client)
           answers[`nativeClient${answer.client}Package`] = answer.package
           answers[`nativeClient${answer.client}Version`] = answer.version
