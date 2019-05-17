@@ -269,8 +269,6 @@ export default class AppGenerator extends Generator {
       }
     }
 
-    const answersEnd = await this._promptEnd()
-
     featuresGroup = 0
     const allAnswersFeatures: AnswersFeatures[] = []
     for (const answersFeatures of rawAnswersFeatures) {
@@ -299,6 +297,8 @@ export default class AppGenerator extends Generator {
         }
       }
     }
+
+    const answersEnd = await this._promptEnd()
 
     this.answersMain = { ...answersStart, ...answersEnd, features: allAnswersFeatures }
   }
