@@ -34,11 +34,16 @@ describe('generator-docker-devbox:app', () => {
         '.bash_enter.d/05-variables',
         '.bash_enter.d/10-path',
         '.bash_enter.d/12-install-jq',
+        '.bash_enter.d/15-install-cfssl-cli',
+        '.bash_enter.d/17-install-mkcert',
         '.bash_enter.d/20-mo',
         '.bash_enter.d/30-env-symlinks',
         '.bash_enter.d/50-ca-certificates',
         '.bash_enter.d/60-cfssl-cli-gencert',
-        '.bash_enter.d/62-nginx-proxy-config',
+        '.bash_enter.d/62-mkcert',
+        '.bash_enter.d/65-install-certs',
+        '.bash_enter.d/70-reverse-proxy-config',
+        '.bash_enter.d/90-env-file',
         '.bash_enter.d/95-init'
       ])
     })

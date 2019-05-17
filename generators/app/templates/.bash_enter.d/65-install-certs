@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+SHOULD_RESTART_NGINX_PROXY=0
+
+PROJECT_CERTS="$DOCKER_DEVBOX_DIR/.certs"
+
+for DOMAIN in $(dc config | sed -n -e 's/\s*VIRTUAL_HOST: //p'); do
+  mkdir -p "${DOCKER_DEVBOX_CERTS_PATH}"
+
+  CERT_KEY="${PROJECT_CERTS}/${DOMAIN}.key"
+  CERT_KEY_DEST="${DOCKER_DEVBOX_CERTS_PATH}/${DOMAIN}.key"
+
+  CERT_CRT="${PROJECT_CERTS}/${DOMAIN}.crt"
+  CERT_CRT_DEST="${DOCKER_DEVBOX_CERTS_PATH}/${DOMAIN}.crt"
+
+  if _cp_file_if_different "$CERT_KEY" "$CERT_KEY_DEST"; then
+    SHOULD_RESTART_NGINX_PROXY=1
+  fi
+
+  if _cp_file_if_different "$CERT_CRT" "$CERT_CRT_DEST"; then
+    SHOULD_RESTART_NGINX_PROXY=1
+  fi
+done
+
+if [[ -n "${DOCKER_DEVBOX_REVERSE_PROXY}" && "${DOCKER_DEVBOX_REVERSE_PROXY}" == "nginx-proxy" ]]; then
+  if [ "$SHOULD_RESTART_NGINX_PROXY" -eq "1" ]; then
+    echo "$(tput setaf 3)nginx-proxy certificates have been applied. Restarting nginx-proxy container ...$(tput sgr0)"
+    docker restart nginx-proxy
+    echo "$(tput setaf 2)nginx-proxy container has been restarted."
+  fi
+fi

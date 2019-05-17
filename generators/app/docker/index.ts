@@ -29,25 +29,29 @@ export class DockerDevboxExt implements Extension {
   }
 
   reverseProxy (subdomain?: string, port?: number): this {
-    this.builder.network('reverse-proxy', { name: '${REVERSE_PROXY_NETWORK}', external: true })
-    const virtualHost = this.virtualHost(subdomain)
-    /*
-    this.builder.label("traefik.enable=true")
-    this.builder.label("traefik.frontend.rule=Host:" + virtualHost)
-    this.builder.label("traefik.docker.network=${REVERSE_PROXY_NETWORK}")
-    this.builder.label("traefik.port=" + (port ? port : '80'))
-    this.builder.label("traefik.frontend.entryPoints=http,https")
-    */
+    this.builder.network('reverse-proxy', { name: '${DOCKER_DEVBOX_REVERSE_PROXY_NETWORK}', external: true })
+    this.builder.label('traefik.enable=true')
+
+    this.virtualHost(subdomain)
+    this.virtualPort(port)
+
     return this
   }
 
-  private virtualHost (subdomain?: string): string {
+  private virtualHost (subdomain?: string) {
     let virtualHost = '${DOCKER_DEVBOX_DOMAIN_PREFIX}.${DOCKER_DEVBOX_DOMAIN}'
     if (subdomain) {
       virtualHost = subdomain + '.' + virtualHost
     }
     this.builder.environment('VIRTUAL_HOST', virtualHost)
-    return virtualHost
+    this.builder.label('traefik.frontend.rule=Host:' + virtualHost)
+  }
+
+  private virtualPort (port?: number) {
+    const virtualPort = (port ? port : '80')
+
+    this.builder.environment('VIRTUAL_PORT', virtualPort)
+    this.builder.label('traefik.port=' + virtualPort)
   }
 
   xdebug (): this {

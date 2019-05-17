@@ -2,7 +2,7 @@
 
 if [[ -n "${DOCKER_DEVBOX_SSL}" && "${DOCKER_DEVBOX_SSL}" == "mkcert" ]]; then
   MKCERT_EXE=$(command -v mkcert)
-  DESTINATION="$DOCKER_DEVBOX_DIR/.nginx-proxy/certs"
+  DESTINATION="$DOCKER_DEVBOX_DIR/.certs"
 
   if [ -f "$MKCERT_EXE" ]; then
      for RAWDOMAIN in $(dc config | sed -n -e 's/\s*VIRTUAL_HOST: //p'); do

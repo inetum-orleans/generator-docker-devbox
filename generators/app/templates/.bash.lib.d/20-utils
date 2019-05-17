@@ -5,3 +5,25 @@ _utils_relative_path() {
   RELATIVE_PATH=$(echo "$ABSOLUTE_PATH" | sed "s;$DOCKER_DEVBOX_DIR;;g")
   echo "$RELATIVE_PATH"
 }
+
+_cp_file_if_different() {
+SRC="$1"
+DEST="$2"
+
+if [ -f "$SRC" ] && [ ! -f "$DEST" ]; then
+  cp -f "$SRC" "$DEST"
+  return 0
+else
+  if [ ! -f "$SRC" ] && [ -f "$DEST" ]; then
+    rm "$DEST"
+    return 0
+  else
+    if [ -f "$SRC" ] && [ -f "$DEST" ] && ! cmp -s "$SRC" "$DEST"; then
+      cp -f "$SRC" "$DEST"
+      return 0
+    fi
+  fi
+fi
+
+return 1
+}
