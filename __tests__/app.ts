@@ -16,42 +16,12 @@ describe('generator-docker-devbox:app', () => {
     })
 
     it('should have SmartCD entrypoint files', () => {
-      assert.file('.bash_enter')
+      assert.file(['.bash_enter', '.bash_leave'])
     })
 
-    it('should have default .bin scripts', () => {
+    it('should have yo .bin scripts', () => {
       assert.file([
-        '.bin/dc',
-        '.bin/system',
-        '.bin/yo',
-        '.bin/mo'
-      ])
-    })
-
-    it('should have default .bash_enter.d scripts', () => {
-      assert.file([
-        '.bash_enter.d/01-env',
-        '.bash_enter.d/05-variables',
-        '.bash_enter.d/10-path',
-        '.bash_enter.d/12-install-jq',
-        '.bash_enter.d/15-install-cfssl-cli',
-        '.bash_enter.d/17-install-mkcert',
-        '.bash_enter.d/20-mo',
-        '.bash_enter.d/30-env-symlinks',
-        '.bash_enter.d/50-ca-certificates',
-        '.bash_enter.d/60-cfssl-cli-gencert',
-        '.bash_enter.d/62-mkcert',
-        '.bash_enter.d/65-install-certs',
-        '.bash_enter.d/70-reverse-proxy-config',
-        '.bash_enter.d/90-env-file',
-        '.bash_enter.d/95-init'
-      ])
-    })
-
-    it('should have default .bash_leave.d scripts', () => {
-      assert.file([
-        '.bash_leave.d/01-env',
-        '.bash_leave.d/95-cleanup-variables'
+        '.bin/yo'
       ])
     })
   })

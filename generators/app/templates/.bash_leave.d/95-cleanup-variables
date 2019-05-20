@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-autounstash
-
-unset DOCKER_DEVBOX_DIR

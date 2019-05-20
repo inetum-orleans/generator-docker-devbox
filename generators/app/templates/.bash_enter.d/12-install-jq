@@ -1,9 +1,0 @@
-#!/usr/bin/env bash
-
-JQ_EXE=$(command -v jq)
-
-if [ ! -x "$JQ_EXE" ]; then
-   echo "$(tput setaf 3)jq is not available. Downloading binary ...$(tput sgr0)"
-   curl -fsSL -o "$DOCKER_DEVBOX_DIR/.bin/jq" https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux32
-   chmod +x "$DOCKER_DEVBOX_DIR/.bin/jq"
-fi

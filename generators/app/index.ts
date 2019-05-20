@@ -379,16 +379,6 @@ export default class AppGenerator extends Generator {
     this.log(chalk.bold.blue('Initializing environment ...'))
     this.log('')
 
-    this.log(chalk.bold.cyan('$ . .bash_leave'))
-    this.log('')
-
-    if (this.options['bash-disabled']) {
-      this.log(chalk.red('bash execution is disabled (bash-disabled argument). You should run the command manually'))
-    } else {
-      await bash('. .bash_leave')
-    }
-    this.log('')
-
     this.log(chalk.bold.cyan('$ . .bash_enter'))
     this.log('')
 
