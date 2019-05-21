@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
-. "$DOCKER_DEVBOX_DIR/.bash.lib.d/50-docker"
+. "$DOCKER_DEVBOX_SCRIPTS_PATH/.bash.lib.d/50-docker"
 
 run --user postgres --workdir="$(_docker_workdir "/workdir")" {{instance.name}} pg_dump --dbname=postgres://{{projectName}}:{{projectName}}@{{instance.name}}/{{projectName}} "$@"

@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
-. "$DOCKER_DEVBOX_DIR/.bash.lib.d/50-docker"
+. "$DOCKER_DEVBOX_SCRIPTS_PATH/.bash.lib.d/50-docker"
 
 run --workdir="$(_docker_workdir "/app")" --entrypoint node-sass {{instance.name}} "$@"

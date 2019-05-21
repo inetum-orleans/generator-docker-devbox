@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-. "$DOCKER_DEVBOX_DIR/.bash.lib.d/50-docker"
+. "$DOCKER_DEVBOX_SCRIPTS_PATH/.bash.lib.d/50-docker"
 
 if [ "$1" == "run" ] && [ "$2" == "serve" ]; then
   PORTS=" -p ${DOCKER_DEVBOX_PORT_PREFIX}88:80"

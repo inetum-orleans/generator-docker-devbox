@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
-. "$DOCKER_DEVBOX_DIR/.bash.lib.d/50-docker"
+. "$DOCKER_DEVBOX_SCRIPTS_PATH/.bash.lib.d/50-docker"
 
 run --user root --workdir="$(_docker_workdir "/workdir")" {{instance.name}} mysql -h{{instance.name}} -u{{projectName}} -p{{projectName}} "$@"
