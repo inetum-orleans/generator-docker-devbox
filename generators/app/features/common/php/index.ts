@@ -160,11 +160,13 @@ export abstract class Php extends DefaultFeature implements DockerComposeFeature
       builder.service(context.instance.name)
         .with.default()
         .volume.project(this.projectVolume)
+        .volume.relative('php-config.ini', '/usr/local/etc/php/conf.d/php-config.ini')
 
       if (context.phpTools.indexOf('composer') !== -1) {
         builder.service(context.instance.name)
           .volume.named(`${context.instance.name}-composer-cache`, '/composer/cache')
       }
+
     } else {
       builder.service(context.instance.name)
         .ext(DockerDevboxExt).xdebug()
