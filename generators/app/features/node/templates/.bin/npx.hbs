@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 . "$DOCKER_DEVBOX_SCRIPTS_PATH/.bash.lib.d/50-docker"
 
-run$PORTS --workdir="$(_docker_workdir "/app")" --entrypoint npx {{instance.name}} "$@"
+run --workdir="$(_docker_workdir "/app")" --entrypoint npx {{instance.name}} "$@"
