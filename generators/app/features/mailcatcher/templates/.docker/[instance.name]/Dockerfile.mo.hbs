@@ -1,10 +1,10 @@
 FROM alpine:3.6
 {{#if authorName}}LABEL maintainer="{{authorName}}{{#if authorEmail}} <{{authorEmail}}>{{/if}}"{{/if}}
 
-\{{#DOCKER_DEVBOX_CA_CERTIFICATES}}
+\{{#DOCKER_DEVBOX_COPY_CA_CERTIFICATES}}
 COPY .ca-certificates/* /usr/local/share/ca-certificates/
 RUN apk add --update ca-certificates && update-ca-certificates
-\{{/DOCKER_DEVBOX_CA_CERTIFICATES}}
+\{{/DOCKER_DEVBOX_COPY_CA_CERTIFICATES}}
 
 RUN apk add --update \
 ruby \

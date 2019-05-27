@@ -1,10 +1,8 @@
 FROM php:{{phpVersion}}-{{phpMode}}
 {{#if authorName}}LABEL maintainer="{{authorName}}{{#if authorEmail}} <{{authorEmail}}>{{/if}}"{{/if}}
 
-\{{#DOCKER_DEVBOX_CA_CERTIFICATES}}
 COPY .ca-certificates/* /usr/local/share/ca-certificates/
 RUN update-ca-certificates
-\{{/DOCKER_DEVBOX_CA_CERTIFICATES}}
 {{#inArray phpExtensions "gd"}}
 
 RUN apt-get update -y && apt-get install -y libpng-dev libfreetype6-dev libjpeg62-turbo-dev && rm -rf /var/lib/apt/lists/* \
