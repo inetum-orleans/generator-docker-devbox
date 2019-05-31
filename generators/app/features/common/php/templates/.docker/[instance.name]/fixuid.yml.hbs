@@ -1,0 +1,8 @@
+user: www-data
+group: www-data
+paths:
+  - /
+{{#inArray phpTools "composer"}}
+  - /composer/cache
+{{/inArray}}
+

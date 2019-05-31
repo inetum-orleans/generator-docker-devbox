@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 . "$DOCKER_DEVBOX_SCRIPTS_PATH/.bash.lib.d/50-docker"
 
-run --workdir="$(_docker_workdir "/app")" --entrypoint npm {{instance.name}} "$@"
+run --workdir="$(_docker_workdir "/app")" {{instance.name}} npm "$@"

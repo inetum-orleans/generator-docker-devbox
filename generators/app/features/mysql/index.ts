@@ -6,6 +6,7 @@ import { AnswersFeature, FeatureContext } from '../../index'
 import { PortsManager } from '../../managers'
 import * as semver from 'semver'
 import { rsort } from '../../semver-utils'
+import { DockerDevboxExt } from '../../docker'
 
 export class MySQL extends DefaultFeature implements Feature, DockerComposeFeature<MySQL>, FeatureAsyncInit {
   name: string = 'mysql'
@@ -60,6 +61,7 @@ export class MySQL extends DefaultFeature implements Feature, DockerComposeFeatu
         .env('MYSQL_PASSWORD', context.projectName)
         .volume.project('/workdir')
         .volume.named(`${context.instance.name}-data`, '/var/lib/mysql')
+        .ext(DockerDevboxExt).fixuid()
     } else {
       builder.service(context.instance.name)
         .port(`${portsManager.uniquePort(6)}:3306`)

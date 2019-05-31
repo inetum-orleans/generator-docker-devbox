@@ -6,6 +6,7 @@ import { AnswersFeature, FeatureContext } from '../../index'
 import { PortsManager } from '../../managers'
 import * as semver from 'semver'
 import { rsort } from '../../semver-utils'
+import { DockerDevboxExt } from '../../docker'
 
 export class MariaDB extends DefaultFeature implements Feature, DockerComposeFeature<MariaDB>, FeatureAsyncInit {
   name: string = 'mariadb'
@@ -60,6 +61,7 @@ export class MariaDB extends DefaultFeature implements Feature, DockerComposeFea
         .env('MYSQL_PASSWORD', context.projectName)
         .volume.project('/workdir')
         .volume.named(`${context.instance.name}-data`, '/var/lib/mysql')
+        .ext(DockerDevboxExt).fixuid()
     } else {
       builder.service(context.instance.name)
         .port(`${portsManager.uniquePort(6)}:3306`)

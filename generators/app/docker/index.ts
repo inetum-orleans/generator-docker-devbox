@@ -60,6 +60,11 @@ export class DockerDevboxExt implements Extension {
     return this
   }
 
+  fixuid (): this {
+    this.builder.user('${USER_ID}:${GROUP_ID}')
+    return this
+  }
+
   get service (): ServiceBuilder {
     return this.builder
   }

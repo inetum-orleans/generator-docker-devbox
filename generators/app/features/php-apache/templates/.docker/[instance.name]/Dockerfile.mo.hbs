@@ -1,4 +1,8 @@
 {{#> php/Dockerfile phpMode='apache'}}
+# Allow apache to run server on port < 1024
+RUN apt-get update -y && apt-get install -y libcap2-bin && rm -rf /var/lib/apt/lists/* \
+&& setcap 'cap_net_bind_service=+ep' $(which apache2)
+
 {{#inArray apacheExtensions "rewrite"}}
 
 RUN a2enmod rewrite

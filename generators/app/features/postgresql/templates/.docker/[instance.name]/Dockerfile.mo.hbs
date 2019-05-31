@@ -9,5 +9,6 @@ RUN apt-get update \
 RUN mkdir /workdir
 VOLUME /workdir
 
-# Fix permissions to match host user
-RUN usermod -u ${USER_ID:-1000} postgres && groupmod -g ${GROUP_ID:-1000} postgres
+{{> fixuid}}
+
+USER postgres

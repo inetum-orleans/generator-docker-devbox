@@ -7,6 +7,7 @@ import { PortsManager } from '../../managers'
 import * as glob from 'glob'
 import { BulkOptions } from '../../templating'
 import { rsort } from '../../semver-utils'
+import { DockerDevboxExt } from '../../docker'
 
 export class Node extends DefaultFeature implements Feature, DockerComposeFeature<Node>, FeatureAsyncInit {
   name: string = 'node'
@@ -85,6 +86,7 @@ export class Node extends DefaultFeature implements Feature, DockerComposeFeatur
         .volume.project('/app')
         .volume.named(`${context.instance.name}-cache`, '/home/node/.cache')
         .volume.named(`${context.instance.name}-npm-packages`, '/home/node/.npm-packages')
+        .ext(DockerDevboxExt).fixuid()
     }
   }
 }

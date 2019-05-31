@@ -116,14 +116,16 @@ RUN apt-get update -y && apt-get install -y ssmtp && rm -rf /var/lib/apt/lists/*
 && echo "mailhub=maildev.\{{COMPOSE_NETWORK_NAME}}" >> /etc/ssmtp/ssmtp.conf \
 && echo 'sendmail_path = "/usr/sbin/ssmtp -t"' > /usr/local/etc/php/conf.d/mail.ini
 {{/hasFeature}}
-
-# Fix write permissions on Linux/Mac
-RUN usermod -u ${USER_ID:-1000} www-data \
-&& groupmod -g ${GROUP_ID:-1000} www-data
 {{#inArray phpTools "composer"}}
 
-RUN chown -R www-data:www-data $COMPOSER_HOME
-RUN chown -R www-data:www-data /var/www
-RUN mkdir -p "$COMPOSER_HOME/cache" && chown -R www-data:www-data "$COMPOSER_HOME/cache"
+RUN mkdir -p "$COMPOSER_HOME/cache" \
+&& chown -R www-data:www-data $COMPOSER_HOME \
+&& chown -R www-data:www-data /var/www
+{{/inArray}}
+
+{{> fixuid}}
+USER www-data
+{{#inArray phpTools "composer"}}
+
 VOLUME /composer/cache
 {{/inArray}}

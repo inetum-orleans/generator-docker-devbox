@@ -166,7 +166,7 @@ export abstract class Php extends DefaultFeature implements DockerComposeFeature
         builder.service(context.instance.name)
           .volume.named(`${context.instance.name}-composer-cache`, '/composer/cache')
       }
-
+      builder.service(context.instance.name).ext(DockerDevboxExt).fixuid()
     } else {
       builder.service(context.instance.name)
         .ext(DockerDevboxExt).xdebug()
