@@ -10,4 +10,4 @@ RUN mkdir /workdir
 VOLUME /workdir
 
 # Fix permissions to match host user
-RUN usermod -u ${HOST_UID:-1000} postgres && groupmod -g ${HOST_GID:-1000} postgres
+RUN usermod -u ${USER_ID:-1000} postgres && groupmod -g ${GROUP_ID:-1000} postgres

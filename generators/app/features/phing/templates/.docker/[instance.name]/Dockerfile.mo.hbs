@@ -22,7 +22,7 @@ RUN echo "date.timezone=${PHP_TIMEZONE:-UTC}" > $PHP_INI_DIR/conf.d/composer.ini
 
 # Install phing
 RUN composer global require phing/phing pear/archive_tar --prefer-dist --no-progress --no-suggest \
-&& chmod +x ${COMPOSER_HOME}/vendor/phing/phing/bin/phing && chown ${HOST_UID:-1000}:${HOST_GID:-1000} ${COMPOSER_HOME}/vendor/phing/phing/bin/phing
+&& chmod +x ${COMPOSER_HOME}/vendor/phing/phing/bin/phing && chown ${USER_ID:-1000}:${GROUP_ID:-1000} ${COMPOSER_HOME}/vendor/phing/phing/bin/phing
 
 # Docker CLI
 ARG DOCKER_VERSION=18.03.1-ce
@@ -37,8 +37,8 @@ RUN curl -fsSL -o docker.tgz https://download.docker.com/linux/static/stable/x86
 RUN groupadd -g 998 docker
 RUN usermod -a -G docker www-data
 
-RUN usermod -u ${HOST_UID:-1000} www-data
-RUN groupmod -g ${HOST_GID:-1000} www-data
-RUN chown -R ${HOST_UID:-1000}:${HOST_GID:-1000} $COMPOSER_HOME
+RUN usermod -u ${USER_ID:-1000} www-data
+RUN groupmod -g ${GROUP_ID:-1000} www-data
+RUN chown -R ${USER_ID:-1000}:${GROUP_ID:-1000} $COMPOSER_HOME
 
 ENTRYPOINT "/composer/vendor/phing/phing/bin/phing"

@@ -5,4 +5,4 @@ FROM mysql:{{mysqlVersion}}
 RUN mkdir /workdir
 VOLUME /workdir
 
-RUN usermod -u ${HOST_UID:-1000} mysql && groupmod -g ${HOST_GID:-1000} mysql
+RUN usermod -u ${USER_ID:-1000} mysql && groupmod -g ${GROUP_ID:-1000} mysql

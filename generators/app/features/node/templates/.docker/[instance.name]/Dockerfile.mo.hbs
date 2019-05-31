@@ -13,10 +13,10 @@ RUN npm i --global npm
 RUN apt-get update -y && apt-get install -y libcap2-bin && rm -rf /var/lib/apt/lists/* \
 && setcap 'cap_net_bind_service=+ep' $(which node)
 
-RUN usermod -u ${HOST_UID:-1000} node && groupmod -g ${HOST_GID:-1000} node \
-&& mkdir /home/node/.npm-packages && chown -R ${HOST_UID:-1000}:${HOST_GID:-1000} /home/node/.npm-packages \
-&& mkdir -p /home/node/.cache/yarn && chown -R ${HOST_UID:-1000}:${HOST_GID:-1000} /home/node/.cache \
-&& mkdir /app && chown -R ${HOST_UID:-1000}:${HOST_GID:-1000} /app
+RUN usermod -u ${USER_ID:-1000} node && groupmod -g ${GROUP_ID:-1000} node \
+&& mkdir /home/node/.npm-packages && chown -R ${USER_ID:-1000}:${GROUP_ID:-1000} /home/node/.npm-packages \
+&& mkdir -p /home/node/.cache/yarn && chown -R ${USER_ID:-1000}:${GROUP_ID:-1000} /home/node/.cache \
+&& mkdir /app && chown -R ${USER_ID:-1000}:${GROUP_ID:-1000} /app
 
 WORKDIR /app
 
