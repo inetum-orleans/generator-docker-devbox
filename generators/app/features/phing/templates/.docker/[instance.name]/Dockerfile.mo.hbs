@@ -1,8 +1,10 @@
 FROM php:{{phpVersion}}-cli
 {{#if authorName}}LABEL maintainer="{{authorName}}{{#if authorEmail}} <{{authorEmail}}>{{/if}}"{{/if}}
+\{{#DOCKER_DEVBOX_COPY_CA_CERTIFICATES}}
 
 COPY .ca-certificates/* /usr/local/share/ca-certificates/
 RUN update-ca-certificates
+\{{/DOCKER_DEVBOX_COPY_CA_CERTIFICATES}}
 
 ENV COMPOSER_HOME /composer
 ENV PATH /composer/vendor/bin:$PATH

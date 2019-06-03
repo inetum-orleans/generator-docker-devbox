@@ -11,3 +11,7 @@ autostash DOCKER_DEVBOX_ENV_SYMLINKS="{{envFiles}}"
 # List of directories containing *.mo.* files to pass through mo templating.
 # Directories ending with "[*]" will be processed recursively.
 autostash DOCKER_DEVBOX_MO_DIRS="{{moDirectories}}"
+
+# Set self signed CA certificates (cfssl/mkcert) into containers.
+# You may need this if containers communicates with each others through their https public name.
+# autostash DOCKER_DEVBOX_COPY_SELF_CA_CERTIFICATE=1
