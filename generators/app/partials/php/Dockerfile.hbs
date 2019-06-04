@@ -72,6 +72,17 @@ RUN curl -fsSL -o /usr/local/bin/drupal https://drupalconsole.com/installer && c
 {{#inArray phpTools "drush-launcher"}}
 
 RUN curl -fsSL -o /usr/local/bin/drush https://github.com/drush-ops/drush-launcher/releases/download/0.6.0/drush.phar && chmod +x /usr/local/bin/drush
+{{#eq phpDrushGlobal "composer"}}
+
+RUN composer global require drush/drush:^{{phpDrushGlobalComposerVersion}} --prefer-dist
+{{/eq}}
+{{#eq phpDrushGlobal "phar"}}
+
+ADD https://github.com/drush-ops/drush/releases/download/8.3.0/drush.phar /usr/local/bin/drush.phar
+RUN chmod +rx /usr/local/bin/drush.phar
+ENV DRUSH_LAUNCHER_FALLBACK /usr/local/bin/drush.phar
+{{/eq}}
+
 {{/inArray}}
 {{#inArray phpTools "phing"}}
 

@@ -9,6 +9,7 @@ import { BulkOptions } from '../../../templating'
 import * as glob from 'glob'
 import { rsort } from '../../../semver-utils'
 import { Answers, ChoiceType } from 'inquirer'
+import { cleanupAnswers } from '../../../answers'
 
 export abstract class Php extends DefaultFeature implements DockerComposeFeature<Php>, FeatureAsyncInit {
   instanceName: string = 'web'
@@ -66,6 +67,45 @@ export abstract class Php extends DefaultFeature implements DockerComposeFeature
           { value: 'drush-launcher', name: 'Drush Launcher' },
           'wkhtmltopdf'],
         default: ['composer'],
+        store: true
+      },
+      {
+        type: 'list',
+        name: 'phpDrushGlobal',
+        message: 'Drush global installation',
+        when: (answers) => {
+          answers = cleanupAnswers(answers)
+          return answers.phpTools.indexOf('drush-launcher') > -1
+        },
+        choices: (answers) => {
+          answers = cleanupAnswers(answers)
+
+          const choices: ChoiceType<Answers>[] = [
+            {
+              value: null,
+              name: 'Do not install drush globally (recommanded, drush should be installed as a composer dependency of your drupal project)'
+            },
+            {
+              value: 'composer',
+              name: 'Install drush globally with composer',
+              disabled: answers.phpTools.indexOf('composer') === -1 ? '"composer" should have been chosen in PHP Tools' : undefined
+            },
+            { value: 'phar', name: 'Install drush globally with PHAR (Drush 8 only)' }
+          ]
+
+          return choices
+        },
+        store: true
+      },
+      {
+        type: 'list',
+        name: 'phpDrushGlobalComposerVersion',
+        message: 'Drush version',
+        when: (answers) => {
+          answers = cleanupAnswers(answers)
+          return answers.phpDrushGlobal === 'composer'
+        },
+        choices: ['9', '8', '7', '6'],
         store: true
       }
     ]
