@@ -20,7 +20,7 @@ export class DockerDevboxConfigBuilderOptions extends DefaultConfigBuilderOption
       dockerfile: `${name}/Dockerfile`
     }
   }
-  imageName: (name: string) => string = (name: string) => `$\{DOCKER_DEVBOX_REGISTRY\}{{lowercase projectName}}/${name}`
+  imageName: (name: string) => string = (name: string) => `$\{DOCKER_DEVBOX_REGISTRY\}$\{DOCKER_DEVBOX_REGISTRY_REPOSITORY\}/${name}`
   serviceDir: (name: string) => string = (name: string) => `${this.projectDir}/.docker/${name}`
 }
 

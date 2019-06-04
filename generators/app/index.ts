@@ -24,7 +24,7 @@ const yosay = require('yosay')
 interface AnswersStart extends Generator.Answers {
   projectName: string
   authorName: string
-  authorEmail: string,
+  authorEmail: string
 }
 
 interface AnswersEnd extends Generator.Answers {
@@ -71,6 +71,10 @@ export default class AppGenerator extends Generator {
 
   private _sanitizeProjectName (input: string) {
     return input.replace(/(?:(?![\.])[\s\W_])+/g, '-')
+  }
+
+  private _sanitizeRegistryRepository (input: string) {
+    return input.replace(/(?:(?![\.])[\s\W_])+/g, '-').toLowerCase()
   }
 
   private async _promptStart () {
@@ -367,8 +371,11 @@ export default class AppGenerator extends Generator {
       '**/*.d/*'
     ]
 
+    const computed = { 'registryRepository': this._sanitizeRegistryRepository(this.answersMain['projectName']) }
+
     this.templating.bulk(defaultIncludes, {
       ...this.answersMain,
+      ...computed,
       envFiles: envFiles.join(' '),
       moDirectories: moDirectories.join(' ')
     })
