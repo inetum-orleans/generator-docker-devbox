@@ -1,6 +1,6 @@
 import * as Generator from 'yeoman-generator'
 import { Templating } from './templating'
-import { ChoiceType } from 'inquirer'
+import { Answers, ChoiceType, InputQuestion } from 'inquirer'
 import { features } from './features'
 import { DockerComposeFeature, Feature, FeatureAsyncInit, FeatureInstance } from './features/feature'
 import { Helpers } from './helpers'
@@ -78,7 +78,7 @@ export default class AppGenerator extends Generator {
   }
 
   private async _promptStart () {
-    const prompts: Generator.Question[] = [
+    const prompts: Generator.Question<AnswersStart>[] = [
       {
         type: 'input',
         name: 'projectName',
@@ -108,7 +108,7 @@ export default class AppGenerator extends Generator {
   }
 
   private async _promptEnd () {
-    const prompts = {
+    const prompts: Generator.Questions<AnswersEnd> = {
       type: 'input',
       name: 'portPrefix',
       message: 'Prefix of docker-compose port mappings [10-655]',
@@ -121,7 +121,7 @@ export default class AppGenerator extends Generator {
       },
       store: true
     }
-    return this.prompt(prompts) as Promise<AnswersEnd>
+    return this.prompt(prompts)
 
   }
 
@@ -137,7 +137,7 @@ export default class AppGenerator extends Generator {
   }
 
   private async _promptFeatures (featuresGroup: number, rawAnswersFeatures: RawAnswersFeatures[]) {
-    const choicesFeature: ChoiceType[] = []
+    const choicesFeature: ChoiceType<Answers>[] = []
 
     for (const feature of features) {
       const featureCount = this._featureCount(feature.name, rawAnswersFeatures)

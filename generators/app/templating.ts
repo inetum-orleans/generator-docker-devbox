@@ -145,8 +145,8 @@ export class Templating {
       to = this.npmignoreWorkaround(to)
 
       const fromContent = this.fs.read(from)
-      const renderedContent = this.render(fromContent, context, from, handlebarsOptions)
-      this.fs.append(to, renderedContent)
+      const renderedContent = this.render(fromContent, context, from, handlebarsOptions);
+      (this.fs as any).append(to, renderedContent)
     } else {
       this.copySingle(from, to, context, handlebarsOptions)
     }

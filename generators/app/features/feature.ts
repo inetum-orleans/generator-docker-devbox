@@ -1,4 +1,4 @@
-import { ChoiceType } from 'inquirer'
+import { Answers, ChoiceType } from 'inquirer'
 import * as Generator from 'yeoman-generator'
 import { AnswersFeature, AnswersFeatures, FeatureContext } from '..'
 import * as path from 'path'
@@ -24,11 +24,11 @@ export interface FeatureAsyncInit {
   initAsync (): Promise<void>
 }
 
-export interface Feature {
+export interface Feature<A = Answers> {
   name: string
   label: string
   directory: string | string[]
-  choice: ChoiceType
+  choice: ChoiceType<A>
   instanceName: string
 
   duplicateAllowed?: boolean
@@ -86,7 +86,7 @@ export function dirnameFrom (name: string, common: boolean = true) {
   return path.join(__dirname, name)
 }
 
-export abstract class DefaultFeature implements Feature {
+export abstract class DefaultFeature<A = Answers> implements Feature<A> {
   abstract name: string
   abstract label: string
   abstract instanceName: string
@@ -131,7 +131,7 @@ export abstract class DefaultFeature implements Feature {
     return instances
   }
 
-  get choice (): ChoiceType {
+  get choice () {
     return { name: this.label, value: this.name }
   }
 

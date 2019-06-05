@@ -8,7 +8,7 @@ import { DockerDevboxExt } from '../../../docker'
 import { BulkOptions } from '../../../templating'
 import * as glob from 'glob'
 import { rsort } from '../../../semver-utils'
-import { ChoiceType } from 'inquirer'
+import { Answers, ChoiceType, ListQuestion } from 'inquirer'
 
 export abstract class Php extends DefaultFeature implements DockerComposeFeature<Php>, FeatureAsyncInit {
   instanceName: string = 'web'
@@ -76,9 +76,9 @@ export abstract class Php extends DefaultFeature implements DockerComposeFeature
   }
 
   postProcessAnswers (answers: AnswersFeature, answersFeatures: AnswersFeatures, allAnswers: AnswersFeatures[]): Generator.Questions | null | undefined | void {
-    const databaseChoicesByType: { [type: string]: ChoiceType[] } = {}
+    const databaseChoicesByType: { [type: string]: ChoiceType<Answers>[] } = {}
 
-    function add (type: string, value: ChoiceType) {
+    function add (type: string, value: ChoiceType<Answers>) {
       if (!(type in databaseChoicesByType)) {
         databaseChoicesByType[type] = []
       }
@@ -127,13 +127,12 @@ export abstract class Php extends DefaultFeature implements DockerComposeFeature
       const questions: Generator.Questions = []
       for (const type in databaseChoicesByType) {
         const databaseChoices = databaseChoicesByType[type]
-        const choices = [{ value: null, name: 'No native client' }, ...databaseChoices]
+        const choices: ChoiceType<Answers>[] = [{ value: null, name: 'No native client' }, ...databaseChoices]
         questions.push({
           type: 'list',
           name: 'nativeClient' + type,
           message: 'Native client for ' + type,
           choices,
-          default: choices[0],
           store: true
         })
       }

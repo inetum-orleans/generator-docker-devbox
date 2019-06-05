@@ -41,7 +41,7 @@ export class Node extends DefaultFeature implements Feature, DockerComposeFeatur
     ]
   }
 
-  questions () {
+  questions (): Generator.Question[] {
     return [
       ...this.asyncQuestions,
       {
