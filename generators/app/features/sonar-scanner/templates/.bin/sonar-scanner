@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 . "$DOCKER_DEVBOX_SCRIPTS_PATH/.bash.lib.d/50-docker"
 
-run --default-entrypoint {{instance.name}} $@
+_RUN_DEFAULT_ENTRYPOINT=1 run {{instance.name}} $@
