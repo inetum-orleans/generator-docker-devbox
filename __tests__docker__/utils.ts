@@ -1,6 +1,7 @@
 import { bash as _bash, ProcessOutput } from '../generators/app/system'
 import { Feature, FeatureAsyncInit } from '../generators/app/features/feature'
-import { ChoiceType } from 'inquirer'
+import {ChoiceType, QuestionOptions} from 'inquirer'
+import {Answers} from "yeoman-generator";
 
 export enum BuildOptionsChoiceType {
   NO,
@@ -33,11 +34,12 @@ export function buildOptions (featuresPrefix: string, pattern: BuildOptionsChoic
     if (feature.questions) {
       const questions = feature.questions()
       for (const question of questions) {
-        if (question.choices) {
+        const questionOptions = question as QuestionOptions<Answers>
+        if (questionOptions.choices) {
           const key = `${featuresPrefix}~${feature.name}~${question.name}`
           const values: string[] = []
           if (pattern === BuildOptionsChoiceType.ALL) {
-            for (const choice of (question.choices as ReadonlyArray<ChoiceType>)) {
+            for (const choice of (questionOptions.choices as ReadonlyArray<ChoiceType<Answers>>)) {
               if (typeof choice === 'string') {
                 values.push(choice)
               }

@@ -1,6 +1,5 @@
 import * as helpers from 'yeoman-test'
 import AppGenerator from '../generators/app'
-import * as path from 'path'
 import { features } from '../generators/app/features'
 import { bash, buildOptions, BuildOptionsChoiceType } from './utils'
 
@@ -12,10 +11,8 @@ jest.setTimeout(1000 * 60 * 15)
 describe('All features', () => {
   describe('Default options', () => {
     beforeAll(async () => {
-      return helpers.run(AppGenerator, {
-        resolved: require.resolve(path.join(__dirname, '../generators/app')),
-        namespace: 'generator-docker-devbox:app'
-      }).withArguments('bash-disabled')
+      return helpers.run(AppGenerator)
+        .withArguments('bash-disabled')
         .withPrompts({
           'features~0': features.map(f => f.name)
         }).toPromise()
@@ -35,10 +32,8 @@ describe('All features', () => {
   if (allOptions) {
     describe('All options', () => {
       beforeAll(async () => {
-        return helpers.run(AppGenerator, {
-          resolved: require.resolve(path.join(__dirname, '../generators/app')),
-          namespace: 'generator-docker-devbox:app'
-        }).withArguments('bash-disabled')
+        return helpers.run(AppGenerator)
+          .withArguments('bash-disabled')
           .withPrompts({
             'features~0': features.map(f => f.name),
             ...allOptions
@@ -60,10 +55,8 @@ describe('All features', () => {
   if (noOption) {
     describe('No option', () => {
       beforeAll(async () => {
-        return helpers.run(AppGenerator, {
-          resolved: require.resolve(path.join(__dirname, '../generators/app')),
-          namespace: 'generator-docker-devbox:app'
-        }).withArguments('bash-disabled')
+        return helpers.run(AppGenerator)
+          .withArguments('bash-disabled')
           .withPrompts({
             'features~0': features.map(f => f.name),
             ...noOption
@@ -86,10 +79,8 @@ xdescribe('Each feature', () => {
     for (const feature of features) {
       describe(feature.label, () => {
         beforeAll(async () => {
-          return helpers.run(AppGenerator, {
-            resolved: require.resolve(path.join(__dirname, '../generators/app')),
-            namespace: 'generator-docker-devbox:app'
-          }).withArguments('bash-disabled')
+          return helpers.run(AppGenerator)
+            .withArguments('bash-disabled')
             .withPrompts({
               'features~0': [
                 'mail-catcher'
@@ -115,10 +106,8 @@ xdescribe('Each feature', () => {
       if (allOptions) {
         describe(feature.label, () => {
           beforeAll(async () => {
-            return helpers.run(AppGenerator, {
-              resolved: require.resolve(path.join(__dirname, '../generators/app')),
-              namespace: 'generator-docker-devbox:app'
-            }).withArguments('bash-disabled')
+            return helpers.run(AppGenerator)
+              .withArguments('bash-disabled')
               .withPrompts({
                 'features~0': [
                   feature.name
@@ -146,10 +135,8 @@ xdescribe('Each feature', () => {
       if (noOption) {
         describe(feature.label, () => {
           beforeAll(async () => {
-            return helpers.run(AppGenerator, {
-              resolved: require.resolve(path.join(__dirname, '../generators/app')),
-              namespace: 'generator-docker-devbox:app'
-            }).withArguments('bash-disabled')
+            return helpers.run(AppGenerator)
+              .withArguments('bash-disabled')
               .withPrompts({
                 'features~0': [
                   feature.name

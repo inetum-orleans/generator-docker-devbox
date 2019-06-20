@@ -2,16 +2,13 @@ import * as assert from 'yeoman-assert'
 import * as helpers from 'yeoman-test'
 import AppGenerator from '../generators/app'
 
-const path = require('path')
 jest.setTimeout(1000 * 60 * 2)
 
 describe('generator-docker-devbox:app', () => {
   describe('Default answers', () => {
     beforeAll(async () => {
-      await helpers.run(AppGenerator, {
-        resolved: require.resolve(path.join(__dirname, '../generators/app')),
-        namespace: 'generator-docker-devbox:app'
-      }).withArguments('bash-disabled')
+      await helpers.run(AppGenerator)
+        .withArguments('bash-disabled')
         .toPromise()
     })
 
@@ -28,10 +25,8 @@ describe('generator-docker-devbox:app', () => {
 
   describe('single group, apache-php', () => {
     beforeAll(async () => {
-      await helpers.run(AppGenerator, {
-        resolved: require.resolve(path.join(__dirname, '../generators/app')),
-        namespace: 'generator-docker-devbox:app'
-      }).withArguments('bash-disabled')
+      await helpers.run(AppGenerator)
+        .withArguments('bash-disabled')
         .withPrompts({
           'features~0': [
             'php-apache'
@@ -52,10 +47,8 @@ describe('generator-docker-devbox:app', () => {
 
   describe('single group, apache-php + postgres', () => {
     beforeAll(async () => {
-      await helpers.run(AppGenerator, {
-        resolved: require.resolve(path.join(__dirname, '../generators/app')),
-        namespace: 'generator-docker-devbox:app'
-      }).withArguments('bash-disabled')
+      await helpers.run(AppGenerator)
+        .withArguments('bash-disabled')
         .withPrompts({
           'features~0': [
             'php-apache',

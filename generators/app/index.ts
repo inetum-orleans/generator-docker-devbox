@@ -104,7 +104,7 @@ export default class AppGenerator extends Generator {
         store: true
       }
     ]
-    return this.prompt(prompts) as Promise<AnswersStart>
+    return this.prompt(prompts)
   }
 
   private async _promptEnd () {
