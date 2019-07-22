@@ -1,0 +1,13 @@
+FROM mailhog/mailhog
+{{#if authorName}}LABEL maintainer="{{authorName}}{{#if authorEmail}} <{{authorEmail}}>{{/if}}"{{/if}}
+
+USER root
+\{{#DOCKER_DEVBOX_COPY_CA_CERTIFICATES}}
+
+COPY .ca-certificates/* /usr/local/share/ca-certificates/
+RUN apk add --update ca-certificates && update-ca-certificates
+\{{/DOCKER_DEVBOX_COPY_CA_CERTIFICATES}}
+
+EXPOSE 25
+EXPOSE 80
+CMD ["-smtp-bind-addr", "0.0.0.0:25", "-ui-bind-addr", "0.0.0.0:80", "-api-bind-addr", "0.0.0.0:80"]

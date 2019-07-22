@@ -18,7 +18,7 @@ export class Mail extends DefaultFeature implements DockerComposeFeature<Mail> {
       type: 'list',
       name: 'mailserver',
       message: 'Mail server',
-      choices: ['mailcatcher', 'maildev'],
+      choices: ['mailcatcher', 'maildev', 'mailhog'],
       default: 'mailcatcher',
       store: true
     }
