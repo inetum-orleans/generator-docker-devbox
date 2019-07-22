@@ -1,4 +1,5 @@
-FROM php:{{phpVersion}}-{{phpMode}}
+FROM php:{{phpVersion}}-{{phpMode}}-stretch
+# Use debian stretch instead of buster as a temporary workaround for docker-library/php#865
 {{#if authorName}}LABEL maintainer="{{authorName}}{{#if authorEmail}} <{{authorEmail}}>{{/if}}"{{/if}}
 \{{#DOCKER_DEVBOX_COPY_CA_CERTIFICATES}}
 
