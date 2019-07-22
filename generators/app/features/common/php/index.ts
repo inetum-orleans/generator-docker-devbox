@@ -172,7 +172,7 @@ export abstract class Php extends DefaultFeature implements DockerComposeFeature
         .volume.project(this.projectVolume)
         .volume.relative('php-config.ini', '/usr/local/etc/php/conf.d/php-config.ini')
 
-      if (this.hasFeature(context, 'mailcatcher')) {
+      if (this.hasFeature(context, 'mail')) {
         builder.service(context.instance.name)
           .volume.relative('msmtprc', '/etc/msmtprc')
       }
@@ -209,7 +209,7 @@ export abstract class Php extends DefaultFeature implements DockerComposeFeature
       options.excludeFiles.push('.bin/symfony.hbs')
     }
 
-    if (!this.hasFeature(context, 'mailcatcher')) {
+    if (!this.hasFeature(context, 'mail')) {
       options.excludeFiles.push('.docker/[instance.name]/msmtprc.mo')
     }
 

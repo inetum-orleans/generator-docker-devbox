@@ -105,12 +105,7 @@ RUN apt-get update -y && apt-get install -y lsb-release \
 && apt-get install -y ./wkhtmltopdf.deb && rm -rf /var/lib/apt/lists/* \
 && rm wkhtmltopdf.deb
 {{/inArray}}
-{{#hasFeature 'mailcatcher'}}
-
-RUN apt-get update -y && apt-get install -y msmtp msmtp-mta && rm -rf /var/lib/apt/lists/* \
-&& echo 'sendmail_path = "/usr/sbin/sendmail -t -i"' > /usr/local/etc/php/conf.d/mail.ini
-{{/hasFeature}}
-{{#hasFeature 'maildev'}}
+{{#hasFeature 'mail'}}
 
 RUN apt-get update -y && apt-get install -y msmtp msmtp-mta && rm -rf /var/lib/apt/lists/* \
 && echo 'sendmail_path = "/usr/sbin/sendmail -t -i"' > /usr/local/etc/php/conf.d/mail.ini

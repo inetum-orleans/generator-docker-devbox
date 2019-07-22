@@ -163,6 +163,10 @@ export abstract class DefaultFeature<A = Answers> implements Feature<A> {
     return options
   }
 
+  templateDirectory (context: FeatureContext<this>, directory: string) {
+    return path.join(directory, 'templates')
+  }
+
   write (templating: Templating, helpers: Helpers, context: FeatureContext<this>) {
     let directories = this.directory
 
@@ -175,7 +179,7 @@ export abstract class DefaultFeature<A = Answers> implements Feature<A> {
         excludeFiles: clone(this.excludeFiles),
         appendFiles: clone(this.appendFiles),
         filepathDestinationTransformer: context.instance.filepathDestinationTransformer,
-        cwd: path.join(directory, 'templates')
+        cwd: this.templateDirectory(context, directory)
       }
       options = this.writeOptions(options, context, directory)
       templating.bulk(this.files(context), context, options)
