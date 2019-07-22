@@ -8,7 +8,7 @@ import { DockerDevboxExt } from '../../../docker'
 import { BulkOptions } from '../../../templating'
 import * as glob from 'glob'
 import { rsort } from '../../../semver-utils'
-import { Answers, ChoiceType, ListQuestion } from 'inquirer'
+import { Answers, ChoiceType } from 'inquirer'
 
 export abstract class Php extends DefaultFeature implements DockerComposeFeature<Php>, FeatureAsyncInit {
   instanceName: string = 'web'
@@ -154,12 +154,28 @@ export abstract class Php extends DefaultFeature implements DockerComposeFeature
     }
   }
 
+  private hasFeature (context: FeatureContext<Php>, featureId: string) {
+    for (const answersFeature of context.features) {
+      {
+        if (answersFeature[featureId]) {
+          return true
+        }
+      }
+    }
+    return false
+  }
+
   dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<Php>, portsManager: PortsManager, dev?: boolean): void {
     if (!dev) {
       builder.service(context.instance.name)
         .with.default()
         .volume.project(this.projectVolume)
         .volume.relative('php-config.ini', '/usr/local/etc/php/conf.d/php-config.ini')
+
+      if (this.hasFeature(context, 'mailcatcher')) {
+        builder.service(context.instance.name)
+          .volume.relative('msmtprc', '/etc/msmtprc')
+      }
 
       if (context.phpTools.indexOf('composer') !== -1) {
         builder.service(context.instance.name)
@@ -191,6 +207,10 @@ export abstract class Php extends DefaultFeature implements DockerComposeFeature
     }
     if (context.phpTools.indexOf('symfony-client') === -1) {
       options.excludeFiles.push('.bin/symfony.hbs')
+    }
+
+    if (!this.hasFeature(context, 'mailcatcher')) {
+      options.excludeFiles.push('.docker/[instance.name]/msmtprc.mo')
     }
 
     return options
