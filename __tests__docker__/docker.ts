@@ -1,12 +1,20 @@
 import * as helpers from 'yeoman-test'
 import AppGenerator from '../generators/app'
 import { features } from '../generators/app/features'
-import { bash, buildOptions, BuildOptionsChoiceType } from './utils'
+import { bash, buildFeaturePrompts, BuildOptionsChoiceType } from './utils'
 
 // Because docker sometimes fails to pull images, or hits authentication failures ...
 (jest as any).retryTimes(5)
 
 jest.setTimeout(1000 * 60 * 15)
+
+function validateConfig () {
+  return bash('. .bash_enter && dc config')
+}
+
+function buildDockerImage () {
+  return bash('. .bash_enter && dc build --pull')
+}
 
 describe('All features', () => {
   describe('Default options', () => {
@@ -19,18 +27,17 @@ describe('All features', () => {
     })
 
     it('should validate docker-compose configuration', async () => {
-      return bash('. .bash_enter && dc config')
+      return validateConfig()
     })
 
     it('should build docker image', async () => {
-      return bash('. .bash_enter && dc build --pull')
+      return buildDockerImage()
     })
   })
 
-  const allOptions = buildOptions('features~0', BuildOptionsChoiceType.ALL, ...features)
+  const allOptions = buildFeaturePrompts('features~0', BuildOptionsChoiceType.ALL, ...features)
 
-  if (allOptions) {
-    describe('All options', () => {
+  describe('All options', () => {
       beforeAll(async () => {
         return helpers.run(AppGenerator)
           .withArguments('bash-disabled')
@@ -41,37 +48,35 @@ describe('All features', () => {
       })
 
       it('should validate docker-compose configuration', async () => {
-        return bash('. .bash_enter && dc config')
+        return validateConfig()
       })
 
-      it('should build docker images', async () => {
-        return bash('. .bash_enter && dc build --pull')
+      it('should build docker image', async () => {
+        return buildDockerImage()
       })
+    }
+  )
+
+  const noOption = buildFeaturePrompts('features~0', BuildOptionsChoiceType.NO, ...features)
+
+  describe('No option', () => {
+    beforeAll(async () => {
+      return helpers.run(AppGenerator)
+        .withArguments('bash-disabled')
+        .withPrompts({
+          'features~0': features.map(f => f.name),
+          ...noOption
+        }).toPromise()
     })
-  }
 
-  const noOption = buildOptions('features~0', BuildOptionsChoiceType.NO, ...features)
-
-  if (noOption) {
-    describe('No option', () => {
-      beforeAll(async () => {
-        return helpers.run(AppGenerator)
-          .withArguments('bash-disabled')
-          .withPrompts({
-            'features~0': features.map(f => f.name),
-            ...noOption
-          }).toPromise()
-      })
-
-      it('should validate docker-compose configuration', async () => {
-        return bash('. .bash_enter && dc config')
-      })
-
-      it('should build docker images', async () => {
-        return bash('. .bash_enter && dc build --pull')
-      })
+    it('should validate docker-compose configuration', async () => {
+      return validateConfig()
     })
-  }
+
+    it('should build docker image', async () => {
+      return buildDockerImage()
+    })
+  })
 })
 
 xdescribe('Each feature', () => {
@@ -89,11 +94,11 @@ xdescribe('Each feature', () => {
         })
 
         it('should validate docker-compose configuration', async () => {
-          return bash('. .bash_enter && dc config')
+          return validateConfig()
         })
 
-        it('should build docker images', async () => {
-          return bash('. .bash_enter && dc build --pull')
+        it('should build docker image', async () => {
+          return buildDockerImage()
         })
       })
     }
@@ -101,59 +106,55 @@ xdescribe('Each feature', () => {
 
   describe('All options', () => {
     for (const feature of features) {
-      const allOptions = buildOptions('features~0', BuildOptionsChoiceType.ALL, feature)
+      const allOptions = buildFeaturePrompts('features~0', BuildOptionsChoiceType.ALL, feature)
 
-      if (allOptions) {
-        describe(feature.label, () => {
-          beforeAll(async () => {
-            return helpers.run(AppGenerator)
-              .withArguments('bash-disabled')
-              .withPrompts({
-                'features~0': [
-                  feature.name
-                ],
-                ...allOptions
-              }).toPromise()
-          })
-
-          it('should validate docker-compose configuration', async () => {
-            return bash('. .bash_enter && dc config')
-          })
-
-          it('should build docker images', async () => {
-            return bash('. .bash_enter && dc build --pull')
-          })
+      describe(feature.label, () => {
+        beforeAll(async () => {
+          return helpers.run(AppGenerator)
+            .withArguments('bash-disabled')
+            .withPrompts({
+              'features~0': [
+                feature.name
+              ],
+              ...allOptions
+            }).toPromise()
         })
-      }
+
+        it('should validate docker-compose configuration', async () => {
+          return validateConfig()
+        })
+
+        it('should build docker image', async () => {
+          return buildDockerImage()
+        })
+      })
     }
   })
 
   describe('No option', () => {
     for (const feature of features) {
-      const noOption = buildOptions('features~0', BuildOptionsChoiceType.NO, feature)
+      const noOption = buildFeaturePrompts('features~0', BuildOptionsChoiceType.NO, feature)
 
-      if (noOption) {
-        describe(feature.label, () => {
-          beforeAll(async () => {
-            return helpers.run(AppGenerator)
-              .withArguments('bash-disabled')
-              .withPrompts({
-                'features~0': [
-                  feature.name
-                ],
-                ...noOption
-              }).toPromise()
-          })
-
-          it('should validate docker-compose configuration', async () => {
-            return bash('. .bash_enter && dc config')
-          })
-
-          it('should build docker images', async () => {
-            return bash('. .bash_enter && dc build --pull')
-          })
+      describe(feature.label, () => {
+        beforeAll(async () => {
+          return helpers.run(AppGenerator)
+            .withArguments('bash-disabled')
+            .withPrompts({
+              'features~0': [
+                feature.name
+              ],
+              ...noOption
+            }).toPromise()
         })
-      }
+
+        it('should validate docker-compose configuration', async () => {
+          return validateConfig()
+        })
+
+        it('should build docker image', async () => {
+          return buildDockerImage()
+        })
+      })
     }
   })
 })
