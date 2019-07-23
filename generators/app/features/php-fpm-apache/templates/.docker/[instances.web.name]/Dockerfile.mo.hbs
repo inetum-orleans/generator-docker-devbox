@@ -13,12 +13,12 @@ RUN mkdir -p /usr/local/apache2/conf/custom \
 && sed -i '/LoadModule proxy_fcgi_module/s/^#//g' /usr/local/apache2/conf/httpd.conf \
 && echo >> /usr/local/apache2/conf/httpd.conf && echo 'IncludeOptional conf/custom/*.conf' >> /usr/local/apache2/conf/httpd.conf
 
+RUN sed -i '/LoadModule proxy_module/s/^#//g' /usr/local/apache2/conf/httpd.conf
 {{#inArray apacheExtensions "rewrite"}}
 
 RUN sed -i '/LoadModule rewrite_module/s/^#//g' /usr/local/apache2/conf/httpd.conf
 {{/inArray}}
 {{#inArray apacheExtensions "proxy-http"}}
 
-RUN sed -i '/LoadModule proxy_module/s/^#//g' /usr/local/apache2/conf/httpd.conf \
-&& sed -i '/LoadModule proxy_http_module/s/^#//g' /usr/local/apache2/conf/httpd.conf
+RUN sed -i '/LoadModule proxy_http_module/s/^#//g' /usr/local/apache2/conf/httpd.conf
 {{/inArray}}
