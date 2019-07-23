@@ -251,6 +251,7 @@ export abstract class Php extends DefaultFeature implements DockerComposeFeature
 
     if (!this.hasFeature(context, 'mail')) {
       options.excludeFiles.push('.docker/[instance.name]/msmtprc.mo')
+      options.excludeFiles.push('.docker/[instance.name]/.gitignore.hbs')
     }
 
     return options
