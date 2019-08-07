@@ -11,11 +11,13 @@ import { MariaDB } from './mariadb'
 import { Solr } from './solr'
 import { PhpFpmNginx } from './php-fpm-nginx'
 import { PhpFpmApache } from './php-fpm-apache'
+import { PhpCli } from './php-cli'
 
 export const features: Feature[] = [
   new PhpFpmApache(),
   new PhpFpmNginx(),
   new PhpApache(),
+  new PhpCli(),
   new Postgres(),
   new MySQL(),
   new MariaDB(),
