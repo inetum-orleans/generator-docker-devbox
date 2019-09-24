@@ -220,6 +220,7 @@ export abstract class Php extends DefaultFeature implements DockerComposeFeature
       if (context.phpTools.indexOf('composer') !== -1) {
         builder.service(context.instance.name)
           .volume.named(`${context.instance.name}-composer-cache`, '/composer/cache')
+          .volume.named(`${context.instance.name}-composer-vendor`, '/composer/vendor')
       }
       builder.service(context.instance.name).ext(DockerDevboxExt).fixuid()
     } else {

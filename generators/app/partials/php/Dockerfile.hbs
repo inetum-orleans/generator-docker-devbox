@@ -124,6 +124,7 @@ RUN apt-get update -y && apt-get install -y msmtp msmtp-mta && rm -rf /var/lib/a
 {{#inArray phpTools "composer"}}
 
 RUN mkdir -p "$COMPOSER_HOME/cache" \
+&& mkdir -p "$COMPOSER_HOME/vendor" \
 && chown -R www-data:www-data $COMPOSER_HOME \
 && chown -R www-data:www-data /var/www
 {{/inArray}}
