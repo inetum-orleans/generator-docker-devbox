@@ -12,12 +12,12 @@ export class DockerDevboxConfigBuilderOptions extends DefaultConfigBuilderOption
   restart: string = '${DOCKER_DEVBOX_RESTART_POLICY}'
   projectDir: string = '${COMPOSE_PROJECT_DIR}'
   portPrefix: string | null = '${DOCKER_DEVBOX_PORT_PREFIX}'
-  version: Version = Version.v22
+  version: Version = Version.v37
 
   buildConfiguration: (name: string) => BuildDefinition = (name: string) => {
     return {
-      context: '.docker',
-      dockerfile: `${name}/Dockerfile`
+      context: `.docker/${name}`,
+      cache_from: [`$\{DOCKER_DEVBOX_REGISTRY\}$\{DOCKER_DEVBOX_REGISTRY_REPOSITORY\}/${name}`]
     }
   }
   imageName: (name: string) => string = (name: string) => `$\{DOCKER_DEVBOX_REGISTRY\}$\{DOCKER_DEVBOX_REGISTRY_REPOSITORY\}/${name}`
