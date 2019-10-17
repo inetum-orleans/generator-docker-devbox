@@ -1,5 +1,4 @@
 import { dirnameFrom, DockerComposeFeature, FeatureAsyncInit } from '../feature'
-import * as Generator from 'yeoman-generator'
 import { ConfigBuilder } from '@gfi-centre-ouest/docker-compose-builder'
 import { FeatureContext } from '../../index'
 import { PortsManager } from '../../managers'
@@ -7,6 +6,7 @@ import { Php } from '../common/php'
 import { DockerDevboxExt } from '../../docker'
 import { RegistryClient } from '../../docker/registry'
 import { rsort } from '../../semver-utils'
+import { Answers, Question } from 'yeoman-generator'
 
 export class PhpFpmApache extends Php implements DockerComposeFeature<PhpFpmApache>, FeatureAsyncInit {
   name: string = 'php-fpm-apache'
@@ -41,7 +41,7 @@ export class PhpFpmApache extends Php implements DockerComposeFeature<PhpFpmApac
     ]
   }
 
-  questions (): Generator.Question[] {
+  questions (): Question<Answers>[] {
     const questions = super.questions()
 
     return [

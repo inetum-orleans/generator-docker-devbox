@@ -1,6 +1,6 @@
 import { DefaultFeature, DockerComposeFeature, Feature, FeatureAsyncInit } from '../feature'
 import { ConfigBuilder } from '@gfi-centre-ouest/docker-compose-builder'
-import * as Generator from 'yeoman-generator'
+import { Answers, Question } from 'yeoman-generator'
 import { RegistryClient } from '../../docker/registry'
 import { FeatureContext } from '../../index'
 import { PortsManager } from '../../managers'
@@ -13,7 +13,7 @@ export class Solr extends DefaultFeature implements Feature, DockerComposeFeatur
   directory: string = __dirname
   duplicateAllowed: boolean = true
 
-  asyncQuestions: Generator.Question[] = []
+  asyncQuestions: Question<Answers>[] = []
 
   async initAsync () {
     const registry = new RegistryClient()
@@ -37,7 +37,7 @@ export class Solr extends DefaultFeature implements Feature, DockerComposeFeatur
     ]
   }
 
-  questions (): Generator.Question[] {
+  questions (): Question[] {
     return this.asyncQuestions
   }
 
@@ -50,7 +50,7 @@ export class Solr extends DefaultFeature implements Feature, DockerComposeFeatur
         .entrypoint(['docker-entrypoint.sh', 'solr-precreate', context.projectName, '/solr-conf'])
     } else {
       builder.service(context.instance.name)
-      .port(`${portsManager.uniquePort(83)}:8983`)
+        .port(`${portsManager.uniquePort(83)}:8983`)
     }
   }
 }

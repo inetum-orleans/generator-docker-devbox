@@ -1,5 +1,4 @@
 import { DefaultFeature, DockerComposeFeature, FeatureAsyncInit } from '../../feature'
-import * as Generator from 'yeoman-generator'
 import { RegistryClient } from '../../../docker/registry'
 import { ConfigBuilder } from '@gfi-centre-ouest/docker-compose-builder'
 import { AnswersFeature, AnswersFeatures, FeatureContext } from '../../../index'
@@ -8,15 +7,16 @@ import { DockerDevboxExt } from '../../../docker'
 import { BulkOptions } from '../../../templating'
 import * as glob from 'glob'
 import { rsort } from '../../../semver-utils'
-import { Answers, ChoiceType } from 'inquirer'
+import { ChoiceOptions, ListChoiceOptions } from 'inquirer'
 import { cleanupAnswers } from '../../../answers'
+import { Answers, Question, Questions } from 'yeoman-generator'
 
 export abstract class Php extends DefaultFeature implements DockerComposeFeature<Php>, FeatureAsyncInit {
   instanceName: string = 'web'
   directory: string | string[] = __dirname
   duplicateAllowed: boolean = true
 
-  asyncQuestions: Generator.Question[] = []
+  asyncQuestions: Question<Answers>[] = []
 
   abstract phpMode: string
 
@@ -45,7 +45,7 @@ export abstract class Php extends DefaultFeature implements DockerComposeFeature
     ]
   }
 
-  questions (): Generator.Question[] {
+  questions (): Question<Answers>[] {
     return [...this.asyncQuestions,
       {
         type: 'checkbox',
@@ -80,7 +80,7 @@ export abstract class Php extends DefaultFeature implements DockerComposeFeature
         choices: (answers) => {
           answers = cleanupAnswers(answers)
 
-          const choices: ChoiceType<Answers>[] = [
+          const choices: ListChoiceOptions<Answers>[] = [
             {
               value: null,
               name: 'Do not install drush globally (recommanded, drush should be installed as a composer dependency of your drupal project)'
@@ -88,7 +88,7 @@ export abstract class Php extends DefaultFeature implements DockerComposeFeature
             {
               value: 'composer',
               name: 'Install drush globally with composer',
-              disabled: answers.phpTools.indexOf('composer') === -1 ? '"composer" should have been chosen in PHP Tools' : undefined
+              disabled: answers.phpTools.indexOf('composer') === -1 ? '"composer" should have been chosen in PHP Tools' : false
             },
             { value: 'phar', name: 'Install drush globally with PHAR (Drush 8 only)' }
           ]
@@ -115,14 +115,16 @@ export abstract class Php extends DefaultFeature implements DockerComposeFeature
     return '/var/www/html'
   }
 
-  postProcessAnswers (answers: AnswersFeature, answersFeatures: AnswersFeatures, allAnswers: AnswersFeatures[]): Generator.Questions | null | undefined | void {
-    const databaseChoicesByType: { [type: string]: ChoiceType<Answers>[] } = {}
+  postProcessAnswers (answers: AnswersFeature, answersFeatures: AnswersFeatures, allAnswers: AnswersFeatures[]): Questions<Answers> | null | undefined | void {
+    const databaseChoicesByType: { [type: string]: ChoiceOptions<Answers>[] } = {}
 
-    function add (type: string, value: ChoiceType<Answers>) {
-      if (!(type in databaseChoicesByType)) {
+    function add (type: string, value: ChoiceOptions<Answers>) {
+      let choices: ChoiceOptions<Answers>[] | undefined = databaseChoicesByType[type]
+      if (!choices) {
+        choices = []
         databaseChoicesByType[type] = []
       }
-      databaseChoicesByType[type].push(value)
+      choices.push(value)
     }
 
     for (const answersFeaturesGroup of allAnswers) {
@@ -164,10 +166,10 @@ export abstract class Php extends DefaultFeature implements DockerComposeFeature
     }
 
     if (Object.keys(databaseChoicesByType).length > 0) {
-      const questions: Generator.Questions = []
+      const questions: Array<Question<Answers>> = []
       for (const type in databaseChoicesByType) {
         const databaseChoices = databaseChoicesByType[type]
-        const choices: ChoiceType<Answers>[] = [{ value: null, name: 'No native client' }, ...databaseChoices]
+        const choices: ChoiceOptions<Answers>[] = [{ value: null, name: 'No native client' }, ...databaseChoices]
         questions.push({
           type: 'list',
           name: 'nativeClient' + type,
@@ -181,7 +183,7 @@ export abstract class Php extends DefaultFeature implements DockerComposeFeature
     }
   }
 
-  postProcessFeatureAnswers? (answers: AnswersFeature): Generator.Questions | null | undefined | void {
+  postProcessFeatureAnswers? (answers: AnswersFeature): void {
     for (const key in answers) {
       if (key.startsWith('nativeClient') && key !== 'nativeClient') {
         if (answers[key]) {

@@ -1,9 +1,9 @@
-import * as Generator from 'yeoman-generator'
 import { Templating } from './templating'
-import { Answers, ChoiceType, InputQuestion } from 'inquirer'
+import { ChoiceOptions } from 'inquirer'
 import { features } from './features'
 import { DockerComposeFeature, Feature, FeatureAsyncInit, FeatureInstance } from './features/feature'
 import { Helpers } from './helpers'
+import * as Generator from 'yeoman-generator'
 
 import 'source-map-support/register'
 import { DockerDevboxConfigBuilderOptions } from './docker'
@@ -137,7 +137,7 @@ export default class AppGenerator extends Generator {
   }
 
   private async _promptFeatures (featuresGroup: number, rawAnswersFeatures: RawAnswersFeatures[]) {
-    const choicesFeature: ChoiceType<Answers>[] = []
+    const choicesFeature: ChoiceOptions<Generator.Answers>[] = []
 
     for (const feature of features) {
       const featureCount = this._featureCount(feature.name, rawAnswersFeatures)

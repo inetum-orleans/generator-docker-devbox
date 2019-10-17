@@ -1,6 +1,6 @@
 import { DefaultFeature, DockerComposeFeature, Feature, FeatureAsyncInit } from '../feature'
 import { ConfigBuilder } from '@gfi-centre-ouest/docker-compose-builder'
-import * as Generator from 'yeoman-generator'
+import { Answers, Question } from 'yeoman-generator'
 import { RegistryClient } from '../../docker/registry'
 import { FeatureContext } from '../../index'
 import { PortsManager } from '../../managers'
@@ -13,7 +13,7 @@ export class Phing extends DefaultFeature implements Feature, DockerComposeFeatu
   directory: string = __dirname
   duplicateAllowed: boolean = false
 
-  asyncQuestions: Generator.Question[] = []
+  asyncQuestions: Question<Answers>[] = []
 
   async initAsync () {
     const registry = new RegistryClient()
@@ -40,7 +40,7 @@ export class Phing extends DefaultFeature implements Feature, DockerComposeFeatu
     ]
   }
 
-  questions (): Generator.Question[] {
+  questions (): Question[] {
     return this.asyncQuestions
   }
 

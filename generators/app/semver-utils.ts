@@ -22,7 +22,7 @@ function sortTagsImpl (tags: string[], sortFunction = semver.rsort): string[] {
     }
   })
 
-  const sortedVersions = sortFunction(tags.filter(tag => !!tagToVersion[tag]).map(tag => tagToVersion[tag] || tag)) as string[]
+  const sortedVersions = sortFunction(tags.filter(tag => !!tagToVersion[tag]).map(tag => tagToVersion[tag] || tag))
   const sortedTags = sortedVersions.map(version => versionToTag[version.toString()] || version)
   const otherTags = tags.filter(tag => !tagToVersion[tag])
   return [...sortedTags, ...otherTags]

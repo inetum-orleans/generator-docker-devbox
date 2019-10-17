@@ -1,6 +1,6 @@
 import { DefaultFeature, DockerComposeFeature, Feature, FeatureAsyncInit } from '../feature'
 import { ConfigBuilder } from '@gfi-centre-ouest/docker-compose-builder'
-import * as Generator from 'yeoman-generator'
+import { Answers, Question, Questions } from 'yeoman-generator'
 import { RegistryClient } from '../../docker/registry'
 import { AnswersFeature, FeatureContext } from '../../index'
 import { PortsManager } from '../../managers'
@@ -15,7 +15,7 @@ export class Postgres extends DefaultFeature implements Feature, DockerComposeFe
   directory: string = __dirname
   duplicateAllowed: boolean = true
 
-  asyncQuestions: Generator.Question[] = []
+  asyncQuestions: Question<Answers>[] = []
 
   async initAsync () {
     const registry = new RegistryClient()
@@ -43,7 +43,7 @@ export class Postgres extends DefaultFeature implements Feature, DockerComposeFe
     return this.asyncQuestions
   }
 
-  postProcessFeatureAnswers? (answers: AnswersFeature): Generator.Questions | null | undefined | void {
+  postProcessFeatureAnswers? (answers: AnswersFeature): Questions | null | undefined | void {
     const postgresVersion = semver.coerce(answers['postgresVersion'])!
     const major = semver.major(postgresVersion, true)
     const minor = semver.minor(postgresVersion, true)

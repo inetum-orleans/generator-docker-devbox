@@ -3,7 +3,7 @@ import { ConfigBuilder } from '@gfi-centre-ouest/docker-compose-builder'
 import { DockerDevboxExt } from '../../docker'
 import { FeatureContext } from '../../index'
 import { PortsManager } from '../../managers'
-import * as Generator from 'yeoman-generator'
+import { Answers, Question } from 'yeoman-generator'
 import * as path from 'path'
 
 export class Mail extends DefaultFeature implements DockerComposeFeature<Mail> {
@@ -13,7 +13,7 @@ export class Mail extends DefaultFeature implements DockerComposeFeature<Mail> {
   directory: string = __dirname
   duplicateAllowed: boolean = false
 
-  questions (): Generator.Question[] {
+  questions (): Question<Answers>[] {
     return [{
       type: 'list',
       name: 'mailserver',

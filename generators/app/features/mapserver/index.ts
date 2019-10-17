@@ -1,7 +1,7 @@
 import { DefaultFeature, DockerComposeFeature, FeatureAsyncInit } from '../feature'
 import { ConfigBuilder } from '@gfi-centre-ouest/docker-compose-builder'
 import { DockerDevboxExt } from '../../docker'
-import * as Generator from 'yeoman-generator'
+import { Answers, Question } from 'yeoman-generator'
 import { RegistryClient } from '../../docker/registry'
 import { FeatureContext } from '../../index'
 import { PortsManager } from '../../managers'
@@ -14,7 +14,7 @@ export class Mapserver extends DefaultFeature implements DockerComposeFeature<Ma
   directory: string = __dirname
   duplicateAllowed: boolean = true
 
-  asyncQuestions: Generator.Question[] = []
+  asyncQuestions: Question<Answers>[] = []
 
   async initAsync () {
     const registry = new RegistryClient()
@@ -38,7 +38,7 @@ export class Mapserver extends DefaultFeature implements DockerComposeFeature<Ma
     ]
   }
 
-  questions (): Generator.Question[] {
+  questions (): Question<Answers>[] {
     return this.asyncQuestions
   }
 

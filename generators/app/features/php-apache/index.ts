@@ -1,10 +1,10 @@
 import { dirnameFrom, DockerComposeFeature, FeatureAsyncInit } from '../feature'
 import { ConfigBuilder } from '@gfi-centre-ouest/docker-compose-builder'
-import { AnswersFeature, AnswersFeatures, FeatureContext } from '../../index'
+import { FeatureContext } from '../../index'
 import { PortsManager } from '../../managers'
 import { Php } from '../common/php'
 import { DockerDevboxExt } from '../../docker'
-import * as Generator from 'yeoman-generator'
+import { Answers, Question } from 'yeoman-generator'
 
 export class PhpApache extends Php implements DockerComposeFeature<PhpApache>, FeatureAsyncInit {
   name: string = 'php-apache'
@@ -13,7 +13,7 @@ export class PhpApache extends Php implements DockerComposeFeature<PhpApache>, F
   directory: string | string[] = [dirnameFrom('php'), __dirname]
   phpMode: string = 'apache'
 
-  questions (): Generator.Question[] {
+  questions (): Question<Answers>[] {
     return [
       ...super.questions(),
       {

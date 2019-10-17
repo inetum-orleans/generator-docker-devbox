@@ -1,5 +1,5 @@
-import { Answers, ChoiceType } from 'inquirer'
-import * as Generator from 'yeoman-generator'
+import { Answers, ChoiceOptions } from 'inquirer'
+import { Question, Questions } from 'yeoman-generator'
 import { AnswersFeature, AnswersFeatures, FeatureContext } from '..'
 import * as path from 'path'
 import { BulkOptions, Templating } from '../templating'
@@ -28,7 +28,7 @@ export interface Feature<A = Answers> {
   name: string
   label: string
   directory: string | string[]
-  choice: ChoiceType<A>
+  choice: ChoiceOptions<A>
   instanceName: string
 
   duplicateAllowed?: boolean
@@ -49,7 +49,7 @@ export interface Feature<A = Answers> {
   /**
    * Additional questions to ask when this feature is selected.
    */
-  questions? (): Generator.Question[]
+  questions? (): Question[]
 
   /**
    * Post process feature answers
@@ -58,7 +58,7 @@ export interface Feature<A = Answers> {
    * @param answersFeatures
    * @param allAnswers
    */
-  postProcessFeatureAnswers? (answers: AnswersFeature): Generator.Questions | null | undefined | void
+  postProcessFeatureAnswers? (answers: AnswersFeature): Questions | null | undefined | void
 
   /**
    * Post process answers
@@ -67,7 +67,7 @@ export interface Feature<A = Answers> {
    * @param answersFeatures
    * @param allAnswers
    */
-  postProcessAnswers? (answers: AnswersFeature, answersFeatures: AnswersFeatures, allAnswers: AnswersFeatures[]): Generator.Questions | null | undefined | void
+  postProcessAnswers? (answers: AnswersFeature, answersFeatures: AnswersFeatures, allAnswers: AnswersFeatures[]): Questions | null | undefined | void
 
   /**
    * Write files related to this feature.
