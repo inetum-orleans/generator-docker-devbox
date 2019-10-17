@@ -319,8 +319,8 @@ export default class AppGenerator extends Generator {
 
     const builderOptions = new DockerDevboxConfigBuilderOptions()
 
-    const composeBuilder = newBuilder({ version: Version.v22 }, builderOptions)
-    const composeDevBuilder = newBuilder({ version: Version.v22 }, builderOptions)
+    const composeBuilder = newBuilder(undefined, builderOptions)
+    const composeDevBuilder = newBuilder(undefined, builderOptions)
 
     let instanceNameManager = new NameManager()
     let portsManager = new PortsManager()
