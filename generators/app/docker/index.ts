@@ -55,7 +55,7 @@ export class DockerDevboxExt implements Extension {
   }
 
   xdebug (): this {
-    this.builder.environment('XDEBUG_CONFIG', 'idekey={{projectName}} remote_host=${HOST_IP}')
+    this.builder.environment('XDEBUG_CONFIG', 'remote_enable=on remote_autostart=off idekey={{projectName}} remote_host=${HOST_IP}')
     this.builder.environment('PHP_IDE_CONFIG', 'serverName={{projectName}}')
     return this
   }
