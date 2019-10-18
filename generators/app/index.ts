@@ -70,7 +70,7 @@ export default class AppGenerator extends Generator {
   }
 
   private _sanitizeProjectName (input: string) {
-    return input.replace(/(?:(?![\.])[\s\W_])+/g, '-')
+    return input.replace(/(?:(?![\.])[\s\W_])+/g, '-').toLowerCase()
   }
 
   private _sanitizeRegistryRepository (input: string) {
