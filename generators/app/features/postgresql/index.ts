@@ -51,7 +51,7 @@ export class Postgres extends DefaultFeature implements Feature, DockerComposeFe
     answers['postgresClientVersion'] = major >= 10 ? `${major}` : `${major}.${minor}`
   }
 
-  dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<Postgres>, portsManager: PortsManager, dev?: boolean): void {
+  dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<this>, portsManager: PortsManager, dev?: boolean): void {
     if (!dev) {
       builder.service(context.instance.name)
         .with.default()

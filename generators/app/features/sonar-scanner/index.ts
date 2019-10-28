@@ -10,7 +10,7 @@ export class SonarScanner extends DefaultFeature implements Feature, DockerCompo
   directory: string = __dirname
   duplicateAllowed: boolean = true
 
-  dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<SonarScanner>, portsManager: PortsManager, dev?: boolean): void {
+  dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<this>, portsManager: PortsManager, dev?: boolean): void {
     if (!dev) {
       builder.service(context.instance.name)
         .with.default()

@@ -79,7 +79,7 @@ export class Node extends DefaultFeature implements Feature, DockerComposeFeatur
     return options
   }
 
-  dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<Node>, portsManager: PortsManager, dev?: boolean): void {
+  dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<this>, portsManager: PortsManager, dev?: boolean): void {
     if (!dev) {
       builder.service(context.instance.name)
         .with.default()

@@ -29,11 +29,14 @@ export class Mail extends DefaultFeature implements DockerComposeFeature<Mail> {
     return path.join(directory, `${context.mailserver}-templates`)
   }
 
-  dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<Mail>, portsManager: PortsManager, dev?: boolean): void {
+  reverseProxyServices (context: FeatureContext<this>) {
+    return [{ service: context.instance.name, subdomainPrefix: context.instance.name }]
+  }
+
+  dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<this>, portsManager: PortsManager, dev?: boolean): void {
     if (dev) {
       builder.service(context.instance.name)
         .with.default()
-        .ext(DockerDevboxExt).reverseProxy(context.instance.name)
     }
   }
 }

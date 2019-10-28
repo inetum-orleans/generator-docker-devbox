@@ -1,4 +1,4 @@
-import { DefaultFeature, DockerComposeFeature, FeatureAsyncInit } from '../feature'
+import { DefaultFeature, DockerComposeFeature, FeatureAsyncInit, ReverseProxyService } from '../feature'
 import { ConfigBuilder } from '@gfi-centre-ouest/docker-compose-builder'
 import { DockerDevboxExt } from '../../docker'
 import { Answers, Question } from 'yeoman-generator'
@@ -42,20 +42,21 @@ export class Mapserver extends DefaultFeature implements DockerComposeFeature<Ma
     return this.asyncQuestions
   }
 
-  envFiles (context: FeatureContext<Mapserver>): string[] {
+  envFiles (context: FeatureContext<this>): string[] {
     return [`.docker/${context.instance.name}/mapserver.map`]
   }
 
-  dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<Mapserver>, portsManager: PortsManager, dev?: boolean): void {
+  reverseProxyServices (context: FeatureContext<this>): ReverseProxyService[] {
+    return [{ service: context.instance.name, subdomainPrefix: context.instance.name }]
+  }
+
+  dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<this>, portsManager: PortsManager, dev?: boolean): void {
     if (!dev) {
       builder.service(context.instance.name)
         .with.default()
         .env('LISTEN_PORT_80', '1')
         .volume.relative('', '/etc/mapserver')
         .user('${USER_ID}')
-    } else {
-      builder.service(context.instance.name)
-        .ext(DockerDevboxExt).reverseProxy(context.instance.name)
     }
   }
 }

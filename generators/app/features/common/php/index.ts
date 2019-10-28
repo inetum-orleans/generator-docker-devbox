@@ -196,7 +196,7 @@ export abstract class Php extends DefaultFeature implements DockerComposeFeature
     }
   }
 
-  private hasFeature (context: FeatureContext<Php>, featureId: string) {
+  private hasFeature (context: FeatureContext<this>, featureId: string) {
     for (const answersFeature of context.features) {
       {
         if (answersFeature[featureId]) {
@@ -207,7 +207,7 @@ export abstract class Php extends DefaultFeature implements DockerComposeFeature
     return false
   }
 
-  dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<Php>, portsManager: PortsManager, dev?: boolean): void {
+  dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<this>, portsManager: PortsManager, dev?: boolean): void {
     if (!dev) {
       builder.service(context.instance.name)
         .with.default()

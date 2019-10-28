@@ -44,7 +44,7 @@ export class Phing extends DefaultFeature implements Feature, DockerComposeFeatu
     return this.asyncQuestions
   }
 
-  dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<Phing>, portsManager: PortsManager, dev?: boolean): void {
+  dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<this>, portsManager: PortsManager, dev?: boolean): void {
     if (!dev) {
       builder.service(context.instance.name)
         .with.default()

@@ -24,6 +24,12 @@ export interface FeatureAsyncInit {
   initAsync (): Promise<void>
 }
 
+export interface ReverseProxyService {
+  service: string,
+  port?: number,
+  subdomainPrefix?: string
+}
+
 export interface Feature<A = Answers> {
   name: string
   label: string
@@ -34,6 +40,8 @@ export interface Feature<A = Answers> {
   duplicateAllowed?: boolean
   excludeFiles?: (string | RegExp)[]
   appendFiles?: (string | RegExp)[]
+
+  reverseProxyServices? (context: FeatureContext<this>): ReverseProxyService[]
 
   moDirectories? (context: FeatureContext<this>): string[]
 
@@ -55,8 +63,6 @@ export interface Feature<A = Answers> {
    * Post process feature answers
    *
    * @param answers
-   * @param answersFeatures
-   * @param allAnswers
    */
   postProcessFeatureAnswers? (answers: AnswersFeature): Questions | null | undefined | void
 
