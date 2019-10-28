@@ -1,4 +1,4 @@
-import { dirnameFrom, DockerComposeFeature, FeatureAsyncInit } from '../feature'
+import { dirnameFrom, DockerComposeFeature, FeatureAsyncInit, ReverseProxyService } from '../feature'
 import { ConfigBuilder } from '@gfi-centre-ouest/docker-compose-builder'
 import { FeatureContext } from '../../index'
 import { PortsManager } from '../../managers'
@@ -56,7 +56,14 @@ export class PhpFpmApache extends Php implements DockerComposeFeature<PhpFpmApac
       }]
   }
 
-  dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<PhpFpmApache>, portsManager: PortsManager, dev?: boolean): void {
+  reverseProxyServices (context: FeatureContext<this>): ReverseProxyService[] {
+    return [{
+      service: context.instances.web.name,
+      subdomainPrefix: context.instances.web.name === this.otherInstanceNames[0] ? undefined : context.instances.web.name
+    }]
+  }
+
+  dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<this>, portsManager: PortsManager, dev?: boolean): void {
     super.dockerComposeConfiguration(builder, context, portsManager, dev)
 
     if (!dev) {
@@ -64,9 +71,6 @@ export class PhpFpmApache extends Php implements DockerComposeFeature<PhpFpmApac
         .with.default()
         .volume.project(this.projectVolume)
         .volume.relative('apache.conf', '/usr/local/apache2/conf/custom/apache.conf')
-    } else {
-      builder.service(context.instances.web.name)
-        .ext(DockerDevboxExt).reverseProxy(context.instances.web.name === this.otherInstanceNames[0] ? undefined : context.instances.web.name)
     }
   }
 }

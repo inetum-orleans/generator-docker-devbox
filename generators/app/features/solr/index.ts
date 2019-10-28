@@ -41,7 +41,7 @@ export class Solr extends DefaultFeature implements Feature, DockerComposeFeatur
     return this.asyncQuestions
   }
 
-  dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<Solr>, portsManager: PortsManager, dev?: boolean): void {
+  dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<this>, portsManager: PortsManager, dev?: boolean): void {
     if (!dev) {
       builder.service(context.instance.name)
         .with.default()

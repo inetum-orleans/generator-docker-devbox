@@ -18,3 +18,8 @@ autostash DOCKER_DEVBOX_REGISTRY_REPOSITORY="{{registryRepository}}"
 # Set self signed CA certificates (cfssl/mkcert) into containers.
 # You may need this if containers communicates with each others through their https public name.
 # autostash DOCKER_DEVBOX_COPY_SELF_CA_CERTIFICATE=1
+
+# Configure list of services that should be configured on reverse proxy.
+# Should be something like "service1:port1[:subdomain1] service2:port2[:subdomain2]".
+# subdomain part is optional, it will be prepend to default docker devbox domain.
+autostash DOCKER_DEVBOX_REVERSE_PROXY_SERVICES="{{reverseProxyServices}}"

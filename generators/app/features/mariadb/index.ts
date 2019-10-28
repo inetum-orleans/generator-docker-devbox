@@ -51,7 +51,7 @@ export class MariaDB extends DefaultFeature implements Feature, DockerComposeFea
     answers['mariadbClientVersion'] = `${major}.${minor}`
   }
 
-  dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<MariaDB>, portsManager: PortsManager, dev?: boolean): void {
+  dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<this>, portsManager: PortsManager, dev?: boolean): void {
     if (!dev) {
       builder.service(context.instance.name)
         .with.default()

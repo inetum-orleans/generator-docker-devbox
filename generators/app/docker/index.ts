@@ -28,32 +28,6 @@ export class DockerDevboxExt implements Extension {
   constructor (private builder: ServiceBuilder) {
   }
 
-  reverseProxy (subdomain?: string, port?: number): this {
-    this.builder.network('reverse-proxy', { name: '${DOCKER_DEVBOX_REVERSE_PROXY_NETWORK}', external: true })
-    this.builder.label('traefik.enable=true')
-
-    this.virtualHost(subdomain)
-    this.virtualPort(port)
-
-    return this
-  }
-
-  private virtualHost (subdomain?: string) {
-    let virtualHost = '${DOCKER_DEVBOX_DOMAIN_PREFIX}.${DOCKER_DEVBOX_DOMAIN}'
-    if (subdomain) {
-      virtualHost = subdomain + '.' + virtualHost
-    }
-    this.builder.environment('VIRTUAL_HOST', virtualHost)
-    this.builder.label('traefik.frontend.rule=Host:' + virtualHost)
-  }
-
-  private virtualPort (port?: number) {
-    const virtualPort = (port ? port : '80')
-
-    this.builder.environment('VIRTUAL_PORT', virtualPort)
-    this.builder.label('traefik.port=' + virtualPort)
-  }
-
   xdebug (): this {
     this.builder.environment('XDEBUG_CONFIG', 'remote_enable=on remote_autostart=off idekey={{projectName}} remote_host=${HOST_IP}')
     this.builder.environment('PHP_IDE_CONFIG', 'serverName={{projectName}}')

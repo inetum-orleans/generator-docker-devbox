@@ -51,7 +51,7 @@ export class MySQL extends DefaultFeature implements Feature, DockerComposeFeatu
     answers['mysqlClientVersion'] = `${major}.${minor}`
   }
 
-  dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<MySQL>, portsManager: PortsManager, dev?: boolean): void {
+  dockerComposeConfiguration (builder: ConfigBuilder, context: FeatureContext<this>, portsManager: PortsManager, dev?: boolean): void {
     if (!dev) {
       builder.service(context.instance.name)
         .with.default()

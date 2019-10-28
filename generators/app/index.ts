@@ -1,7 +1,13 @@
 import { Templating } from './templating'
 import { ChoiceOptions } from 'inquirer'
 import { features } from './features'
-import { DockerComposeFeature, Feature, FeatureAsyncInit, FeatureInstance } from './features/feature'
+import {
+  DockerComposeFeature,
+  Feature,
+  FeatureAsyncInit,
+  FeatureInstance,
+  ReverseProxyService
+} from './features/feature'
 import { Helpers } from './helpers'
 import * as Generator from 'yeoman-generator'
 
@@ -199,6 +205,19 @@ export default class AppGenerator extends Generator {
     return raw
   }
 
+  private _buildReverseProxyServiceEntry (rps: ReverseProxyService) {
+    let ret = rps.service
+    if (rps.port) {
+      ret = `${ret}:${rps.port}`
+    } else {
+      ret = `${ret}:80`
+    }
+    if (rps.subdomainPrefix) {
+      ret = `${ret}:${rps.subdomainPrefix}`
+    }
+    return ret
+  }
+
   initializing () {
     const exitListeners = process.listeners('exit')
     for (const exitListener of exitListeners) {
@@ -316,6 +335,7 @@ export default class AppGenerator extends Generator {
 
     const envFiles: string[] = ['docker-compose.override.yml']
     const moDirectories: string[] = ['$DOCKER_DEVBOX_DIR/.docker[*]']
+    const reverseProxyServices: string[] = []
 
     const builderOptions = new DockerDevboxConfigBuilderOptions()
 
@@ -345,6 +365,9 @@ export default class AppGenerator extends Generator {
         }
         if (feature.moDirectories) {
           moDirectories.push(...feature.moDirectories(context))
+        }
+        if (feature.reverseProxyServices) {
+          reverseProxyServices.push(...feature.reverseProxyServices(context).map(s => this._buildReverseProxyServiceEntry(s)))
         }
 
         const dockerComposeFeature = feature as unknown as DockerComposeFeature<typeof feature>
@@ -377,7 +400,8 @@ export default class AppGenerator extends Generator {
       ...this.answersMain,
       ...computed,
       envFiles: envFiles.join(' '),
-      moDirectories: moDirectories.join(' ')
+      moDirectories: moDirectories.join(' '),
+      reverseProxyServices: reverseProxyServices.join(' ')
     })
   }
 
