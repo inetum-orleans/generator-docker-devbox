@@ -122,7 +122,7 @@ export abstract class Php extends DefaultFeature implements DockerComposeFeature
       let choices: ChoiceOptions<Answers>[] | undefined = databaseChoicesByType[type]
       if (!choices) {
         choices = []
-        databaseChoicesByType[type] = []
+        databaseChoicesByType[type] = choices
       }
       choices.push(value)
     }
