@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 . "$DOCKER_DEVBOX_SCRIPTS_PATH/.bash.lib.d/50-docker"
 
-run --workdir="$(_docker_workdir "/workdir")" --entrypoint "fixuid -q mysql" {{instance.name}} mysql -h{{instance.name}} -u{{projectName}} -p{{projectName}} "$@"
+run --workdir="$(_docker_workdir "/workdir")" --entrypoint "fixuid -q mysql" {{instance.name}} -h{{instance.name}} -u{{projectName}} -p{{projectName}} -D{{instance.name}} "$@"
