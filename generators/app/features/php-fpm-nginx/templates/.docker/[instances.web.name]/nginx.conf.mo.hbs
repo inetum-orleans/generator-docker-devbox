@@ -1,6 +1,7 @@
 server {
     root /var/www/html/{{instances.web.name}};
     index index.html index.php;
+    client_max_body_size 0;
 
     location ~ '\.php$' {
         fastcgi_split_path_info ^(.+?\.php)(|/.*)$;
