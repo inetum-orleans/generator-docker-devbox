@@ -8,7 +8,9 @@ RUN update-ca-certificates
 {{#inArray phpExtensions "gd"}}
 
 RUN apt-get update -y && apt-get install -y libpng-dev libfreetype6-dev libjpeg62-turbo-dev && rm -rf /var/lib/apt/lists/* \
-&& docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
+&& docker-php-ext-configure gd \
+--with-freetype{{#semver phpVersion '<7.4'}}-dir=/usr/include/{{/semver}} \
+--with-jpeg{{#semver phpVersion '<7.4'}}-dir=/usr/include/{{/semver}} \
 && docker-php-ext-install gd
 {{/inArray}}
 {{#inArray phpExtensions "opcache"}}
