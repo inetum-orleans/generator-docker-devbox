@@ -100,7 +100,7 @@ export class Templating {
     return template(context, handlebarsOptions)
   }
 
-  renderMustache (input: string, context: any, tags?: string[]): string {
+  renderMustache (input: string, context: any, tags?: [string, string]): string {
     return Mustache.render(input, context, undefined, tags)
   }
 

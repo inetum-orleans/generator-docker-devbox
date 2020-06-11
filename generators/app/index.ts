@@ -19,7 +19,7 @@ import * as yaml from 'js-yaml'
 import * as path from 'path'
 import * as process from 'process'
 
-import chalk from 'chalk'
+import { red, bold, green } from 'chalk'
 import { bash } from './system'
 import { NameManager, PortsManager } from './managers'
 
@@ -232,7 +232,7 @@ export default class AppGenerator extends Generator {
 
   async prompting () {
     this.log(
-      yosay('Welcome to the epic ' + chalk.red('@gfi-centre-ouest/docker-devbox') + ' generator!')
+      yosay('Welcome to the epic ' + red('@gfi-centre-ouest/docker-devbox') + ' generator!')
     )
 
     const answersStart = await this._promptStart()
@@ -407,46 +407,46 @@ export default class AppGenerator extends Generator {
 
   async install () {
     this.log('')
-    this.log(chalk.bold.blue('Initializing environment ...'))
+    this.log(bold.blue('Initializing environment ...'))
     this.log('')
 
-    this.log(chalk.bold.cyan('$ . .bash_enter'))
+    this.log(bold.cyan('$ . .bash_enter'))
     this.log('')
 
     if (this.options['bash-disabled']) {
-      this.log(chalk.red('bash execution is disabled (bash-disabled argument). You should run the command manually.'))
+      this.log(red('bash execution is disabled (bash-disabled argument). You should run the command manually.'))
     } else {
       await bash('. .bash_enter')
     }
 
     this.log('')
 
-    this.log(chalk.bold.green('🎉 Everything has been generated properly ! 🎉'))
+    this.log(bold.green('🎉 Everything has been generated properly ! 🎉'))
     this.log('')
 
-    this.log(chalk.green('run ') +
-      chalk.bold.cyan('. .bash_enter') +
-      chalk.green(' to initialize the environment.')
+    this.log(green('run ') +
+      bold.cyan('. .bash_enter') +
+      green(' to initialize the environment.')
     )
     this.log('')
 
-    this.log(chalk.bold.cyan('dc') +
-      chalk.green(' is available as an alias for ') +
-      chalk.bold.cyan('docker-compose') +
-      chalk.green('.')
+    this.log(bold.cyan('dc') +
+      green(' is available as an alias for ') +
+      bold.cyan('docker-compose') +
+      green('.')
     )
 
-    this.log(chalk.bold.cyan('.bin') +
-      chalk.green(' directory is registered in PATH to bring commands from docker containers right in your bash environment.')
+    this.log(bold.cyan('.bin') +
+      green(' directory is registered in PATH to bring commands from docker containers right in your bash environment.')
     )
 
-    this.log(chalk.green('Run ') +
-      chalk.bold.cyan('dc build') +
-      chalk.green(' to build images, ') +
-      chalk.bold.cyan('dc up -d') +
-      chalk.green(' to start containers, ') +
-      chalk.bold.cyan('dc logs -f') +
-      chalk.green(' to follow the container logs.'
+    this.log(green('Run ') +
+      bold.cyan('dc build') +
+      green(' to build images, ') +
+      bold.cyan('dc up -d') +
+      green(' to start containers, ') +
+      bold.cyan('dc logs -f') +
+      green(' to follow the container logs.'
       )
     )
     this.log('')
