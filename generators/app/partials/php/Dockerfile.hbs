@@ -99,9 +99,11 @@ RUN apt-get update -y && apt-get install -y {{nativeClientMySQLPackage}} && rm -
 {{/inArray}}
 {{#inArray nativeClient 'MariaDB'}}
 
-RUN apt-get update -y && apt-get -y install software-properties-common gnupg && \
-curl -fsSL https://downloads.mariadb.com/MariaDB/mariadb_repo_setup | bash -s -- --mariadb-server-version="mariadb-{{nativeClientMariaDBVersion}}" \
-&& apt-get update -y && apt-get install -y {{nativeClientMariaDBPackage}} && rm -rf /var/lib/apt/lists/*
+RUN apt-get update -y && apt-get install software-properties-common gnupg -y && \
+apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8 && \
+add-apt-repository "deb [arch=amd64,arm64,ppc64el] http://mirrors.up.pt/pub/mariadb/repo/{{nativeClientMariaDBVersion}}/debian $(lsb_release -cs) main" && \
+apt-get update -y && apt-get install {{nativeClientMariaDBPackage}} -y && rm -rf /var/lib/apt/lists/*
+
 {{/inArray}}
 {{#inArray phpTools "wkhtmltopdf"}}
 
